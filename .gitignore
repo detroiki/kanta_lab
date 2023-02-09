@@ -2,7 +2,7 @@
 docu/
 results/
 exec/
-tests/test_data/
+tests/
 
 ## R
 # History files

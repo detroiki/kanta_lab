@@ -24,3 +24,19 @@ std::vector<std::string> split(const std::string &s,
     split(s, delim, std::back_inserter(elems));
     return elems;
 }
+
+
+std::string concat_string(std::vector<std::string> elems, 
+                          std::string sep) {
+    std::stringstream ss;
+    for(auto elem: elems) {
+        ss << elem << sep;
+    }
+    std::string final = ss.str();
+    return(final);
+}
+
+//     std::string concat = std::accumulate(std::make_move_iterator(v.begin()),
+//                                          std::make_move_iterator(v.end()),
+//                                          std::string());
+//  https://en.cppreference.com/w/cpp/iterator/move_iterator
