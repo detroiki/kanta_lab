@@ -18,18 +18,26 @@ int main(int argc, char *argv[]) {
     std::string report_path = concat_string(report_path_vec, std::string(""));
     std::vector<std::string> full_res_path_vec = {res_path, "processed/data/", file_name, "_reduced.csv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
+    std::vector<std::string> dup_path_vec = {res_path, "processed/reports/problem_rows/", file_name, "_duplicates.csv"};    
+    std::string dup_path = concat_string(dup_path_vec, std::string(""));
 
     // Opening
     std::ifstream in_file;
     std::ofstream error_file;
     std::ofstream res_file;
-    in_file.open(file_path); error_file.open(report_path); res_file.open(full_res_path);
-    check_in_open(in_file, file_path); check_out_open(error_file, report_path); check_out_open(res_file, full_res_path);
+    std::ofstream dup_file;
+    in_file.open(file_path); error_file.open(report_path); res_file.open(full_res_path); dup_file.open(dup_path);
+    check_in_open(in_file, file_path); check_out_open(error_file, report_path); check_out_open(res_file, full_res_path); check_out_open(dup_file, dup_path);
 
+    // Line Counting
     int skip_count = 0;
+    int dup_count = 0;
     unsigned long long line_count = 0;
     unsigned long long total_line_count = 0;
     int lines_invalid = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
+
+    // For skipping duplicate entries
+    std::unordered_set<std::string> entry_id;
 
     // Reading file line by line
     std::string line;
@@ -90,10 +98,16 @@ int main(int argc, char *argv[]) {
                     full_line_vec[elem_idx] = "NA";
                 }
             }
-            // Selecting all non-ID rows to reduce the size
-            res_file << full_line_vec[1] << ";" << full_line_vec[9] << ";" <<  full_line_vec[10] << ";" <<  full_line_vec[11] << ";" <<  full_line_vec[12] << ";" <<  full_line_vec[13] << ";" <<  full_line_vec[14] << ";" <<  full_line_vec[15] << ";" <<  full_line_vec[16] << ";" <<  full_line_vec[18] << ";" <<  full_line_vec[19] << ";" <<  full_line_vec[20] << ";" <<  full_line_vec[21] << ";" <<  full_line_vec[22] << ";" <<  full_line_vec[23] << ";" <<  full_line_vec[24] << "\n";
-            line_count++;
-            total_line_count++;
+            if(entry_id.insert(full_line_vec[3]).second) {
+                // Selecting all non-ID rows to reduce the size
+                res_file << full_line_vec[1] << ";" << full_line_vec[9] << ";" <<  full_line_vec[10] << ";" <<  full_line_vec[11] << ";" <<  full_line_vec[12] << ";" <<  full_line_vec[13] << ";" <<  full_line_vec[14] << ";" <<  full_line_vec[15] << ";" <<  full_line_vec[16] << ";" <<  full_line_vec[18] << ";" <<  full_line_vec[19] << ";" <<  full_line_vec[20] << ";" <<  full_line_vec[21] << ";" <<  full_line_vec[22] << ";" <<  full_line_vec[23] << ";" <<  full_line_vec[24] << "\n";
+                line_count++;
+                total_line_count++;
+            } else {
+                dup_file << line << "\n";
+                total_line_count++;
+                dup_count++;
+            }
         } 
         // Line is invalid
         if((lines_invalid == 1) | (lines_invalid == 3)) {
@@ -110,8 +124,13 @@ int main(int argc, char *argv[]) {
             total_line_count++;
         }
     }
+
+    cout << "line number: " << line_count << " closing" << endl;
+    cout << "skipped: " << skip_count << endl;
+    cout << "duplicates: " << dup_count << endl;
     // Closing
     in_file.close();
     error_file.close();
     res_file.close();
+    dup.file.close();
 }

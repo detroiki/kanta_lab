@@ -7,19 +7,16 @@ int main(int argc, char *argv[]) {
     unsigned long long n_rows = 0;
     int n_cols = 15;
 
-    std::string file_name = argv[1];
-    std::string res_path = argv[2];
-    if(argc >= 4) n_cols = atoi(argv[3]);
-    if(argc >= 5) n_rows = atoi(argv[4]);
+    std::string file_path = argv[1];
+    std::string res_path = argv[3];
 
 
     // Opening
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/", file_name, "_problem_rows_counting.csv"};    
+    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/all_minimal_counting.csv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
     std::ifstream in_file;
-    std::ofstream error_file;
-    error_file.open(report_path);
-    check_out_open(error_file, report_path);
+    in_file.open(file_path); 
+    check_in_open(in_file, file_path); 
 
 
     // Defining result variables
@@ -32,11 +29,7 @@ int main(int argc, char *argv[]) {
     int skip_count = 0;
     // Reading file line by line
     std::string line;
-    while(std::getline(std::cin, line)) {
-        cout << line << endl;
-        if((line_count > n_rows) & (n_rows != 0)) {
-            break;
-        }
+    while(std::getline(in_file, line)) {
         // Split values and copy into resulting vector
         std::vector<std::string> line_vec = split(line, delim);
         if(int(line_vec.size()) == n_cols)  {
@@ -53,7 +46,6 @@ int main(int argc, char *argv[]) {
             cout << "Skipping line: " << total_line_count << " size: " << line.size() << " no of columns: " << line_vec.size() << " " << line << endl;
             skip_count++;
             total_line_count++;
-            error_file << line << "\n";
         }
     }
     cout << "line number: " << line_count << " closing" << endl;

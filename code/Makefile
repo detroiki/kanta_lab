@@ -1,5 +1,12 @@
 FLAGS = -std=c++11 -static -Wall
 
+## MINIMAL
+minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o 
+	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o -o exec/minimal
+
+bin/main_minimal.o: src/minimal/minimal_main.cpp
+	$(info Buildung Main Reduce...)  g++ -c $(FLAGS) -o bin/main_minimal.o src/minimal/minimal_main.cpp
+
 ## REDUCE
 reduce: bin/main_reduce.o bin/file_helpers.o bin/string_helpers.o 
 	g++ $(FLAGS) bin/main_reduce.o bin/file_helpers.o bin/string_helpers.o -o exec/reduce
@@ -48,7 +55,10 @@ run_missing: exec/missing
 	exec/missing tests/processed/data/test_reduced.csv test_reduced tests/ 16
 
 run_counting: exec/counting
-	exec/counting tests/processed/data/test_reduced.csv test_reduced tests/ 16
+	exec/counting test_reduce tests/ 16
+
+run_minimal: exec/minimal
+	exec/minimal test tests/ tests/test_data/test.csv tests/test_data/test_2.csv
 	
 clean:
 	$(info Cleaning up...)
