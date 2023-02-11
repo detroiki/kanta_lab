@@ -1,5 +1,12 @@
 FLAGS = -std=c++11 -static -Wall
 
+## DOWNSAMPLE
+downsample: bin/main_downsample.o bin/file_helpers.o bin/string_helpers.o 
+	g++ $(FLAGS) bin/main_downsample.o bin/file_helpers.o bin/string_helpers.o -o exec/downsample
+
+bin/main_downsample.o: src/downsample/downsample_main.cpp
+	$(info Buildung Main Reduce...)  g++ -c $(FLAGS) -o bin/main_downsample.o src/downsample/downsample_main.cpp
+
 ## MINIMAL
 minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o 
 	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o -o exec/minimal
@@ -58,8 +65,13 @@ run_counting: exec/counting
 	exec/counting test_reduce tests/ 16
 
 run_minimal: exec/minimal
-	exec/minimal test tests/ tests/test_data/test.csv tests/test_data/test_2.csv
-	
+	exec/minimal tests/
+
+run_minimal_app: exec/minimal
+	exec/minimal tests/ file_2
+
+run_downsample: exec/downsample
+	exec/downsample /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/reports/sampled_ids_10.txt 10
 clean:
 	$(info Cleaning up...)
 	rm bin/*.o
