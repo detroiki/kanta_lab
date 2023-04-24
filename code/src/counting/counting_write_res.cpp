@@ -22,7 +22,7 @@ void write_col_counts(std::unordered_map<std::string, std::unordered_map<std::st
             } else if(col_name == "LAB_ABBREVIATION") {
                 res_file << "LAB_ABBREVIATION\tCOUNT\n";
             } else if(col_name == "LAB_VALUE") {
-                res_file << "LAB_ID\nOMOP_ID\tLAB_ABBREVIATION\tLAB_VALUE\tLAB_UNIT\tCOUNT\n";
+                res_file << "LAB_ID\tOMOP_ID\tLAB_ABBREVIATION\tLAB_VALUE\tLAB_UNIT\tCOUNT\n";
             } else if(col_name == "LAB_UNIT") {
                 res_file << "LAB_UNIT\tCOUNT\n";
             } else if(col_name == "LAB_ABNORMALITY") {
