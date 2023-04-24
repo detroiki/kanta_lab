@@ -1,136 +1,100 @@
 #include "../header.h"
 
 int main(int argc, char *argv[]) {
-    // File and delimiter
-    const char *delim = ";";
-    // Defining zero as reading whole file here
-    unsigned long long n_rows = 0;
-    int n_cols = 25;
-
-    std::string file_path = argv[1];
-    std::string file_name = argv[2];
-    std::string res_path = argv[3];
-    if(argc >= 5) n_rows = atoi(argv[2]);
-    if(argc >= 6) n_cols = atoi(argv[3]);
-
-    // Full Paths
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/problem_rows/", file_name, "_problem_rows.csv"};    
-    std::string report_path = concat_string(report_path_vec, std::string(""));
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/", file_name, "_reduced.csv"};    
+    std::string res_path = argv[1];
+    std::string omop_map_path = argv[2];
+    // Out File
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/", "all_minimal_omop.csv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
-    std::vector<std::string> dup_path_vec = {res_path, "processed/reports/problem_rows/", file_name, "_duplicates.csv"};    
-    std::string dup_path = concat_string(dup_path_vec, std::string(""));
 
-    // Opening
-    std::ifstream in_file;
-    std::ofstream error_file;
-    std::ofstream res_file;
-    std::ofstream dup_file;
-    in_file.open(file_path); error_file.open(report_path); res_file.open(full_res_path); dup_file.open(dup_path);
-    check_in_open(in_file, file_path); check_out_open(error_file, report_path); check_out_open(res_file, full_res_path); check_out_open(dup_file, dup_path);
-
-    // Line Counting
-    int skip_count = 0;
-    int dup_count = 0;
-    unsigned long long line_count = 0;
-    unsigned long long total_line_count = 0;
-    int lines_invalid = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
-
-    // For skipping duplicate entries
-    std::unordered_set<std::string> entry_id;
-
-    // Reading file line by line
+    // Getting Concept data
     std::string line;
+    std::ifstream omop_in;
+    // These are multiple maps. Starts with source. Each source then has entries with the LAB IDs mapping to the OMOP IDs
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> omop_map;
+    std::unordered_map<std::string, std::string> omop_units;
+    std::unordered_map<std::string, std::string> omop_names;
+
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> omop_abbreviations;
+    omop_in.open(omop_map_path); check_in_open(omop_in, omop_map_path);
+    while(std::getline(omop_in, line)) {
+        std::vector<std::string> line_vec = split(line, "\t");
+        std::string lab_id = line_vec[0];
+        std::string source = line_vec[1];
+        std::string abbreviation = line_vec[2];
+        std::string unit = line_vec[3];
+        std::string group_id = line_vec[4];
+        std::string name = line_vec[5];
+        // LAB_ID, SOURCE, ....., OMOP_ID
+        omop_map[source][lab_id] = group_id;
+        omop_names[group_id] = name;
+        omop_units[lab_id] = unit;
+        omop_abbreviations[source][lab_id] = abbreviation;
+    }
+    omop_in.close();
+
+    std::ofstream res_file;
+    res_file.open(full_res_path); check_out_open(res_file, full_res_path); 
+    // Counts
+    unsigned long long total_line_count = 0;
+
+
+    // Lines
     std::string new_line;
 
-    while(std::getline(in_file, line)) {
-       if((line_count > n_rows) & (n_rows != 0)) {
-            break;
-        }
-        // Split values and copy into resulting vector
-        std::vector<std::string> full_line_vec(n_cols);
-        std::vector<std::string> line_vec = split(line, delim);
-            
-        // Seemingly correctly defined line
-        if(int(line_vec.size()) == n_cols) {
-            std::copy(line_vec.begin(), line_vec.end(), full_line_vec.begin());
-            lines_invalid = 0;
-        // Too many columns, can't fix at the moment. Line invalid. TODO
-        } else if(int(line_vec.size()) > n_cols) {
-            lines_invalid = 1;
-        // Trying to fix line potential early line breaks
-        } else if(int(line_vec.size()) < n_cols)  {
-            // Getting next line
-            std::getline(in_file, new_line);
-            std::vector<std::string> new_line_vec = split(new_line, delim);
-
-            // New line is likely continuation of previous line
-            if(int(new_line_vec.size()) < n_cols) {
-                // Concatinating back last element of previous line with first of new line
-                std::string new_name = concat_string(std::vector<std::string> {line_vec[line_vec.size()-1], new_line_vec[0]});
-                line_vec.at(line_vec.size()-1) =  new_name;
-
-                // Concatinating the two line vectors
-                line_vec.insert(line_vec.end(), next(new_line_vec.begin()), new_line_vec.end());
-                if(int(line_vec.size()) == n_cols) {
-                    std::copy(line_vec.begin(), line_vec.end(), full_line_vec.begin());
-                    lines_invalid = 0;
-                // Concatination does not give us a valid line. Both are invalid. 
-                } else {
-                    lines_invalid = 2;
-                }
-            // New line is actually a full line. Line is invalid. Newline is valid, using it. 
-            } else if(int(new_line_vec.size()) == n_cols) { 
-                std::copy(new_line_vec.begin(), new_line_vec.end(), full_line_vec.begin());
-                lines_invalid = 3;
-            } else {
-                lines_invalid = 2;
-            }
-        } 
-        // Line or newline is valid
-        if((lines_invalid == 0) | (lines_invalid == 3)) {
-            // Replacing different NA indicators with NA
-            for(int elem_idx=0; elem_idx < n_cols; elem_idx++) {
-                // Replacing NAs
-                if((full_line_vec[elem_idx] == "Puuttuu") |
-                    (full_line_vec[elem_idx] == "\"\"") | 
-                    ((full_line_vec[elem_idx] == "-1") & (elem_idx != 19))) { // -1 in value not considered NA
-                    full_line_vec[elem_idx] = "NA";
-                }
-            }
-            if(entry_id.insert(full_line_vec[3]).second) {
-                // Selecting all non-ID rows to reduce the size
-                res_file << full_line_vec[1] << ";" << full_line_vec[9] << ";" <<  full_line_vec[10] << ";" <<  full_line_vec[11] << ";" <<  full_line_vec[12] << ";" <<  full_line_vec[13] << ";" <<  full_line_vec[14] << ";" <<  full_line_vec[15] << ";" <<  full_line_vec[16] << ";" <<  full_line_vec[18] << ";" <<  full_line_vec[19] << ";" <<  full_line_vec[20] << ";" <<  full_line_vec[21] << ";" <<  full_line_vec[22] << ";" <<  full_line_vec[23] << ";" <<  full_line_vec[24] << "\n";
-                line_count++;
-                total_line_count++;
-            } else {
-                dup_file << line << "\n";
-                total_line_count++;
-                dup_count++;
-            }
-        } 
-        // Line is invalid
-        if((lines_invalid == 1) | (lines_invalid == 3)) {
-            cout << "Skipping line: " << total_line_count << " size: " << line_vec.size() << " " << line << endl;
-            error_file << line << "\n";
-            skip_count++;
+    // In
+    while(std::getline(std::cin, line)) {
+        if(total_line_count == 0) {
+            res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT" << "\n";
             total_line_count++;
-        }  
-        // Newline is also invalid
-        if(lines_invalid == 2) {
-            cout << "Skipping line: " << total_line_count << new_line << endl;
-            error_file << new_line << "\n";
-            skip_count++;
-            total_line_count++;
+            continue;
         }
+        total_line_count++;
+        // 0: FINREGISTRYID, 1: DATE, 2: LAB_NAME, 3: ID, 4: ID_SOURCE, 5: NAME, 6: ABBREVIATION, 7: VALUE, 8: UNIT, 9: ABNORMALITY
+        std::vector<std::string> line_vec = split(line, ";");
+
+        // Getting current lab source
+        std::string lab_source;
+        if(line_vec[2].find("Helsinki") != std::string::npos) {
+            lab_source = "LABfi_HUS";
+        } else if(line_vec[2].find("Tampere") != std::string::npos) {
+            lab_source = "LABfi_TMP";
+        } else if(line_vec[2].find("Turku") != std::string::npos) {
+            lab_source = "LABfi_TKU";
+        } else {
+            lab_source = "LABfi";
+        }
+
+        // Finding OMOP ID
+        std::string omop_id;
+        std::string omop_name;
+        std::string omop_unit;
+        std::string omop_abbreviation;
+        std::string lab_id = line_vec[3];
+        if(omop_map[lab_source].find(lab_id) != omop_map[lab_source].end()) {
+            omop_id = omop_map[lab_source][lab_id];
+            omop_name = omop_names[omop_id];
+            omop_unit = omop_units[lab_id];
+            omop_abbreviation = omop_abbreviations[lab_source][lab_id];
+
+        } else if(omop_map["LABfi"].find(lab_id) != omop_map["LABfi"].end()) {
+            omop_id = omop_map["LABfi"][lab_id];
+            omop_name = omop_names[omop_id];
+            omop_unit = omop_units[lab_id];
+            omop_abbreviation = omop_abbreviations["LABfi"][lab_id];
+        } else {
+            omop_id = "NA"; omop_name = "NA"; omop_unit = "NA"; omop_abbreviation = "NA";
+        }
+
+        std::string lab_abbreviation;
+        if(line_vec[4] == "0") {
+            lab_abbreviation = line_vec[5];
+        } else {
+            lab_abbreviation = line_vec[6];
+        }
+        // Writing to file
+        res_file << line_vec[0] << ";" << line_vec[1] << ";" << line_vec[2] << ";" << lab_id << ";" << lab_abbreviation << ";" << line_vec[7] << ";" << line_vec[8] << ";" << line_vec[9] << ";" << omop_id << ";" << omop_name << ";" << omop_abbreviation << ";" << omop_unit << "\n";
     }
 
-    cout << "line number: " << line_count << " closing" << endl;
-    cout << "skipped: " << skip_count << endl;
-    cout << "duplicates: " << dup_count << endl;
-    // Closing
-    in_file.close();
-    error_file.close();
-    res_file.close();
-    dup.file.close();
+    res_file.close(); 
 }

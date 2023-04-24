@@ -3,23 +3,12 @@
 int main(int argc, char *argv[]) {
      // File and delimiter
     const char *delim = ";";
-    // Defining zero as reading whole file here
-    unsigned long long n_rows = 0;
-    int n_cols = 15;
 
     std::string file_name = argv[1];
     std::string res_path = argv[2];
-    if(argc >= 4) n_cols = atoi(argv[3]);
-    if(argc >= 5) n_rows = atoi(argv[4]);
-
 
     // Opening
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/", file_name, "_problem_rows_counting.csv"};    
-    std::string report_path = concat_string(report_path_vec, std::string(""));
     std::ifstream in_file;
-    std::ofstream error_file;
-    error_file.open(report_path);
-    check_out_open(error_file, report_path);
 
 
     // Defining result variables
@@ -29,39 +18,24 @@ int main(int argc, char *argv[]) {
     unsigned long long line_count = 0;
     unsigned long long total_line_count = 0;
 
-    int skip_count = 0;
     // Reading file line by line
     std::string line;
     while(std::getline(std::cin, line)) {
-        cout << line << endl;
-        if((line_count > n_rows) & (n_rows != 0)) {
-            break;
-        }
+        //cout << line << endl;
+        total_line_count++;
         // Split values and copy into resulting vector
         std::vector<std::string> line_vec = split(line, delim);
-        if(int(line_vec.size()) == n_cols)  {
-            // Column names
-            if(line_count == 0) {
-                // Copying the first line elements into the column vector
-                std::copy(line_vec.begin(), line_vec.end(), std::back_inserter(col_names));
-            } else {
-                update_col_tables(line_vec, col_names, col_tables);
-            }
-            line_count++;
-            total_line_count++;
+        // Column names
+        if(line_count == 0) {
+            // Copying the first line elements into the column vector
+            std::copy(line_vec.begin(), line_vec.end(), std::back_inserter(col_names));
         } else {
-            cout << "Skipping line: " << total_line_count << " size: " << line.size() << " no of columns: " << line_vec.size() << " " << line << endl;
-            skip_count++;
-            total_line_count++;
-            error_file << line << "\n";
+            update_col_tables(line_vec, col_names, col_tables);
         }
-    }
-    cout << "line number: " << line_count << " closing" << endl;
-    cout << "skipped: " << skip_count << endl;
-    // Closing
+        line_count++;
+    } 
     in_file.close();
-    error_file.close();
     // Writing results
-    write_col_counts(col_tables, col_names, n_cols, res_path, file_name);
+    write_col_counts(col_tables, col_names, res_path, file_name);
 }
 

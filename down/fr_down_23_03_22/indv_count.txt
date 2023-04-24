@@ -1,0 +1,3 @@
+Number of individuals no missing: 4514401
+Number of individuals missing: 4687506
+Number of individuals all: 5001389

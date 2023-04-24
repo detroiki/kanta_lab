@@ -7,6 +7,13 @@ downsample: bin/main_downsample.o bin/file_helpers.o bin/string_helpers.o
 bin/main_downsample.o: src/downsample/downsample_main.cpp
 	$(info Buildung Main Reduce...)  g++ -c $(FLAGS) -o bin/main_downsample.o src/downsample/downsample_main.cpp
 
+## DOWNSAMPLE
+rem_dups: bin/rem_dups_main.o bin/file_helpers.o bin/string_helpers.o 
+	g++ $(FLAGS) bin/rem_dups_main.o bin/file_helpers.o bin/string_helpers.o -o exec/remove_duplicates
+
+bin/rem_dups_main.o: src/remove_duplicates/rem_dups_main.cpp
+	$(info Buildung Main Reduce...)  g++ -c $(FLAGS) -o bin/rem_dups_main.o src/remove_duplicates/rem_dups_main.cpp
+
 ## MINIMAL
 minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o 
 	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o -o exec/minimal
@@ -56,22 +63,21 @@ bin/file_helpers.o: src/file_helpers.cpp
 	$(info Buildung File Helpers...)  g++ -c $(FLAGS) -o bin/file_helpers.o src/file_helpers.cpp
 
 run_reduce: exec/reduce
-	exec/reduce tests/test_data/test.csv test tests/
+	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/reduce tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
 
 run_missing: exec/missing
 	exec/missing tests/processed/data/test_reduced.csv test_reduced tests/ 16
 
 run_counting: exec/counting
-	exec/counting test_reduce tests/ 16
+	exec/counting file_1 tests/
 
 run_minimal: exec/minimal
-	exec/minimal tests/
-
+	exec/minimal tests/ file_1 /home/kira/duni/helsinki/DSGE/Code/kanta_lab/docu/thl_sote_fix_name_map.tsv
 run_minimal_app: exec/minimal
-	exec/minimal tests/ file_2
+	exec/minimal tests/ file_2 /home/kira/duni/helsinki/DSGE/Code/kanta_lab/docu/thl_sote_fix_name_map.tsv
 
 run_downsample: exec/downsample
-	exec/downsample /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/reports/sampled_ids_10.txt 10
+	exec/downsample tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/reports/sampled_ids_10.txt 10
 clean:
 	$(info Cleaning up...)
 	rm bin/*.o

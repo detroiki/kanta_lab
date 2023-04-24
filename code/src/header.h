@@ -20,7 +20,6 @@ void update_col_tables(std::vector<std::string> line,
                        std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> &col_tables);
 void write_col_counts(std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> col_tables,
                        std::vector<std::string> col_names,
-                       int n_cols,
                        std::string res_path,
                        std::string file_name);
 std::string concat_string(std::vector<std::string> elems, std::string sep = std::string(""));
