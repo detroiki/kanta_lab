@@ -1,4 +1,4 @@
-void update_col_tables_minimal(std::vector<std::string> line,
+void update_col_tabs_minimal(std::vector<std::string> line,
                                std::vector<std::string> &col_names,
                                 std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> &col_tables) {
 

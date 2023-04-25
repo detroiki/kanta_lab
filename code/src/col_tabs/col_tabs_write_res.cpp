@@ -10,11 +10,8 @@
  * 
  * @return void
  * 
- * Expects the columns to be FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
- * Skips column tables for columns DATE_TIME, LAB_VALUE, and OMOP_NAME
- * 
  * **/
-void write_col_counts(std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> col_tables,
+void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> col_tables,
                        std::vector<std::string> col_names,
                        std::string res_path,
                        std::string file_name) {
@@ -31,7 +28,6 @@ void write_col_counts(std::unordered_map<std::string, std::unordered_map<std::st
             res_file.open(full_res_path); check_out_open(res_file, full_res_path);
             
             // Writing
-
             res_file << col_name << "\tCOUNT\n"; 
             for(const std::pair<const std::string, unsigned long long>& elem: col_tables[col_name]) {
                 res_file << elem.first << "\t" << elem.second << "\n";

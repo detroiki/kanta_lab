@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
 
 
     // Opening
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/all_minimal_counting.csv"};    
+    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/all_minimal_col_tabs.csv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
     std::ifstream in_file;
     in_file.open(file_path); 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
                 // Copying the first line elements into the column vector
                 std::copy(line_vec.begin(), line_vec.end(), std::back_inserter(col_names));
             } else {
-                update_col_tables(line_vec, col_names, col_tables);
+                update_col_tabs(line_vec, col_names, col_tables);
             }
             line_count++;
             total_line_count++;
@@ -54,6 +54,6 @@ int main(int argc, char *argv[]) {
     in_file.close();
     error_file.close();
     // Writing results
-    write_col_counts(col_tables, col_names, n_cols, res_path, file_name);
+    omop_write_cross_tabs(col_tables, col_names, n_cols, res_path, file_name);
 }
 
