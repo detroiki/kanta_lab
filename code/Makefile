@@ -42,18 +42,18 @@ bin/missing.o: src/missing/missing.cpp
 bin/missing_write_res.o: src/missing/missing_write_res.cpp
 	$(info Buildung Writing Results Missing...)  g++ -c $(FLAGS) -o bin/missing_write_res.o src/missing/missing_write_res.cpp
 
-## COUNTING
-counting: bin/main_counting.o bin/counting.o bin/string_helpers.o  bin/file_helpers.o bin/counting_write_res.o
-	g++ $(FLAGS) bin/main_counting.o bin/counting.o bin/string_helpers.o  bin/file_helpers.o bin/counting_write_res.o -o exec/counting
+## col_tabs
+col_tabs: bin/main_col_tabs.o bin/col_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/col_tabs_write_res.o
+	g++ $(FLAGS) bin/main_col_tabs.o bin/col_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/col_tabs_write_res.o -o exec/col_tabs
 
-bin/main_counting.o: src/counting/counting_main.cpp
-	$(info Buildung Main Counting...)  g++ -c $(FLAGS) -o bin/main_counting.o src/counting/counting_main.cpp
+bin/main_col_tabs.o: src/col_tabs/col_tabs_main.cpp
+	$(info Buildung Main col_tabs...)  g++ -c $(FLAGS) -o bin/main_col_tabs.o src/col_tabs/col_tabs_main.cpp
 
-bin/counting.o: src/counting/counting.cpp
-	$(info Buildung Counting...)  g++ -c $(FLAGS) -o bin/counting.o src/counting/counting.cpp
+bin/col_tabs.o: src/col_tabs/col_tabs.cpp
+	$(info Buildung col_tabs...)  g++ -c $(FLAGS) -o bin/col_tabs.o src/col_tabs/col_tabs.cpp
 
-bin/counting_write_res.o: src/counting/counting_write_res.cpp
-	$(info Buildung  Writing Results Counting...)  g++ -c $(FLAGS) -o bin/counting_write_res.o src/counting/counting_write_res.cpp
+bin/col_tabs_write_res.o: src/col_tabs/col_tabs_write_res.cpp
+	$(info Buildung  Writing Results col_tabs...)  g++ -c $(FLAGS) -o bin/col_tabs_write_res.o src/col_tabs/col_tabs_write_res.cpp
 
 ## HELPERS
 bin/string_helpers.o: src/string_helpers.cpp
@@ -68,8 +68,8 @@ run_reduce: exec/reduce
 run_missing: exec/missing
 	exec/missing tests/processed/data/test_reduced.csv test_reduced tests/ 16
 
-run_counting: exec/counting
-	exec/counting file_1 tests/
+run_col_tabs: exec/col_tabs
+	exec/col_tabs file_1 tests/
 
 run_minimal: exec/minimal
 	exec/minimal tests/ file_1 /home/kira/duni/helsinki/DSGE/Code/kanta_lab/docu/thl_sote_fix_name_map.tsv
