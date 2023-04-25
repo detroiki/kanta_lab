@@ -1,7 +1,7 @@
 #include "../header.h"
 
 /**
-* @brief Takes the all_minimal_omop.csv file from std::cin and creates column tables
+* @brief Takes the `all_minimal_omop.csv` file from std::cin and creates column tables
 for each relevant column. 
 * Needs the following arguments commandline arguments:
 *    - file_name: The name of the file being read. Needed for the results file being descriptive.
@@ -13,6 +13,7 @@ for each relevant column.
 * @endcode
 * Expects the columns to be FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
 * Skips column tables for columns DATE_TIME, LAB_VALUE, and OMOP_NAME
+* Expects the file delimeter to be ";".
 **/
 int main(int argc, char *argv[]) {
     std::string file_name = argv[1];
