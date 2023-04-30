@@ -9,7 +9,7 @@
  *  
  *  @return void
  * 
- * Expects the columns to be FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
+ * Expects the columns to be FINREGISTRYID;DATE_TIME;service_provider_name;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
  * Skips column tables for columns DATE_TIME, LAB_VALUE, and OMOP_NAME
 */
 void update_col_tabs(std::vector<std::string> line,

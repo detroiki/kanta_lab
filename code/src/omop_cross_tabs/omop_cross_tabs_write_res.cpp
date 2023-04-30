@@ -21,14 +21,14 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                 // Writing header
                 res_file << "LAB_ID\tOMOP_ID\tCOUNT\n";
 
-            // OMOP_ID vs OMOP_ABBREVIATION, LAB_VALUE, OMOP_UNIT, SERVICE_PROVIDER
+            // OMOP_ID vs OMOP_ABBREVIATION, LAB_VALUE, OMOP_UNIT, service_provider_name
             } else if(col_name == "OMOP_NAME") {
                 // Opening
-                full_res_path_vec.push_back("OMOP_ID_value_unit_service_provider_counts.tsv");
+                full_res_path_vec.push_back("OMOP_ID_value_unit_service_provider_name_counts.tsv");
                 std::string full_res_path = concat_string(full_res_path_vec);
                 res_file.open(full_res_path); check_out_open(res_file, full_res_path);
                 // Writing header
-                res_file << "OMOP_ID\tOMOP_ABBREVIATION\tLAB_VALUE\tOMOP_UNIT\tSERVICE_PROVIDER\tCOUNT\n";
+                res_file << "OMOP_ID\tOMOP_ABBREVIATION\tLAB_VALUE\tOMOP_UNIT\tservice_provider_name\tCOUNT\n";
 
             // LAB_ABBREVIATION vs OMOP_ABBREVIATION
             } else if(col_name == "OMOP_ABBREVIATION") {

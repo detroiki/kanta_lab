@@ -11,7 +11,7 @@
  * 
  * Creates cross tables:
  *  - LAB_ID vs OMOP_ID
- *  - OMOP_ID vs OMOP_ABBREVIATION, LAB_VALUE, OMOP_UNIT, SERVICE_PROVIDER
+ *  - OMOP_ID vs OMOP_ABBREVIATION, LAB_VALUE, OMOP_UNIT, service_provider_name
  *  - LAB_ABBREVIATION vs OMOP_ABBREVIATION
  *  - LAB_UNIT vs OMOP_UNIT
 */
@@ -25,7 +25,7 @@ void omop_update_cross_tabs(std::vector<std::string> line,
         // All column elements for better readability
         std::string finregistryid = line[0];
         std::string date_time = line[1];
-        std::string service_provider = line[2];
+        std::string service_provider_name = line[2];
         std::string lab_id = line[3];
         std::string lab_abbreviation = line[4];
         std::string lab_value = line[5];
@@ -42,7 +42,7 @@ void omop_update_cross_tabs(std::vector<std::string> line,
                 col = concat_string(tab_elems, "\t");
                 break;}
             case 9: // OMOP_NAME
-                {std::vector<std::string> tab_elems{omop_id, omop_abbreviation, lab_value, omop_unit, service_provider};
+                {std::vector<std::string> tab_elems{omop_id, omop_abbreviation, lab_value, omop_unit, service_provider_name};
                 col = concat_string(tab_elems, "\t");
                 break;}
             case 10: // OMOP_ABBREVIATION

@@ -11,7 +11,7 @@ for each relevant column.
 * cat all_minimal_omop.csv | ./col_tabs [file_name] [results_file_path]
 * zstdcat all_minimal_omop.csv.zst | ./col_tabs [file_name] [results_file_path]
 * @endcode
-* Expects the columns to be FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
+* Expects the columns to be FINREGISTRYID;DATE_TIME;service_provider_name;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT
 * Skips column tables for columns DATE_TIME, LAB_VALUE, and OMOP_NAME
 * Expects the file delimeter to be ";".
 **/
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
             // Copying the first line elements into the column names vector
             std::copy(line_vec.begin(), line_vec.end(), std::back_inserter(col_names));
         } else {
-            update_col_tabs(line_vec, col_names, col_tables);
+            omop_update_cross_tabs(line_vec, col_names, col_tables);
         }
         total_line_count++;
     }

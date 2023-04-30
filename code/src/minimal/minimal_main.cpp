@@ -1,238 +1,181 @@
 #include "../header.h"
 
+/**
+ * Processes the original kanta data files with 25 columns. 
+ * 
+ * Input:
+ *  - res_path: Path to results folder
+ *  - file: File number
+ *  - thl_sote_path: Path to THL SOTE organisations name map
+ *  - thl_abbrv_path: Path to official abbreviations map
+ * 
+ * @details Expected columns:
+ *  1. asiakirjaoid - Document OID
+ *  2. hetu - Finregistry ID
+ *  3. merkintaoid - Note OID
+ *  4. entryoid - Entry OID
+ *  5. rekisterinpitaja_organisaatio - Registry controller organisation ID
+ *  6. rekisterinpitaja -  Registry organisation ID
+ *  7. palveluntuottaja_organisaatio - Service provider organisation ID
+ *  8. palveluisanta_organisaatio - Service host organisation ID
+ *  9. laboratoriotutkimusoid - Laboratory test OID
+ *  10. potilassyntymaaika_pvm - Patient birth date
+ *  11. potilas_sukupuoli - Patient sex
+ *  12. tutkimusaika - Test time
+ *  13. tutkimuksennaytelaatu - Test sample quality
+ *  14. tutkimuksentekotapa - Test method
+ *  15. paikallinentutkimusnimike - Local test name
+ *  16. paikallinentutkimusnimikeid - Local test name ID
+ *  17. laboratoriotutkimusnimikeid - Laboratory test name ID
+ *  18. tutkimuskoodistonjarjestelmaid - Test code system ID
+ *  19. tutkimusvastauksentila - Test result status
+ *  20. tutkimustulosarvo - Test result value
+ *  21. tutkimustulosyksikkö - Test result unit
+ *  22. tuloksenvalmistumisaika - Test result time
+ *  23. tuloksenpoikkeavuus - Test result abnormality
+ *  24. erikoisalalyhenne - Speciality abbreviation
+ *  25. asiakirjaluontiaika - Document creation time
+ * 
+ * Duplicate lines are removed and written to separate file. A duplicate is defined if all of the following data is the same: 
+ *  1. Finregistry ID
+ *  2. Date and time
+ *  3. Service provider organization
+ *  3. Laboratory test name ID
+ *  4. Laboratory test name abbreviation
+ *  5. Test result value
+ *  6. Test result unit
+ * 
+*/
 int main(int argc, char *argv[]) {
-    // File and delimiter
-    const char *delim = ";";
-    int n_cols = 25;
-
-    std::string res_path = argv[1];
-    std::string file = argv[2];
-    std::string thl_sote_path = argv[3];
-    std::string abbrv_path = argv[4];
+    /// READING IN ARGUMENTS
+    std::string res_path = argv[1]; // Path to results folder
+    std::string file = argv[2]; // File number
+    std::string thl_sote_path = argv[3]; // Path to THL SOTE organisations name map
+    std::string thl_abbrv_path = argv[4]; // Path to official abbreviations map
     
-    // Out File
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/", "all_minimal_file_", file, ".csv"};    
+    /// OUTPUT FILE PATHS   
+    // Results file
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/minimal_file_", file, ".csv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
+    // Row counts file
     std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, ".csv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
+    // Problem rows file
     std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, ".csv"};    
     std::string error_path = concat_string(error_path_vec, std::string(""));
+    // Missing rows file
+    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, ".csv"};
+    std::string missing_path = concat_string(missing_path_vec, std::string(""));
 
-    // For duplicates
-    std::unordered_map<std::string, int> all_dup_lines;
-
-    if(file != "1") {
-        std::ifstream duplines_file;
-        int crnt_file_no = std::stoi(file);
-
-        for(int file_no=1; file_no < crnt_file_no; file_no++) {
-            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), ".csv"};    
-            std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
-            cout << duplines_path << endl;
-            duplines_file.open(duplines_path); check_in_open(duplines_file, duplines_path);
-            std::string line;
-            while(std::getline(duplines_file, line)) {
-                std::vector<std::string> line_vec = split(line, "\t");
-                all_dup_lines[line_vec[0]] = 0;
-            }
-            duplines_file.close();
-        }
-    }
-
-    // Getting thl sote lab name map
-    std::string line;
-    std::ifstream lab_file;
-    std::unordered_map<std::string, std::string> lab_map;
-    lab_file.open(thl_sote_path); check_in_open(lab_file, thl_sote_path);
-    while(std::getline(lab_file, line)) {
-        std::vector<std::string> line_vec = split(line, "\t");
-        lab_map[line_vec[0]] = line_vec[1];
-    }
-    lab_file.close();
-
-    // Getting official abbreviations map
-    std::ifstream abbrv_file;
-    std::unordered_map<std::string, std::string> abbrv_map;
-    abbrv_file.open(abbrv_path); check_in_open(abbrv_file, abbrv_path);
-    while(std::getline(abbrv_file, line)) {
-        std::vector<std::string> line_vec = split(line, "\t");
-        abbrv_map[line_vec[0]] = line_vec[1];
-    }
-    abbrv_file.close();
-
+    // Opening results and error files
     std::ofstream error_file;
+    std::ofstream missing_file;
     std::ofstream res_file;
-    res_file.open(full_res_path); error_file.open(error_path); check_out_open(res_file, full_res_path); check_out_open(error_file, error_path); 
+    res_file.open(full_res_path); error_file.open(error_path);  missing_file.open(missing_path);
+    check_out_open(res_file, full_res_path); check_out_open(error_file, error_path); check_out_open(missing_file, missing_path);
 
+    /// READING IN OTHER FILES
+    // Duplicate line map, including counts for current file
+    std::unordered_map<std::string, int> all_dup_lines;
+    get_previous_dup_lines(all_dup_lines, file, res_path);
 
-    // Counts
-    int skip_count = 0;
-    int dup_count = 0;
-    unsigned long long line_count = 0;
-    unsigned long long total_line_count = 0;
-    unsigned long long value_na_count = 0;
+    // Getting THL SOTE organisations name map. 
+    // See: https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/sote-organisaatio-rekisteri
+    std::unordered_map<std::string, std::string> thl_sote_map;
+    read_thl_sote_map(thl_sote_map, thl_sote_path);
 
-    int lines_invalid = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
+    // Getting official THL abbreviations map 
+    // See: https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120
+    std::unordered_map<std::string, std::string> thl_abbrv_map;
+    read_thl_lab_id_abbrv_map(thl_abbrv_map, thl_abbrv_path);
 
-    // Lines
-    std::string new_line;
+    /// INITIALIZING COUNTS
+    unsigned long long dup_count = 0; // Duplicate lines
+    unsigned long long skip_count = 0; // Skipped lines due to other reasons but duplication
+    unsigned long long valid_line_count = 0; // Valid lines actually written to file
+    unsigned long long total_line_count = 0; // All lines
+    unsigned long long na_count = 0;
+    // This code is used for wrongly split lines writing to error file
+    int lines_valid_status = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
 
-    // In
+    /// READING IN DATA
+    std::string line;
     while(std::getline(std::cin, line)) {
         ++total_line_count;
+        // Getting current line as vector
+        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file);
 
-        // Split values and copy into resulting vector
-        std::vector<std::string> full_line_vec(n_cols);
-        std::vector<std::string> line_vec = split(line, delim);
-                
-        // Seemingly correctly defined line
-        if(int(line_vec.size()) == n_cols) {
-            std::copy(line_vec.begin(), line_vec.end(), full_line_vec.begin());
-            lines_invalid = 0;
-        // Too many columns, can't fix at the moment. Line invalid. TODO
-        } else if(int(line_vec.size()) > n_cols) {
-            lines_invalid = 1;
-        // Trying to fix line potential early line breaks
-        } else if(int(line_vec.size()) < n_cols)  {
-            // Getting next line
-            std::getline(std::cin, new_line);
-            ++total_line_count;
-            std::vector<std::string> new_line_vec = split(new_line, delim);
-
-            // New line is likely continuation of previous line
-            if(int(new_line_vec.size()) < n_cols) {
-                // Concatinating back last element of previous line with first of new line
-                std::string new_name = concat_string(std::vector<std::string> {line_vec[line_vec.size()-1], new_line_vec[0]});
-                line_vec.at(line_vec.size()-1) =  new_name;
-
-                // Concatinating the two line vectors
-                line_vec.insert(line_vec.end(), next(new_line_vec.begin()), new_line_vec.end());
-                if(int(line_vec.size()) == n_cols) {
-                    std::copy(line_vec.begin(), line_vec.end(), full_line_vec.begin());
-                    lines_invalid = 0;
-                // Concatination does not give us a valid line. Both are invalid. 
-                } else {
-                    lines_invalid = 2;
-                }
-            // New line is actually a full line. Line is invalid. Newline is valid, using it. 
-            } else if(int(new_line_vec.size()) == n_cols) { 
-                std::copy(new_line_vec.begin(), new_line_vec.end(), full_line_vec.begin());
-                lines_invalid = 3;
-            } else {
-                lines_invalid = 2;
-            }
-        } 
-        std::string laboratory_name;
-        std::string lab_id;
-        std::string lab_source;
-        std::string abbrv;
         // Line or newline is valid
-        if((lines_invalid == 0) | (lines_invalid == 3)) {
-            if((line_count == 0)) {
-                res_file << "FINREGISTRYID;DATE;LABORATORY;ID;ID_SOURCE;NAME;ABBREVIATION;VALUE;UNIT;ABNORMALITY\n"; //Removed abnormality for now
-                ++line_count;
+        if((lines_valid_status == 0) | (lines_valid_status == 3)) {
+            if((valid_line_count == 0)) {
+                // Writing header
+                res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY\n"; 
+                ++valid_line_count;
             } else {
-                // Replacing different NA indicators with NA
-                for(int elem_idx=0; elem_idx < n_cols; elem_idx++) {
-                    // Replacing NAs
-                    if((full_line_vec[elem_idx] == "Puuttuu") |
-                        (full_line_vec[elem_idx] == "\"\"") | 
-                        (full_line_vec[elem_idx] == "TYHJÄ") | 
-                        (full_line_vec[elem_idx] == "_") |
-                        ((full_line_vec[elem_idx] == "-1") & (elem_idx != 19))) { // -1 in value not considered NA
-                        full_line_vec[elem_idx] = "NA";
-                    }
-                }
-                // Mapping laboratory IDs to laboratory names
-                if(lab_map.find(full_line_vec[6]) != lab_map.end()) {
-                    laboratory_name = lab_map[full_line_vec[6]];
-                } else {
-                    laboratory_name = "NA";
-                }
+                // Fixing the NA indicators to actual NAs
+                fix_nas(final_line_vec);
 
-                // Getting lab ID and SOURCE
+                // Column values directly from line
+                std::string finregistry_id = final_line_vec[1];
+                std::string date_time = final_line_vec[11];
+                std::string service_provider_oid = final_line_vec[6];
+                std::string lab_value = final_line_vec[19];
+                std::string lab_unit = final_line_vec[20];
+                std::string lab_abnormality = final_line_vec[22];
 
-                if(full_line_vec[16] == "NA") {
-                    lab_id = full_line_vec[15];
-                    lab_source = "0";
-                } else {
-                    lab_id = full_line_vec[16];
-                    lab_source = "1";
-                }
+                // Column values needed for mapping and cleaning
+                std::string local_lab_id = final_line_vec[15];
+                std::string thl_lab_id = final_line_vec[16];
+                std::string lab_name = final_line_vec[14];
+            
+                // Lab ID, and source depend on data
+                std::string lab_id; 
+                std::string lab_id_source;
+                get_lab_id_and_source(local_lab_id, thl_lab_id, lab_id, lab_id_source); 
 
-                // Mapping lab IDs to abbreviations
-                if(abbrv_map.find(lab_id) != abbrv_map.end()) {
-                    abbrv = abbrv_map[lab_id];
-                } else {
-                    abbrv = "NA";
-                }
-                if((!((full_line_vec[19] == "NA") & (full_line_vec[22] == "NA"))) & (full_line_vec[3] != "NA") ) { // Have value and entry ID 
-                    std::vector<std::string> dup_vec = {full_line_vec[1], full_line_vec[11], laboratory_name, lab_id, full_line_vec[14], full_line_vec[19], full_line_vec[20]};
-                    std::string dup_line = concat_string(dup_vec, std::string(""));
+                // Mapped column values
+                std::string service_provider_name = get_service_provider_name(thl_sote_map, service_provider_oid);
+                std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, lab_abbrv);
 
+                // Only saving if we have either the value or at least the abnormality
+                // and an lab ID
+                if((!((lab_value == "NA") & (lab_abnormality == "NA"))) & (lab_id != "NA") ) { 
+                    std::vector<std::string> dup_vec = {finregistry_id, date_time, service_provider_name, lab_id, lab_abbrv, lab_value, lab_unit};
+                    std::string dup_line = concat_string(dup_vec, std::string("")); 
+
+                    // Only saving non-duplicated lines
                     if(all_dup_lines.find(dup_line) == all_dup_lines.end()) {
+                        // Increasing line count for this file to one
                         all_dup_lines[dup_line] = 1;
-                        // Selecting all non-ID rows to reduce the size
-                        // 1: Hetu
-                        // 11: Tutkimusaika
-                        // 14: Paikallinentutkimusnimike
-                        // 15: Paikallinentutkimusnimikeid
-                        // 16: Laboratoriotutkimusnimkeid
-                        // 19: Tutkimustulosarvo
-                        // 20: Tutkimustulosyksikkö
-                        // 22: Tuloksenpoikkeavuus
-                        res_file << full_line_vec[1] << ";" <<  full_line_vec[11] << ";" << laboratory_name << ";" << lab_id << ";" << lab_source << ";";
-                        res_file  <<  full_line_vec[14] << ";" << abbrv << ";";
-                        res_file << full_line_vec[19] << ";" << full_line_vec[20] << ";" <<  full_line_vec[22] << "\n";
-                        ++line_count;
+                        // Writing line to file
+                        res_file << finregistry_id << ";" <<  date_time << ";" << service_provider_name << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" <<  lab_abnormality << "\n";
+                        // Increasing valid line count
+                        ++valid_line_count;
+
+                    // Duplicate line
                     } else {
+                        // Increasing line count for this file to one
                         all_dup_lines[dup_line]++;
                         ++dup_count;
                     }
+                
+                // Invalid line because of NAs in both value, and abnormality or NA in lab ID
                 } else {
-                    if(full_line_vec[19] == "NA") ++value_na_count;           
-                    lines_invalid = 1;
+                    ++na_count;       
+                    missing_file << concat_string(final_line_vec, ";") << "\n";
                 }
             }  
         }
-        // Line is invalid
-        if((lines_invalid == 1) | (lines_invalid == 3)) {
-            error_file << full_line_vec[1] << ";" <<  full_line_vec[11] << ";" << laboratory_name << ";" << lab_id << ";" << lab_source << ";";
-            error_file  <<  full_line_vec[14] << ";" << abbrv << ";";
-            error_file << full_line_vec[19] << ";" << full_line_vec[20] << ";" <<  full_line_vec[22] << "\n";
-            ++skip_count;
-        }  
-        // Newline is also invalid
-        if(lines_invalid == 2) {
-            error_file << full_line_vec[1] << ";" <<  full_line_vec[11] << ";" << laboratory_name << ";" << lab_id << ";" << lab_source << ";";
-            error_file  <<  full_line_vec[14] << ";" << abbrv << ";";
-            error_file << full_line_vec[19] << ";" << full_line_vec[20] << ";" <<  full_line_vec[22] << "\n";            ++skip_count;
-        }
+        
+
     }
-
-    std::ofstream report_file;
-    std::ofstream duplines_file;
-    report_file.open(report_path); 
-
-    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, ".csv"};    
-    std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
-    duplines_file.open(duplines_path);
-    check_out_open(report_file, report_path); check_out_open(duplines_file, duplines_path); 
-
-    report_file << "All rows: " << total_line_count << "\n";
-    report_file << "Usable rows: " << line_count << "\n";
-    report_file << "Skipped rows: " << skip_count << "\n";
-    report_file << "Duplicate rows: " << dup_count << "\n";
-    report_file << "Missing value rows: " << value_na_count << "\n";
-    report_file << endl;
-
-    for(const std::pair<const std::string, int>& elem: all_dup_lines) {
-        if(elem.second != 0) {
-            duplines_file << elem.first << "\t" << elem.second << "\n";
-        }
-    }
-
-    duplines_file.close();
+    // Closing
+    error_file.close();
+    missing_file.close();
     res_file.close(); 
-    report_file.close();  
+
+    // Writing final files
+    write_row_count_report(report_path, total_line_count, valid_line_count,skip_count, dup_count, na_count);
+    write_dup_lines_file(res_path, file, report_path, report_file, all_dup_lines);
 }
+

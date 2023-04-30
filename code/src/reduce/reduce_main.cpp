@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     // In
     while(std::getline(std::cin, line)) {
         if(total_line_count == 0) {
-            res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT" << "\n";
+            res_file << "FINREGISTRYID;DATE_TIME;service_provider_name;LAB_ID;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_ABBREVIATION;OMOP_UNIT" << "\n";
             total_line_count++;
             continue;
         }

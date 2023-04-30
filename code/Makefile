@@ -56,14 +56,14 @@ bin/col_tabs_write_res.o: src/col_tabs/col_tabs_write_res.cpp
 	$(info Buildung  Writing Results col_tabs...)  g++ -c $(FLAGS) -o bin/col_tabs_write_res.o src/col_tabs/col_tabs_write_res.cpp
 
 ## omop_cross_tabs
-omop_cross_tabs: bin/main_omop_cross_tabs.o bin/update_omop_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o
-	g++ $(FLAGS) bin/main_omop_cross_tabs.o bin/update_omop_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o -o exec/omop_cross_tabs
+omop_cross_tabs: bin/main_omop_cross_tabs.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o
+	g++ $(FLAGS) bin/main_omop_cross_tabs.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o -o exec/omop_cross_tabs
 
 bin/main_omop_cross_tabs.o: src/omop_cross_tabs/omop_cross_tabs_main.cpp
 	$(info Buildung Main omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/main_omop_cross_tabs.o src/omop_cross_tabs/omop_cross_tabs_main.cpp
 
-bin/update_omop_cross_tabs.o: src/omop_cross_tabs/omop_omop_update_cross_tabs.cpp
-	$(info Buildung omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/update_omop_cross_tabs.o src/omop_cross_tabs/omop_omop_update_cross_tabs.cpp
+bin/omop_update_cross_tabs.o: src/omop_cross_tabs/omop_update_cross_tabs.cpp
+	$(info Buildung omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_update_cross_tabs.o src/omop_cross_tabs/omop_update_cross_tabs.cpp
 
 bin/omop_cross_tabs_write_res.o: src/omop_cross_tabs/omop_cross_tabs_write_res.cpp
 	$(info Buildung  Writing Results omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_cross_tabs_write_res.o src/omop_cross_tabs/omop_cross_tabs_write_res.cpp
