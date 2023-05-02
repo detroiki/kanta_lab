@@ -1,4 +1,19 @@
+# Overview
+
+These are various C++ programs for working with the Kanta lab data files.
+
 # Creating Minal File
+Reduces the original files to a single file with columns
+#### Creates a new file with columns
+  1. `FINREGISTRYID` - Pseudoanonimized IDs
+  2. `DATE_TIME` - Date and time of lab measurement
+  3. `SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  4. `LAB_ID` - Regional or local lab ID
+  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: regional
+  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (regional)
+  7. `LAB_VALUE` - The value of the laboratory measurement
+  8. `LAB_UNIT` - The unit from the file
+  9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
 ## Usage
 ```
 for file_no in 1:10:
