@@ -1,7 +1,8 @@
 #include "../header.h"
 
 /**
- * Processes the original kanta data files with 25 columns. 
+ * Processes the original kanta data files with 25 columns and creates
+ * a file with all minimal necessary columns.
  * 
  * Input:
  *  - res_path: Path to results folder
@@ -9,7 +10,9 @@
  *  - thl_sote_path: Path to THL SOTE organisations name map
  *  - thl_abbrv_path: Path to official abbreviations map
  * 
- * @details Expected columns:
+ * @details 
+ * 
+ * Expected columns:
  *  1. asiakirjaoid - Document OID
  *  2. hetu - Finregistry ID
  *  3. merkintaoid - Note OID
