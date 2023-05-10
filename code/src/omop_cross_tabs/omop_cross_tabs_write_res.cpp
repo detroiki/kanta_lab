@@ -41,7 +41,7 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
             }
             // Writing table
             for(const std::pair<const std::string, unsigned long long>& elem: col_tables[col_name]) {
-                res_file << elem.first << "\t" << elem.second << "\n";
+                res_file << elem.first <<  elem.second << "\n";
             }
 
             // Closing
