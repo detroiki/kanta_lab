@@ -22,12 +22,14 @@ bin/main_minimal.o: src/minimal/minimal_main.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_minimal.o src/minimal/minimal_main.cpp
 
 ## map_omop
-map_omop: bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o 
-	g++ $(FLAGS) bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o -o exec/map_omop
+map_omop: bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o
+	g++ $(FLAGS) bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o -o exec/map_omop
 
 bin/main_map_omop.o: src/map_omop/map_omop_main.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_map_omop.o src/map_omop/map_omop_main.cpp
 
+bin/read_omop_file.o: src/map_omop/read_omop_file.cpp
+	$(info Buildung map_omop...)  g++ -c $(FLAGS) -o bin/read_omop_file.o src/map_omop/read_omop_file.cpp
 
 ## MISSINGNESS
 missing: bin/missing_main.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o
@@ -76,7 +78,7 @@ bin/file_helpers.o: src/file_helpers.cpp
 	$(info Buildung File Helpers...)  g++ -c $(FLAGS) -o bin/file_helpers.o src/file_helpers.cpp
 
 run_map_omop: exec/map_omop
-	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
+	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_group_id_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
 
 run_missing: exec/missing
 	exec/missing tests/processed/data/test_map_omopd.csv test_map_omopd tests/ 16
