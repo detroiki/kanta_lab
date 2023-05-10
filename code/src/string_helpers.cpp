@@ -1,5 +1,4 @@
 #include "header.h"
-
 template <typename Out>
 
 /*/
