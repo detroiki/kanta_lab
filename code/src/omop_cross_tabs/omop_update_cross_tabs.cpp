@@ -46,7 +46,7 @@ void omop_update_cross_tabs(std::vector<std::string> line,
                 col = concat_string(tab_elems, "\t");
                 break;}
             case 11: // OMOP_UNIT   
-                {std::vector<std::string> tab_elems{lab_unit, omop_unit};
+                {std::vector<std::string> tab_elems{lab_unit, omop_unit, omop_id};
                 col = concat_string(tab_elems, "\t");
                 break;}
             case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8:

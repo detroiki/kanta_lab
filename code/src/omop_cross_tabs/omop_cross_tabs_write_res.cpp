@@ -37,7 +37,7 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                 std::string full_res_path = concat_string(full_res_path_vec);
                 res_file.open(full_res_path); check_out_open(res_file, full_res_path);
                 // Writing header
-                res_file << "LAB_UNIT\tOMOP_UNIT\tCOUNT\n";
+                res_file << "LAB_UNIT\tOMOP_UNIT\tOMOP_ID\tCOUNT\n";
             }
             // Writing table
             for(const std::pair<const std::string, unsigned long long>& elem: col_tables[col_name]) {
