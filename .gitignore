@@ -5,6 +5,7 @@ exec/
 tests/
 down/
 
+settings.json
 ## R
 # History files
 .Rhistory

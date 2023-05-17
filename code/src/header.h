@@ -76,7 +76,14 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             unsigned long long &skip_count,
                                             std::ofstream &error_file);
 void read_omop_file(std::string omop_group_id_map_path,
-                    std::unordered_map<std::string, std::string> &omop_group_id_map,
-                    std::unordered_map<std::string, std::string> &omop_lab_id_map,
-                    std::unordered_map<std::string, std::string> &omop_units,
+                    std::unordered_map<std::string, std::unordered_map<std::string, std::string>>  &omop_group_id_map,
                     std::unordered_map<std::string, std::string> &omop_names);
+
+// Helper functions for OMOP mapping
+std::string get_omop_lab_source(std::string lab_id_source,
+                                std::string service_provider);
+std::string get_omop_id(std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &omop_group_id_map,
+                        std::string omop_lab_source,
+                        std::string omop_identifier);
+std::string get_omop_name(std::string omop_id,
+                          std::unordered_map<std::string, std::string> &omop_names);

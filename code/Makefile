@@ -32,11 +32,11 @@ bin/read_omop_file.o: src/map_omop/read_omop_file.cpp
 	$(info Buildung map_omop...)  g++ -c $(FLAGS) -o bin/read_omop_file.o src/map_omop/read_omop_file.cpp
 
 ## MISSINGNESS
-missing: bin/missing_main.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o
-	g++ $(FLAGS) bin/missing_main.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o -o exec/missing
+missing: bin/filter_top_markers.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o
+	g++ $(FLAGS) bin/filter_top_markers.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o -o exec/missing
 
-bin/missing_main.o: src/missing/missing_main.cpp
-	$(info Buildung Main Missing...)  g++ -c $(FLAGS) -o bin/missing_main.o src/missing/missing_main.cpp
+bin/filter_top_markers.o: src/missing/filter_top_markers.cpp
+	$(info Buildung Main Missing...)  g++ -c $(FLAGS) -o bin/filter_top_markers.o src/missing/filter_top_markers.cpp
 
 bin/missing.o: src/missing/missing.cpp
 	$(info Buildung Missing...)  g++ -c $(FLAGS) -o bin/missing.o src/missing/missing.cpp
