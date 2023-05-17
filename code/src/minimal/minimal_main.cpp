@@ -179,6 +179,6 @@ int main(int argc, char *argv[]) {
 
     // Writing final files
     write_row_count_report(report_path, total_line_count, valid_line_count,skip_count, dup_count, na_count);
-    write_dup_lines_file(res_path, file, report_path, report_file, all_dup_lines);
+    write_dup_lines_file(res_path, file, report_path, all_dup_lines);
 }
 

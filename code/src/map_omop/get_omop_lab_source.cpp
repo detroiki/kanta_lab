@@ -16,5 +16,5 @@ std::string get_omop_lab_source(std::string lab_id_source,
             lab_source = "LABfi_NA";
         }
     }
-    return(lab_source)
+    return(lab_source);
 }

@@ -44,11 +44,9 @@ int main(int argc, char *argv[]) {
         std::string omop_lab_source = get_omop_lab_source(lab_id_source, service_provider);
    
         // Finding OMOP mapping
-
         // Currently identifying the OMOP concept by the lab ID and abbreviation.
         // We can map about 60% of the local lab codes this way
         std::string omop_identifier = concat_string({lab_id, lab_abbreviation}, " ");
-
         std::string omop_id = get_omop_id(omop_group_id_map, omop_lab_source, omop_identifier);
         std::string omop_name = get_omop_name(omop_id, omop_names);
 

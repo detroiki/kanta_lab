@@ -78,7 +78,7 @@ void read_thl_sote_map(std::unordered_map<std::string, std::string> &thl_sote_ma
 
 **/
 void read_thl_lab_id_abbrv_map(std::unordered_map<std::string, std::string> &thl_abbrv_map,
-                      std::string thl_abbrv_path) {
+                               std::string thl_abbrv_path) {
     // Opening file
     std::ifstream abbrv_file; abbrv_file.open(thl_abbrv_path); check_in_open(abbrv_file, thl_abbrv_path);
 
@@ -206,7 +206,7 @@ void fix_nas(std::vector<std::string> &final_line_vec) {
  * @return std::string The service provider name
 */
 std::string get_service_provider_name(std::unordered_map<std::string, std::string> &thl_sote_map,
-                               std::string &service_provider_oid) {
+                                      std::string &service_provider_oid) {
     std::string service_provider_name;
     // Mapping laboratory IDs to laboratory names
     if(thl_sote_map.find(service_provider_oid) != thl_sote_map.end()) {
@@ -268,7 +268,8 @@ std::string get_lab_abbrv(std::unordered_map<std::string, std::string> thl_abbrv
             lab_abbrv = thl_abbrv_map[lab_id];
         } else {
             lab_abbrv = "NA";
-        }    
+        }  
+    }  
     return(lab_abbrv);
 }
 
@@ -297,7 +298,6 @@ void write_row_count_report(std::string &report_path,
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
                           std::string &report_path,
-                          std::ofstream &report_file,
                           std::unordered_map<std::string, int> &all_dup_lines) {
     // File paths
     std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, ".csv"};    

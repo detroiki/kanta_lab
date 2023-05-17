@@ -15,21 +15,30 @@ bin/rem_dups_main.o: src/remove_duplicates/rem_dups_main.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/rem_dups_main.o src/remove_duplicates/rem_dups_main.cpp
 
 ## MINIMAL
-minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o 
-	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o -o exec/minimal
+minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
+	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o exec/minimal
 
 bin/main_minimal.o: src/minimal/minimal_main.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_minimal.o src/minimal/minimal_main.cpp
 
+bin/minimal_utils.o: src/minimal/minimal_utils.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/minimal_utils.o src/minimal/minimal_utils.cpp
+
 ## map_omop
-map_omop: bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o
-	g++ $(FLAGS) bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o -o exec/map_omop
+map_omop: bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o bin/get_omop_lab_source.o bin/get_omop_id_and_name.o
+	g++ $(FLAGS) bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o bin/get_omop_lab_source.o bin/get_omop_id_and_name.o -o exec/map_omop
 
 bin/main_map_omop.o: src/map_omop/map_omop_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_map_omop.o src/map_omop/map_omop_main.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_map_omop.o src/map_omop/map_omop_main.cpp 
 
 bin/read_omop_file.o: src/map_omop/read_omop_file.cpp
-	$(info Buildung map_omop...)  g++ -c $(FLAGS) -o bin/read_omop_file.o src/map_omop/read_omop_file.cpp
+	$(info Buildung read_omop_file...)  g++ -c $(FLAGS) -o bin/read_omop_file.o src/map_omop/read_omop_file.cpp
+
+bin/get_omop_lab_source.o: src/map_omop/get_omop_lab_source.cpp
+	$(info Buildung get_omop_lab_source...)  g++ -c $(FLAGS) -o bin/get_omop_lab_source.o src/map_omop/get_omop_lab_source.cpp
+
+bin/get_omop_id_and_name.o: src/map_omop/get_omop_id_and_name.cpp
+	$(info Buildung get_omop_id_and_name...)  g++ -c $(FLAGS) -o bin/get_omop_id_and_name.o src/map_omop/get_omop_id_and_name.cpp
 
 ## MISSINGNESS
 missing: bin/filter_top_markers.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o

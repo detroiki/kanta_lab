@@ -36,7 +36,6 @@ void write_row_count_report(std::string &report_path,
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
                           std::string &report_path,
-                          std::ofstream &report_file,
                           std::unordered_map<std::string, int> &all_dup_lines);
 
 // Writing functions
