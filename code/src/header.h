@@ -43,15 +43,6 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                        std::vector<std::string> col_names,
                        std::string res_path,
                        std::string file_name);
-void write_missing_res(unsigned long long **counts,
-                       std::vector<std::string> col_names,
-                       int n_cols,
-                       std::string res_path,
-                       std::string file_name);
-void write_log(unsigned long long line_count, 
-               unsigned long long total_line_count,
-                       std::string res_path,
-                       std::string file_name);
 
 // Filling data structures functions
 void update_missing_counts(std::vector<std::string> line, unsigned long long **counts);
@@ -77,6 +68,8 @@ std::vector<std::string> read_correct_lines(std::string &line,
 void read_omop_file(std::string omop_group_id_map_path,
                     std::unordered_map<std::string, std::unordered_map<std::string, std::string>>  &omop_group_id_map,
                     std::unordered_map<std::string, std::string> &omop_names);
+void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
+                         std::string file_path);
 
 // Helper functions for OMOP mapping
 std::string get_omop_lab_source(std::string lab_id_source,

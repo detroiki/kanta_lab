@@ -1,30 +1,16 @@
 FLAGS = -std=c++11 -static -Wall
 
-## DOWNSAMPLE
-downsample: bin/main_downsample.o bin/file_helpers.o bin/string_helpers.o 
-	g++ $(FLAGS) bin/main_downsample.o bin/file_helpers.o bin/string_helpers.o -o exec/downsample
+## Minimal
+minimal: bin/minimal_main.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
+	g++ $(FLAGS) bin/minimal_main.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o exec/minimal
 
-bin/main_downsample.o: src/downsample/downsample_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_downsample.o src/downsample/downsample_main.cpp
-
-## DOWNSAMPLE
-rem_dups: bin/rem_dups_main.o bin/file_helpers.o bin/string_helpers.o 
-	g++ $(FLAGS) bin/rem_dups_main.o bin/file_helpers.o bin/string_helpers.o -o exec/remove_duplicates
-
-bin/rem_dups_main.o: src/remove_duplicates/rem_dups_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/rem_dups_main.o src/remove_duplicates/rem_dups_main.cpp
-
-## MINIMAL
-minimal: bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
-	g++ $(FLAGS) bin/main_minimal.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o exec/minimal
-
-bin/main_minimal.o: src/minimal/minimal_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/main_minimal.o src/minimal/minimal_main.cpp
+bin/minimal_main.o: src/minimal/minimal_main.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/minimal_main.o src/minimal/minimal_main.cpp
 
 bin/minimal_utils.o: src/minimal/minimal_utils.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/minimal_utils.o src/minimal/minimal_utils.cpp
 
-## map_omop
+## Mapping OMOP
 map_omop: bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o bin/get_omop_lab_source.o bin/get_omop_id_and_name.o
 	g++ $(FLAGS) bin/main_map_omop.o bin/file_helpers.o bin/string_helpers.o bin/read_omop_file.o bin/get_omop_lab_source.o bin/get_omop_id_and_name.o -o exec/map_omop
 
@@ -40,18 +26,15 @@ bin/get_omop_lab_source.o: src/map_omop/get_omop_lab_source.cpp
 bin/get_omop_id_and_name.o: src/map_omop/get_omop_id_and_name.cpp
 	$(info Buildung get_omop_id_and_name...)  g++ -c $(FLAGS) -o bin/get_omop_id_and_name.o src/map_omop/get_omop_id_and_name.cpp
 
-## MISSINGNESS
-missing: bin/filter_top_markers.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o
-	g++ $(FLAGS) bin/filter_top_markers.o bin/missing.o bin/string_helpers.o bin/file_helpers.o bin/missing_write_res.o -o exec/missing
+## Getting lab data, where OMOP concept covers at least 5% of population
+top_lab_data: bin/top_lab_data_main.o bin/top_lab_data_utils.o bin/string_helpers.o bin/file_helpers.o
+	g++ $(FLAGS) bin/top_lab_data_main.o bin/file_helpers.o bin/string_helpers.o bin/top_lab_data_utils.o -o exec/top_lab_data
 
-bin/filter_top_markers.o: src/missing/filter_top_markers.cpp
-	$(info Buildung Main Missing...)  g++ -c $(FLAGS) -o bin/filter_top_markers.o src/missing/filter_top_markers.cpp
+bin/top_lab_data_main.o: src/top_lab_data/top_lab_data_main.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/top_lab_data_main.o src/top_lab_data/top_lab_data_main.cpp
 
-bin/missing.o: src/missing/missing.cpp
-	$(info Buildung Missing...)  g++ -c $(FLAGS) -o bin/missing.o src/missing/missing.cpp
-
-bin/missing_write_res.o: src/missing/missing_write_res.cpp
-	$(info Buildung Writing Results Missing...)  g++ -c $(FLAGS) -o bin/missing_write_res.o src/missing/missing_write_res.cpp
+bin/top_lab_data_utils.o: src/top_lab_datatop_lab_data_utils.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/top_lab_data_utils.o src/top_lab_data/top_lab_data_utils.cpp
 
 ## col_tabs
 col_tabs: bin/main_col_tabs.o bin/update_col_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/col_tabs_write_res.o
@@ -89,8 +72,6 @@ bin/file_helpers.o: src/file_helpers.cpp
 run_map_omop: exec/map_omop
 	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_group_id_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
 
-run_missing: exec/missing
-	exec/missing tests/processed/data/test_map_omopd.csv test_map_omopd tests/ 16
 
 run_col_tabs: exec/col_tabs
 	exec/col_tabs file_1 tests/
@@ -102,6 +83,7 @@ run_minimal_app: exec/minimal
 
 run_downsample: exec/downsample
 	exec/downsample tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/reports/sampled_ids_10.txt 10
+
 clean:
 	$(info Cleaning up...)
 	rm bin/*.o
