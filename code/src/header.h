@@ -79,3 +79,7 @@ std::string get_omop_id(std::unordered_map<std::string, std::unordered_map<std::
                         std::string omop_identifier);
 std::string get_omop_name(std::string omop_id,
                           std::unordered_map<std::string, std::string> &omop_names);
+
+// Helper functions for top OMOP concepts file creation
+void get_keep_omop_ids(std::unordered_set<std::string> &keep_omop_ids, 
+                       std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count);

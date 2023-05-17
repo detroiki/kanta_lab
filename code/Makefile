@@ -27,13 +27,13 @@ bin/get_omop_id_and_name.o: src/map_omop/get_omop_id_and_name.cpp
 	$(info Buildung get_omop_id_and_name...)  g++ -c $(FLAGS) -o bin/get_omop_id_and_name.o src/map_omop/get_omop_id_and_name.cpp
 
 ## Getting lab data, where OMOP concept covers at least 5% of population
-top_lab_data: bin/top_lab_data_main.o bin/top_lab_data_utils.o bin/string_helpers.o bin/file_helpers.o
+top_lab_data: bin/top_lab_data_main.o bin/file_helpers.o bin/string_helpers.o bin/top_lab_data_utils.o
 	g++ $(FLAGS) bin/top_lab_data_main.o bin/file_helpers.o bin/string_helpers.o bin/top_lab_data_utils.o -o exec/top_lab_data
 
 bin/top_lab_data_main.o: src/top_lab_data/top_lab_data_main.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/top_lab_data_main.o src/top_lab_data/top_lab_data_main.cpp
 
-bin/top_lab_data_utils.o: src/top_lab_datatop_lab_data_utils.cpp
+bin/top_lab_data_utils.o: src/top_lab_data/top_lab_data_utils.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/top_lab_data_utils.o src/top_lab_data/top_lab_data_utils.cpp
 
 ## col_tabs

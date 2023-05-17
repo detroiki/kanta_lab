@@ -1,20 +1,33 @@
 #include "../header.h"
 
-int main(int argc, char *argv[]) {
-    std::string file_path = argv[1];
-    std::string res_path = argv[2];
+void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
+                         std::string file_path) {
+    // Opening file
+    std::ifstream in_file;
+    in_file.open(file_path); check_in_open(in_file, file_path); 
 
-    // Counting number of individuals each OMOP concept ID has
-    std::unordered_map<std::string, std::unordered_set<std::string>> lab_indv_count;
-    get_lab_indv_counts(lab_indv_count, file_path);
+    // Lines
+    std::string line;
+    int first_line = 1; // Indicates header line
 
-    // Getting OMOP IDs to keep with at least 5% of Finregistry individuals
-    std::unordered_set<std::string> keep_omop_ids;
-    get_keep_omop_ids(keep_omop_ids, lab_indv_count);
+    // In
+    while(std::getline(in_file, line)) {
+        if(first_line == 1) {
+            first_line = 0;
+            continue;
+        }
+        // 0: FINREGISTRYID, 1: DATE, 2: LAB_NAME, 3: ID, 4: ID_SOURCE, 5: NAME, 6: ABBREVIATION, 7: VALUE, 8: UNIT, 9: ABNORMALITY
+        std::vector<std::string> line_vec = split(line, ";");
 
-    // Writing information from those OMOP Ids to file
+        std::string omop_id = line_vec[9];
+        std::string finregistryid = line_vec[0];
 
+        lab_indv_count[omop_id].insert(finregistryid);
+    }
+
+    in_file.close(); 
 }
+
 
 void get_keep_omop_ids(std::unordered_set<std::string> &keep_omop_ids, 
                        std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count) {
