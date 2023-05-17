@@ -19,7 +19,7 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                 std::string full_res_path = concat_string(full_res_path_vec);
                 res_file.open(full_res_path); check_out_open(res_file, full_res_path);
                 // Writing header
-                res_file << "LAB_ID\tOMOP_ID\tCOUNT\n";
+                res_file << "LAB_ID\tLAB_ABBREVIATION\tOMOP_ID\tCOUNT\n";
 
             // OMOP_ID vs OMOP_ABBREVIATION, LAB_VALUE, OMOP_UNIT, service_provider_name
             } else if(col_name == "OMOP_NAME") {
@@ -28,17 +28,17 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                 std::string full_res_path = concat_string(full_res_path_vec);
                 res_file.open(full_res_path); check_out_open(res_file, full_res_path);
                 // Writing header
-                res_file << "OMOP_ID\tOMOP_NAME\tLAB_VALUE\tOMOP_UNIT\tSERVICE_PROVIDER\tCOUNT\n";
+                res_file << "LAB_ABBREVIATION\tLAB_UNIT\tOMOP_ID\tOMOP_NAME\tLAB_ABNORMALITY\tLAB_VALUE\tOMOP_UNIT\tSERVICE_PROVIDER\tCOUNT\n";
 
             // LAB_UNIT vs OMOP_UNIT
-            } else if(col_name == "OMOP_UNIT") {
-                // Opening
-                full_res_path_vec.push_back("lab_unit_omop_unit_counts.tsv");
-                std::string full_res_path = concat_string(full_res_path_vec);
-                res_file.open(full_res_path); check_out_open(res_file, full_res_path);
-                // Writing header
-                res_file << "LAB_UNIT\tOMOP_UNIT\tOMOP_ID\tCOUNT\n";
-            }
+            // } else if(col_name == "OMOP_UNIT") {
+            //     // Opening
+            //     full_res_path_vec.push_back("lab_unit_omop_unit_counts.tsv");
+            //     std::string full_res_path = concat_string(full_res_path_vec);
+            //     res_file.open(full_res_path); check_out_open(res_file, full_res_path);
+            //     // Writing header
+            //     res_file << "LAB_UNIT\tOMOP_UNIT\tOMOP_ID\tCOUNT\n";
+            // }
             // Writing table
             for(const std::pair<const std::string, unsigned long long>& elem: col_tables[col_name]) {
                 res_file << elem.first <<  elem.second << "\n";

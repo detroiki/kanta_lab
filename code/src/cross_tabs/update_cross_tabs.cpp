@@ -34,21 +34,18 @@ void omop_update_cross_tabs(std::vector<std::string> line,
         std::string lab_abnormality = line[8];
         std::string omop_id = line[9];
         std::string omop_name = line[10];
-        std::string omop_unit = line[11];
 
         switch(col_idx) {
             case 9: // OMOP_ID
-                {std::vector<std::string> tab_elems{lab_id, omop_id};
+                {std::vector<std::string> tab_elems{lab_id, lab_abbreviation, omop_id};
                 col = concat_string(tab_elems, "\t");
                 break;}
-            case 10: // OMOP_NAME
-                {std::vector<std::string> tab_elems{omop_id, omop_name, lab_value, omop_unit, service_provider_name};
+            case 10: // Overview
+                {std::vector<std::string> tab_elems{lab_abbreviation, lab_unit, omop_id, omop_name, lab_value, service_provider_name};
                 col = concat_string(tab_elems, "\t");
                 break;}
-            case 11: // OMOP_UNIT   
-                {std::vector<std::string> tab_elems{lab_unit, omop_unit, omop_id};
-                col = concat_string(tab_elems, "\t");
-                break;}
+            case 11: 
+                break;
             case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8:
                 break;
         }

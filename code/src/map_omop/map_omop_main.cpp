@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     // In
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
-            res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;OMOP_UNIT" << "\n";
+            res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME" << "\n";
             first_line = 0;
             continue;
         }
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
 
         // Writing to file
-        res_file << line_vec[0] << ";" << line_vec[1] << ";" << line_vec[2] << ";" << line_vec[3] << ";" << lab_abbreviation << ";" << line_vec[4] << ";" << line_vec[7] << ";" << line_vec[8] << ";" << line_vec[9] << ";" << omop_group_id << ";" << omop_name << ";" << omop_unit << "\n";
+        res_file << line_vec[0] << ";" << line_vec[1] << ";" << line_vec[2] << ";" << line_vec[3] << ";" << lab_abbreviation << ";" << line_vec[4] << ";" << line_vec[7] << ";" << line_vec[8] << ";" << line_vec[9] << ";" << omop_group_id << ";" << omop_name << "\n";
     }
 
     res_file.close(); 
