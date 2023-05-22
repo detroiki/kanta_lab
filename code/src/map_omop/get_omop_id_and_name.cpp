@@ -1,5 +1,17 @@
 #include "../header.h"
-
+/**
+ * @brief Gets the OMOP concept ID, given the laboratory source, lab ID and lab abbreviation
+ * 
+ * @param omop_group_id_map The map of the lab IDs and abbreviations to OMOP concept IDs
+ * @param omop_lab_source The laboratory source (LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU)
+ * @param omop_identifier The laboratory ID and abbreviation
+ * 
+ * @return The OMOP concept ID
+ * 
+ * The laboratory source is easily determined, using the information on the 
+ * lab ID source in the original data and the service provider with the function 
+ * `get_omop_lab_source`.
+*/
 std::string get_omop_id(std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &omop_group_id_map,
                         std::string omop_lab_source,
                         std::string omop_identifier){
@@ -30,6 +42,14 @@ std::string get_omop_id(std::unordered_map<std::string, std::unordered_map<std::
     return(omop_id);
 }
 
+/**
+ * @brief Gets the OMOP concept name, given the OMOP concept ID
+ * 
+ * @param omop_id The OMOP concept ID
+ * @param omop_names The map of the OMOP concept IDs to names
+ * 
+ * @return The OMOP concept name
+*/
 std::string get_omop_name(std::string omop_id,
                           std::unordered_map<std::string, std::string> &omop_names){
     std::string omop_name;
