@@ -255,12 +255,14 @@ void get_lab_id_and_source(std::string &local_lab_id,
  * 
  * @details If the laboratory ID is the local code, returns the abbreviation from the data. If the labroatory ID is a regional THL code, returns the abbreviation from the THL abbreviation map. If the laboratory ID is not found in the THL abbreviation map, returns "NA".
 */
-std::string get_lab_abbrv(std::unordered_map<std::string, std::string> thl_abbrv_map,
+std::string get_lab_abbrv(std::unordered_map<std::string, std::string> &thl_abbrv_map,
                           std::string &lab_id,
                           std::string &lab_id_source,
                           std::string &lab_name) {
     std::string lab_abbrv;
     if(lab_id_source == "0") {
+        lab_name = to_lower(lab_name);
+        lab_name = remove_chars(lab_name, ' ');
         lab_abbrv = lab_name;
     } else {
         // Mapping lab IDs to abbreviations
