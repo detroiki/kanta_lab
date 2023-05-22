@@ -103,7 +103,6 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             int &lines_valid_status) {
     int n_cols(25);
     const char *delim = ";";
-    int lines_valid_status;
     std::vector<std::string> new_line_vec;
 
     /// LINE VECTORS
