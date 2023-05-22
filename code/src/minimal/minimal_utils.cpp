@@ -99,7 +99,8 @@ void read_thl_lab_id_abbrv_map(std::unordered_map<std::string, std::string> &thl
 std::vector<std::string> read_correct_lines(std::string &line,
                                             unsigned long long &total_line_count,
                                             unsigned long long &skip_count,
-                                            std::ofstream &error_file) {
+                                            std::ofstream &error_file,
+                                            int &lines_valid_status) {
     int n_cols(25);
     const char *delim = ";";
     int lines_valid_status;

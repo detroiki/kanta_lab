@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
             cout << total_line_count << "\n";
         }
         // Getting current line as vector
-        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file);
+        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file, lines_valid_status);
 
         // Line or newline is valid
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
@@ -155,11 +155,9 @@ int main(int argc, char *argv[]) {
                     std::string service_provider_name = get_service_provider_name(thl_sote_map, service_provider_oid);
                     std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, lab_name);
 
-
                     // Only saving if we have either the value or at least the abnormality
                     // and an lab ID
                     if((!((lab_value == "NA") & (lab_abnormality == "NA"))) & (lab_id != "NA") ) { 
-
                             // Increasing line count for this file to one
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file

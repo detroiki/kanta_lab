@@ -68,7 +68,8 @@ void read_thl_lab_id_abbrv_map(std::unordered_map<std::string, std::string> &thl
 std::vector<std::string> read_correct_lines(std::string &line,
                                             unsigned long long &total_line_count,
                                             unsigned long long &skip_count,
-                                            std::ofstream &error_file);
+                                            std::ofstream &error_file,
+                                            int &lines_valid_status));
 void read_omop_file(std::string omop_group_id_map_path,
                     std::unordered_map<std::string, std::unordered_map<std::string, std::string>>  &omop_group_id_map,
                     std::unordered_map<std::string, std::string> &omop_names);
