@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     std::string omop_group_id_map_path = argv[2];
 
     // Results File
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/all_minimal_omop.csv"};    
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_minimal_omop.csv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
     std::ofstream res_file;
     res_file.open(full_res_path); check_out_open(res_file, full_res_path); 

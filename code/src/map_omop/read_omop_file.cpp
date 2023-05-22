@@ -10,7 +10,7 @@
  * @return void
  * 
  * Reads the OMOP group ID map file. The delimiter is expected to be "\t". 
- * Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME.
+ * Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, OMOP_UNIT, OMOP_ID, OMOP_NAME.
 */
 void read_omop_file(std::string omop_group_id_map_path,
                     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> &omop_group_id_map,
@@ -23,6 +23,7 @@ void read_omop_file(std::string omop_group_id_map_path,
     std::string line;
     while(std::getline(omop_in, line)) {
         // Splitting line
+        
         std::vector<std::string> line_vec = split(line, "\t");
         std::string lab_id = line_vec[0];
         std::string source = line_vec[1];
