@@ -10,6 +10,10 @@ void read_finreg_map(std::string finreg_path,
     std::string line;
     int first_line = 1; // Indicates header line
     while(std::getline(in_finreg, line)) {
+        if (first_line) {
+            first_line = 0;
+            continue;
+        }
         std::vector<std::string> line_vec(split(line, ","));   
         std::string finregid = line_vec[0];
         std::string yob = line_vec[2];

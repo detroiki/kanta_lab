@@ -73,14 +73,14 @@ run_map_omop: exec/map_omop
 	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_group_id_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
 
 ## Add Finregistry Sex and Year of Birth
-firneg_sex_yob: bin/firneg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.o  bin/firneg_sex_yob_utils.o
-	g++ $(FLAGS) bin/firneg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.o bin/firneg_sex_yob_utils.o -o exec/firneg_sex_yob
+finreg_sex_yob: bin/finreg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.o  bin/finreg_sex_yob_utils.o
+	g++ $(FLAGS) bin/finreg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.o bin/finreg_sex_yob_utils.o -o exec/finreg_sex_yob
 
-bin/firneg_sex_yob_main.o: src/firneg_sex_yob/firneg_sex_yob_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/firneg_sex_yob_main.o src/firneg_sex_yob/firneg_sex_yob_main.cpp
+bin/finreg_sex_yob_main.o: src/finreg_sex_yob/finreg_sex_yob_main.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_main.o src/finreg_sex_yob/finreg_sex_yob_main.cpp
 
-bin/firneg_sex_yob_utils.o: src/firneg_sex_yob/firneg_sex_yob_utils.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/firneg_sex_yob_utils.o src/firneg_sex_yob/firneg_sex_yob_utils.cpp
+bin/finreg_sex_yob_utils.o: src/finreg_sex_yob/finreg_sex_yob_utils.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_utils.o src/finreg_sex_yob/finreg_sex_yob_utils.cpp
 
 run_col_tabs: exec/col_tabs
 	exec/col_tabs file_1 tests/

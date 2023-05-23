@@ -78,6 +78,11 @@ void read_omop_file(std::string omop_group_id_map_path,
                     std::unordered_map<std::string, std::string> &omop_names);
 void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
                          std::string file_path);
+void read_finreg_map(std::string finreg_path,
+                     std::unordered_map<std::string, std::string> &finreg_map);
+void write_updated_file(std::string file_path,
+                        std::string res_path,
+                        std::unordered_map<std::string, std::string> &finreg_map);
 
 // Helper functions for OMOP mapping
 std::string get_omop_lab_source(std::string lab_id_source,
