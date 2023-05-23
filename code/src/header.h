@@ -80,8 +80,7 @@ void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std:
                          std::string file_path);
 void read_finreg_map(std::string finreg_path,
                      std::unordered_map<std::string, std::string> &finreg_map);
-void write_updated_file(std::string file_path,
-                        std::string res_path,
+void write_updated_file(std::string res_path,
                         std::unordered_map<std::string, std::string> &finreg_map);
 
 // Helper functions for OMOP mapping

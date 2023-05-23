@@ -31,14 +31,9 @@ void read_finreg_map(std::string finreg_path,
  * @param res_path The path to the results folder
  * 
 */
-void write_updated_file(std::string file_path,
-                        std::string res_path,
+void write_updated_file(std::string res_path,
                         std::unordered_map<std::string, std::string> &finreg_map) {
-    // Opening in file
-    std::ifstream in_file;
-    in_file.open(file_path); check_in_open(in_file, file_path);
-
-    // Results file path
+    // Opening results file
     std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_minimal_omop_sex_yob.csv"};
     std::string full_res_path = concat_string(full_res_path_vec);
     std::ofstream res_file;
@@ -59,7 +54,5 @@ void write_updated_file(std::string file_path,
 
         res_file << line << ";" << finreg_map[finregistryid] << "\n";
     }
-
-    in_file.close();
     res_file.close();
 }
