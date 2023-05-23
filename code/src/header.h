@@ -47,6 +47,9 @@ void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<st
                            std::vector<std::string> col_names,
                            std::string res_path,
                            std::string file_name);
+void write_top_lab_data(std::string file_path,
+                        std::string res_path, 
+                        std::unordered_set<std::string> keep_omop_ids);
 
 // Filling data structures functions
 void update_missing_counts(std::vector<std::string> line, unsigned long long **counts);
