@@ -28,8 +28,12 @@ std::vector<std::string> split(const std::string &s,
 std::string concat_string(std::vector<std::string> elems, 
                           std::string sep) {
     std::stringstream ss;
+    long unsigned int count = 0;
     for(auto elem: elems) {
-        ss << elem << sep;
+        ss << elem;
+        if(count < elems.size()-1)
+            ss << sep;
+        count++;
     }
     std::string final = ss.str();
     return(final);
