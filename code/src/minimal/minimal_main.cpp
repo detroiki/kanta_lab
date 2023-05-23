@@ -118,8 +118,6 @@ int main(int argc, char *argv[]) {
                 res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY\n"; 
                 ++valid_line_count;
             } else {
-
-
                 // Fixing the NA indicators to actual NAs
                 fix_nas(final_line_vec);
 
