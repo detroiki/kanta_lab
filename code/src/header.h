@@ -95,3 +95,30 @@ std::string get_omop_name(std::string omop_id,
 // Helper functions for top OMOP concepts file creation
 void get_keep_omop_ids(std::unordered_set<std::string> &keep_omop_ids, 
                        std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count);
+
+// Helpfer functions final fixing
+int fix_percentages(std::string &lab_value, 
+                    std::string &lab_unit,
+                    std::string &lab_abnorm,
+                    int keep);
+void fix_abnorms(std::string &lab_abnorm);
+void shuffle_lab_abnorm_info(std::string &lab_value, 
+                             std::string &lab_abnorm, 
+                             std::string &lab_unit);
+int remove_illegal_values(std::string &lab_value, 
+                          std::string &lab_abnorm, 
+                          std::string &lab_abbrv,
+                          int keep);
+void remove_illegal_units(std::string &lab_unit);
+void fix_phs(std::string &lab_id,
+             std::string &lab_abbrv,
+             std::string &lab_unit);
+void fix_inrs(std::string &lab_id,
+              std::string &lab_abbrv,
+              std::string &lab_unit);
+void remove_illegal_units(std::string &lab_unit);   
+int remove_illegal_measure_year(std::string &date_time,
+                                int keep);
+int remove_titles(std::string &lab_id,
+                   std::string &lab_abbrv,
+                   int keep);

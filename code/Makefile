@@ -49,18 +49,18 @@ bin/update_col_tabs.o: src/col_tabs/update_col_tabs.cpp
 bin/col_tabs_write_res.o: src/col_tabs/col_tabs_write_res.cpp
 	$(info Buildung  Writing Results col_tabs...)  g++ -c $(FLAGS) -o bin/col_tabs_write_res.o src/col_tabs/col_tabs_write_res.cpp
 
-## omop_cross_tabs
-omop_cross_tabs: bin/omop_cross_tabs_main.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o
-	g++ $(FLAGS) bin/omop_cross_tabs_main.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/omop_cross_tabs_write_res.o -o exec/omop_cross_tabs
+## _cross_tabs
+_cross_tabs: bin/_cross_tabs_main.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/_cross_tabs_write_res.o
+	g++ $(FLAGS) bin/_cross_tabs_main.o bin/omop_update_cross_tabs.o bin/string_helpers.o  bin/file_helpers.o bin/_cross_tabs_write_res.o -o exec/_cross_tabs
 
-bin/omop_cross_tabs_main.o: src/omop_cross_tabs/omop_cross_tabs_main.cpp
-	$(info Buildung Main omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_cross_tabs_main.o src/omop_cross_tabs/omop_cross_tabs_main.cpp
+bin/_cross_tabs_main.o: src/_cross_tabs/_cross_tabs_main.cpp
+	$(info Buildung Main _cross_tabs...)  g++ -c $(FLAGS) -o bin/_cross_tabs_main.o src/_cross_tabs/_cross_tabs_main.cpp
 
-bin/omop_update_cross_tabs.o: src/omop_cross_tabs/omop_update_cross_tabs.cpp
-	$(info Buildung omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_update_cross_tabs.o src/omop_cross_tabs/omop_update_cross_tabs.cpp
+bin/omop_update_cross_tabs.o: src/_cross_tabs/omop_update_cross_tabs.cpp
+	$(info Buildung _cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_update_cross_tabs.o src/_cross_tabs/omop_update_cross_tabs.cpp
 
-bin/omop_cross_tabs_write_res.o: src/omop_cross_tabs/omop_cross_tabs_write_res.cpp
-	$(info Buildung  Writing Results omop_cross_tabs...)  g++ -c $(FLAGS) -o bin/omop_cross_tabs_write_res.o src/omop_cross_tabs/omop_cross_tabs_write_res.cpp
+bin/_cross_tabs_write_res.o: src/_cross_tabs/_cross_tabs_write_res.cpp
+	$(info Buildung  Writing Results _cross_tabs...)  g++ -c $(FLAGS) -o bin/_cross_tabs_write_res.o src/_cross_tabs/_cross_tabs_write_res.cpp
 
 ## HELPERS
 bin/string_helpers.o: src/string_helpers.cpp
@@ -81,6 +81,15 @@ bin/finreg_sex_yob_main.o: src/finreg_sex_yob/finreg_sex_yob_main.cpp
 
 bin/finreg_sex_yob_utils.o: src/finreg_sex_yob/finreg_sex_yob_utils.cpp
 	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_utils.o src/finreg_sex_yob/finreg_sex_yob_utils.cpp
+
+final_fixing: bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o  bin/final_fixing_utils.o
+	g++ $(FLAGS) bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o bin/final_fixing_utils.o -o exec/final_fixing
+
+bin/final_fixing_main.o: src/final_fixing/final_fixing_main.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/final_fixing_main.o src/final_fixing/final_fixing_main.cpp
+
+bin/final_fixing_utils.o: src/final_fixing/final_fixing_utils.cpp
+	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/final_fixing_utils.o src/final_fixing/final_fixing_utils.cpp
 
 run_col_tabs: exec/col_tabs
 	exec/col_tabs file_1 tests/
