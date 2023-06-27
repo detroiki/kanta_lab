@@ -25,11 +25,11 @@ void read_omop_file(std::string omop_group_id_map_path,
         // Splitting line
         
         std::vector<std::string> line_vec = split(line, "\t");
-        std::string lab_id = line_vec[0];
-        std::string source = line_vec[1];
-        std::string abbreviation = line_vec[2];
+        std::string lab_id = remove_chars(line_vec[0], ' ');
+        std::string source = remove_chars(line_vec[1], ' ');
+        std::string abbreviation = remove_chars(line_vec[2], ' ');
         std::string unit = line_vec[3];
-        std::string group_id = line_vec[4];
+        std::string group_id = remove_chars(line_vec[4], ' ');
         std::string name = line_vec[5];
 
         // OMOP identifier is mape up of the lab ID and abbreviation
@@ -37,6 +37,7 @@ void read_omop_file(std::string omop_group_id_map_path,
 
         // The OMOP group ID has separate maps for each lab source
         // LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
+        if((group_id == "\"\"") | (group_id == "")) group_id = "NA";
         omop_group_id_map[source][omop_identifier] = group_id;
         // The mapping to the OMOP name is unique for each group ID
         omop_names[group_id] = name;

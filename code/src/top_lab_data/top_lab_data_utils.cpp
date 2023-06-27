@@ -25,13 +25,14 @@ void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std:
             first_line = 0;
             continue;
         }
-        // 0: FINREGISTRYID, 1: DATE, 2: LAB_NAME, 3: ID, 4: ID_SOURCE, 5: NAME, 6: ABBREVIATION, 7: VALUE, 8: UNIT, 9: ABNORMALITY
         std::vector<std::string> line_vec = split(line, ";");
 
+        std::string finregid = line_vec[0];
         std::string omop_id = line_vec[9];
-        std::string finregistryid = line_vec[0];
 
-        lab_indv_count[omop_id].insert(finregistryid);
+        if(omop_id != "NA") {
+            lab_indv_count[omop_id].insert(finregid);
+        }
     }
 
     in_file.close(); 

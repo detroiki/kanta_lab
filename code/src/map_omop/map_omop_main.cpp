@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
         std::string service_provider = line_vec[2];
         std::string lab_id = line_vec[3];
         std::string lab_id_source = line_vec[4];
-        std::string lab_abbreviation = line_vec[5];
+        std::string lab_abbreviation = remove_chars(line_vec[5], ' ');
         std::string lab_value = line_vec[6];
         std::string lab_unit = line_vec[7];
         std::string lab_abnormality = line_vec[8];  
