@@ -122,3 +122,12 @@ int remove_illegal_measure_year(std::string &date_time,
 int remove_titles(std::string &lab_id,
                    std::string &lab_abbrv,
                    int keep);
+
+// OMOP final fixing
+void get_omop_unit_counts(std::unordered_map<std::string, std::unordered_map<std::string, int>> &omop_unit_count,
+                          std::string file_path);
+void get_omop_max_units(std::unordered_map<std::string, std::string> &omop_max_units,
+                        std::string file_path);
+int decide_keep_rows(std::string omop_id,
+                     std::string lab_unit,
+                     std::unordered_map<std::string, std::string> &omop_max_units);
