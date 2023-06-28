@@ -77,25 +77,35 @@ finreg_sex_yob: bin/finreg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.
 	g++ $(FLAGS) bin/finreg_sex_yob_main.o bin/file_helpers.o bin/string_helpers.o bin/finreg_sex_yob_utils.o -o exec/finreg_sex_yob
 
 bin/finreg_sex_yob_main.o: src/finreg_sex_yob/finreg_sex_yob_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_main.o src/finreg_sex_yob/finreg_sex_yob_main.cpp
+	$(info Buildung Main finreg_sex_yob_main...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_main.o src/finreg_sex_yob/finreg_sex_yob_main.cpp
 
 bin/finreg_sex_yob_utils.o: src/finreg_sex_yob/finreg_sex_yob_utils.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_utils.o src/finreg_sex_yob/finreg_sex_yob_utils.cpp
+	$(info Buildung Main finreg_sex_yob_utils...)  g++ -c $(FLAGS) -o bin/finreg_sex_yob_utils.o src/finreg_sex_yob/finreg_sex_yob_utils.cpp
 
 final_fixing: bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o  bin/final_fixing_utils.o
 	g++ $(FLAGS) bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o bin/final_fixing_utils.o -o exec/final_fixing
 
 bin/final_fixing_main.o: src/final_fixing/final_fixing_main.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/final_fixing_main.o src/final_fixing/final_fixing_main.cpp
+	$(info Buildung Main final_fixing_main...)  g++ -c $(FLAGS) -o bin/final_fixing_main.o src/final_fixing/final_fixing_main.cpp
 
 bin/final_fixing_utils.o: src/final_fixing/final_fixing_utils.cpp
-	$(info Buildung Main map_omop...)  g++ -c $(FLAGS) -o bin/final_fixing_utils.o src/final_fixing/final_fixing_utils.cpp
+	$(info Buildung Main final_fixing_utils...)  g++ -c $(FLAGS) -o bin/final_fixing_utils.o src/final_fixing/final_fixing_utils.cpp
+
+final_fixing_omop: bin/final_fixing_omop_main.o bin/file_helpers.o bin/string_helpers.o  bin/final_fixing_omop_utils.o
+	g++ $(FLAGS) bin/final_fixing_omop_main.o bin/file_helpers.o bin/string_helpers.o bin/final_fixing_omop_utils.o -o exec/final_fixing_omop
+
+bin/final_fixing_omop_main.o: src/final_fixing/final_fixing_omop_main.cpp
+	$(info Buildung Main final_fixing_omop_main...)  g++ -c $(FLAGS) -o bin/final_fixing_omop_main.o src/final_fixing/final_fixing_omop_main.cpp
+
+bin/final_fixing_omop_utils.o: src/final_fixing/final_fixing_omop_utils.cpp
+	$(info Buildung Main final_fixing_omop_utils...)  g++ -c $(FLAGS) -o bin/final_fixing_omop_utils.o src/final_fixing/final_fixing_omop_utils.cpp
 
 run_col_tabs: exec/col_tabs
 	exec/col_tabs file_1 tests/
 
 run_minimal: exec/minimal
 	exec/minimal tests/ file_1 /home/kira/duni/helsinki/DSGE/Code/kanta_lab/docu/thl_sote_fix_name_map.tsv
+	
 run_minimal_app: exec/minimal
 	exec/minimal tests/ file_2 /home/kira/duni/helsinki/DSGE/Code/kanta_lab/docu/thl_sote_fix_name_map.tsv
 
