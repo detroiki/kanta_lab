@@ -55,7 +55,7 @@ void write_updated_file(std::string res_path,
     int first_line = 1; // Indicates header line
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
-            res_file << "FINREGISTRYID;DATE_TIME;SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;SEX;YEAR_OF_BIRTH" << "\n";
+            res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;SEX;YEAR_OF_BIRTH" << "\n";
             first_line = 0;
             continue;
         }
