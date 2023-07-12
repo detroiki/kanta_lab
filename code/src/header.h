@@ -43,22 +43,10 @@ void write_dup_lines_file(std::string &res_path,
                           std::unordered_map<std::string, int> &all_dup_lines);
 
 // Writing functions
-void omop_write_cross_tabs(std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> col_tables,
-                           std::vector<std::string> col_names,
-                           std::string res_path,
-                           std::string file_name);
 void write_top_lab_data(std::string file_path,
                         std::string res_path, 
                         std::unordered_set<std::string> keep_omop_ids);
 
-// Filling data structures functions
-void update_missing_counts(std::vector<std::string> line, unsigned long long **counts);
-void update_col_tabs(std::vector<std::string> line,
-                       std::vector<std::string> &col_names,
-                       std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> &col_tables);
-void omop_update_cross_tabs(std::vector<std::string> line,
-                       std::vector<std::string> &col_names,
-                       std::unordered_map<std::string, std::unordered_map<std::string, unsigned long long>> &col_tables);
 
 // Reading files function
 void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines, 
@@ -78,10 +66,6 @@ void read_omop_file(std::string omop_group_id_map_path,
                     std::unordered_map<std::string, std::string> &omop_names);
 void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
                          std::string file_path);
-void read_finreg_map(std::string finreg_path,
-                     std::unordered_map<std::string, std::string> &finreg_map);
-void write_updated_file(std::string res_path,
-                        std::unordered_map<std::string, std::string> &finreg_map);
 
 // Helper functions for OMOP mapping
 std::string get_omop_lab_source(std::string lab_id_source,
