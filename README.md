@@ -2,12 +2,19 @@
 
 These are various C++ programs for working with the Kanta lab data files.
 
-# Creating Minal File
+# Table of Contents
+- [Creating Minimal File](#minimal)
+- [Mapping OMOP](#omop)
+  
+<a name="minimal">
+  
+# Creating Minimal File
+
 Reduces the original files to a single file with columns
 #### Creates a new file with columns
   1. `FINREGISTRYID` - Pseudoanonimized IDs
-  2. `DATE_TIME` - Date and time of lab measurement
-  3. `SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  2. `LAB_DATE_TIME` - Date and time of lab measurement
+  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
   4. `LAB_ID` - Regional or local lab ID
   5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: regional
   6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (regional)
@@ -45,14 +52,15 @@ std::unordered_map<std::string, std::string> thl_sote_map;
 ### For each line from std::cin
 #### Creates a new file with columns
   0. `FINREGISTRYID` - Pseudoanonimized IDs
-  1. `DATE_TIME` - Date and time of lab measurement
-  2. `SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  1. `LAB_DATE_TIME` - Date and time of lab measurement
+  2. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
   3. `LAB_ID` - Regional or local lab ID
   4. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: regional
   5. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (regional)
   6. `LAB_VALUE` - The value of the laboratory measurement
   7. `LAB_UNIT` - The unit from the file
   8. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
+
 #### Steps
 1. Reads in line a splits, using ";" - See function `read_correct_lines`
     - Checks if the line has 25 columns
@@ -87,9 +95,10 @@ std::string dup_line = concat_string(dup_vec, std::string(""));
 - Provide all maps
   - Preprocessing of THL SOTE or provide map
   - THL lab ID map easy to access
-- Share binary
-- File to run ./minimal on all files and then concatenate to one `all_minimal.tsv` file
 
 ## Important
 - Currently the process takes a lot of space before compression (over 100GB)
   - It is in principal possible to skip all the error file creations if necessary to save some space. However, this still needs to be implemented
+
+<a name="omop"/>
+# Mapping OMOP
