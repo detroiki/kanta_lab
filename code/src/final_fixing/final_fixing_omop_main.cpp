@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
 
         std::vector<std::string> line_vec(split(line, ";"));
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
+        std::string lab_date_time = line_vec[1];
+        std::string lab_service_provider = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         // Seeing if there are lines to be fully removed from the data
         int keep = decide_keep_rows(omop_id, lab_unit, omop_max_units);
         if (keep == 1) {
-            res_file << finregid << ";" << date_time << ";" << service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << "\n";
+            res_file << finregid << ";" << lab_date_time << ";" << lab_service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << "\n";
         } else {
             error_file << line << "\n";
         }
