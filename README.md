@@ -5,6 +5,8 @@ These are various C++ programs for working with the Kanta lab data files.
 # Table of Contents
 - [Creating Minimal File](#minimal)
 - [Mapping OMOP](#omop)
+- [Unit Fixing](#unit)
+
   
 <a name="minimal">
   
@@ -129,14 +131,19 @@ Adds columns
 
 1. Reads in the OMOP concept maps. The OMOP concept ID map has separate maps for each lab source LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
 
-``c
+```c
     // OMOP source -> lab ID + abbreviation -> OMOP ID
     std::unordered_map<std::string, std::unordered_map<std::string, std::string>> omop_concept_map;
     // OMOP ID -> OMOP name
     std::unordered_map<std::string, std::string> omop_names;
 
 ```
+
 1. Reads in the minimal data from stdin. The delimiter is expected to be ";". The column names are irrelevant but they need to be in the correct order as described in section [Minimal File Columns](#minimalcolumns)
 2. Gets the service provider source of the current measurement. So either LABfi, LABfi_HUS, LABfi_TMP, or LABfi_TKU, depending on the location of the service provider.
 3. Gets the lab ID and abbreviation of the current measurement.
 4. Maps the lab ID and abbreviation to OMOP concept ID and name, using the `omop_concept_map`.
+
+<a name="unit">
+
+# Unit Fixing
