@@ -16,8 +16,8 @@ Reduces the original files to a single file with columns
   2. `LAB_DATE_TIME` - Date and time of lab measurement
   3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
   4. `LAB_ID` - Regional or local lab ID
-  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: regional
-  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (regional)
+  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: national
+  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (national)
   7. `LAB_VALUE` - The value of the laboratory measurement
   8. `LAB_UNIT` - The unit from the file
   9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
