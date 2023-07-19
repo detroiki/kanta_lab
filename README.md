@@ -11,7 +11,9 @@ These are various C++ programs for working with the Kanta lab data files.
 # Creating Minimal File
 
 Reduces the original files to a single file with columns
-#### Creates a new file with columns
+<a name="minimalcolumns">
+
+#### Minimal File Columns
   1. `FINREGISTRYID` - Pseudoanonimized IDs
   2. `LAB_DATE_TIME` - Date and time of lab measurement
   3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
@@ -101,4 +103,40 @@ std::string dup_line = concat_string(dup_vec, std::string(""));
   - It is in principal possible to skip all the error file creations if necessary to save some space. However, this still needs to be implemented
 
 <a name="omop"/>
+
 # Mapping OMOP
+
+Maps the OMOP concepts, using both the lab ID and abbreviation map. We can map about 60% of the local lab codes and 87% of the data this way.
+
+The lab ID and abbreviations are mapped to the correct source table, if possible and otherwise hierarchical to the best matching source table. The four tables are LABfi the nation wide table, LABfi_HUS the HUS table, LABfi_TMP the Tampere table, and LABfi_TKU the Turku table. The hierarchy for local lab IDs from non-major hospitals is HUS, TMP, TKU.
+
+## Usage
+
+The program takes in the minimal file created in the previous step and maps the lab measurements to OMOP concepts. The program takes in the following arguments
+
+- `res_path` - The path to the results folder
+- `omop_concept_map_path`: The path to the OMOP concept ID map. Mapping from lab IDs and abbreviations to OMOP concept IDs. The delimiter is expected to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. The columns names are irrelevant but they need to be in the correct order. LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
+
+You can find the map here: TODO
+## Resulting file columns
+
+Adds columns
+
+10. `OMOP_ID` - The OMOP ID of the lab measurement
+11. `OMOP_NAME` - The OMOP name of the lab measurement
+
+## Current Pipeline
+
+1. Reads in the OMOP concept maps. The OMOP concept ID map has separate maps for each lab source LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
+
+``c
+    // OMOP source -> lab ID + abbreviation -> OMOP ID
+    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> omop_concept_map;
+    // OMOP ID -> OMOP name
+    std::unordered_map<std::string, std::string> omop_names;
+
+```
+1. Reads in the minimal data from stdin. The delimiter is expected to be ";". The column names are irrelevant but they need to be in the correct order as described in section [Minimal File Columns](#minimalcolumns)
+2. Gets the service provider source of the current measurement. So either LABfi, LABfi_HUS, LABfi_TMP, or LABfi_TKU, depending on the location of the service provider.
+3. Gets the lab ID and abbreviation of the current measurement.
+4. Maps the lab ID and abbreviation to OMOP concept ID and name, using the `omop_concept_map`.

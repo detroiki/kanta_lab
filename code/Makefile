@@ -70,7 +70,7 @@ bin/file_helpers.o: src/file_helpers.cpp
 	$(info Buildung File Helpers...)  g++ -c $(FLAGS) -o bin/file_helpers.o src/file_helpers.cpp
 
 run_map_omop: exec/map_omop
-	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_group_id_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
+	cat /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/processed/data/all_minimal.csv | exec/map_omop tests/ /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_concept_map.csv /home/kira/duni/helsinki/DSGE/Code/kanta_lab/code/tests/test_data/omop_names.csv
 
 final_fixing: bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o  bin/final_fixing_utils.o
 	g++ $(FLAGS) bin/final_fixing_main.o bin/file_helpers.o bin/string_helpers.o bin/final_fixing_utils.o -o exec/final_fixing
