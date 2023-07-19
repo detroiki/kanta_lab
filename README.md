@@ -122,10 +122,12 @@ The program takes in the minimal file created in the previous step and maps the 
 You can find the map here: TODO
 ## Resulting file columns
 
-Adds columns
+Adds columns 
 
 10. `OMOP_ID` - The OMOP ID of the lab measurement
 11. `OMOP_NAME` - The OMOP name of the lab measurement
+
+to the [Minimal File Columns](#minimalcolumns).
 
 ## Current Pipeline
 
@@ -139,7 +141,7 @@ Adds columns
 
 ```
 
-1. Reads in the minimal data from stdin. The delimiter is expected to be ";". The column names are irrelevant but they need to be in the correct order as described in section [Minimal File Columns](#minimalcolumns)
+1. Reads in the minimal data from stdin. The delimiter is expected to be ";". The column names are irrelevant but they need to be in the correct order as described in section [Minimal File Columns](#minimalcolumns).
 2. Gets the service provider source of the current measurement. So either LABfi, LABfi_HUS, LABfi_TMP, or LABfi_TKU, depending on the location of the service provider.
 3. Gets the lab ID and abbreviation of the current measurement.
 4. Maps the lab ID and abbreviation to OMOP concept ID and name, using the `omop_concept_map`.
@@ -147,3 +149,28 @@ Adds columns
 <a name="unit">
 
 # Unit Fixing
+
+This is implemented in pyhton, using regex. Fixes include:
+
+- Turning empty units to NAs
+- Fixing and unifying all `10e5`, `10^9` etc. to one form `e5`, `e9` etc.
+- Fixing and unifying all forms of `(y|μ)ks(ikkö)` and `iu` to `u`
+- Fixing and unifying all forms of `kopio(t), sol(y|μ|u), kpl, pisteet` to `count`.
+- Fixing and unifying all `n(ä)kö(ke)k(enttä)`to `field`
+- Fixing and unifying all `gulost`to `gstool`.
+- Fixing and unfiying all `(til)osuus` to `osuus`. 
+- Fixing and unifying all `tiiteri` to `titer`.
+- Fixing and unifying all `mosm/kg` to `mosm_kgh2o`.
+- Fixing and unifying all `inrarvo` to `inr`.
+- Fixing and unifying all `ml/min/(173m2)` to `ml/min/173m2`.
+- Fixing all missing or wrong `/`, this can include i.e. `7`.
+- Fixing typos, such as `mot` instead of `mol` and `mmmol` instead of `mmol`.
+- Changing `umol` to `μmol` and `ug/l` to `μg/l`.
+- Making `+` and `pos` to `A` and `-` and `neg(at)` to `N`.
+- Making `o/oo` to `promille`.
+- Making `/d`, and `/vrk` to `/24h`.
+- Removing information such as the degree and ph, i.e. `mg/l/37c` simply becomes `mg/l`. These are typically already unified in the concepts and only irregularly denoted in the unit.
+- Removing information `/100leuk`and `/24h` for the same reason as above.
+- Making power changes for `ku/l`to `u/ml`, `pg/ml` to `ng/l`, `μg/l` to `ng/ml`, `μg/ml` to `mg/l`.
+
+For all regex commands see: TODO.
