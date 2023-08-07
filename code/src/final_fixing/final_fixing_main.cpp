@@ -1,5 +1,25 @@
 #include "../header.h"
 
+/**
+ * @brief Performs final fixes to the data
+ * 
+ * @param argc The number of arguments
+ * @param argv The arguments. The first argument is the path to the results folder.
+ * 
+ * @return int
+ * 
+ * This program performs final fixes to the data. It is run after the data has been processed
+ * and the OMOP IDs have been added. The fixes are:
+ * - Fixing percentages that are in osuus (fraction) format into % format
+ * - Fixing abnormality abbreviations to be consistent. This means replacing < with L, > with H, 
+ *    POS with A and NEG with N. If the abbreviation is not one of these, it is replaced with NA.
+ * - Removing lines where the measurement year is before 2014
+ * - Removing lines where the lab value is not a number. Makes illegal units that are numbers NA. 
+ * - Removing values from title lines (Making them NAs) and turning the lab unit to ordered. 
+ *   These are lines where often there is random information in the lab value column. 
+ * - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
+ *   marked with binary in the lab unit column.
+*/
 int main(int argc, char *argv[])
 {
     std::string res_path = argv[1];
@@ -45,7 +65,7 @@ int main(int argc, char *argv[])
         std::string omop_id = line_vec[9];
         std::string omop_name = line_vec[10];
 
-        // Fixing values
+        // Fixing values and units
         fix_abnorms(lab_abnorm);
         remove_illegal_units(lab_unit);
         fix_phs(lab_id, lab_abbrv, lab_unit);  // Phs often have no units

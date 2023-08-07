@@ -1,5 +1,16 @@
 #include "../header.h"
 
+/**
+ * @brief Fixes phs that often have no units
+ * 
+ * @param lab_id The lab id of the lab test
+ * @param lab_abbrv The lab abbreviation of the lab test
+ * @param lab_unit The lab unit of the lab test
+ * 
+ * @return void
+ * 
+ * Makes the units "ph" to preserve the information that this is a ph measurement.
+*/
 void fix_phs(std::string &lab_id,
              std::string &lab_abbrv,
              std::string &lab_unit) {
@@ -37,6 +48,17 @@ void fix_titles(std::string &lab_id,
     }
 }
 
+/**
+ * @brief Fixes inrs that often have no units
+ * 
+ * @param lab_id The lab id of the lab test
+ * @param lab_abbrv The lab abbreviation of the lab test
+ * @param lab_unit The lab unit of the lab test
+ * 
+ * @return void
+ * 
+ * Makes the units "inr" to preserve the information that this is an inr measurement.
+*/
 void fix_inrs(std::string &lab_id,
               std::string &lab_abbrv,
               std::string &lab_unit) {
@@ -45,6 +67,13 @@ void fix_inrs(std::string &lab_id,
     if((inrs.find(concat_string({lab_id, lab_abbrv}, " ")) != inrs.end()) & (lab_unit == "NA")) lab_unit = "inr";
 }
 
+/**
+ * @brief Removes illegal units that are actually numbers
+ * 
+ * @param lab_unit The lab unit of the lab test
+ * 
+ * @return void
+*/
 void remove_illegal_units(std::string &lab_unit) {
     try {
         double lab_unit_double = std::stod(lab_unit);
@@ -54,8 +83,18 @@ void remove_illegal_units(std::string &lab_unit) {
     }
 }
 
+/**
+ * @brief Removes illegal measure years that are before 2014
+ * 
+ * @param date_time The date and time of the lab test
+ * @param keep Whether the line should be kept or not
+ * 
+ * @return void
+ * 
+ * If the year of the lab test is before 2014, the line is removed.
+*/
 int remove_illegal_measure_year(std::string &date_time,
-                                 int keep) {
+                                int keep) {
     std::string year = date_time.substr(0, 4);
     try {
         int year_int = std::stoi(year);
@@ -68,6 +107,19 @@ int remove_illegal_measure_year(std::string &date_time,
     return(keep);
 }
 
+/**
+ * @brief Removes illegal values that are not numbers
+ * 
+ * @param lab_value The lab value of the lab test
+ * @param lab_abnorm The lab abnormality of the lab test
+ * @param lab_abbrv The lab abbreviation of the lab test
+ * @param keep Whether the line should be kept or not
+ * 
+ * @return void
+ * 
+ * If the lab value is not a number, the line is removed. Additionally, negative values
+ * are removed except for -h-ind, ab-hb-met, be and vekaas.
+*/
 int remove_illegal_values(std::string &lab_value, 
                           std::string &lab_abnorm, 
                           std::string &lab_abbrv,
@@ -98,7 +150,19 @@ int remove_illegal_values(std::string &lab_value,
     return(keep);
 }
 
-
+/**
+ * @brief Fixes percentages that are in osuus (fraction) format
+ * 
+ * @param lab_value The lab value of the lab test
+ * @param lab_unit The lab unit of the lab test
+ * @param lab_abnorm The lab abnormality of the lab test
+ * @param keep Whether the line should be kept or not
+ * 
+ * @return int
+ * 
+ * If the lab unit is osuus (fraction), the lab value is multiplied by 100 and the lab unit
+ * turned to %. If the lab unit is already %, the lab value is kept as is.
+*/
 int fix_percentages(std::string &lab_value, 
                     std::string &lab_unit,
                     std::string &lab_abnorm,
@@ -118,6 +182,17 @@ int fix_percentages(std::string &lab_value,
     return(keep);
 }
 
+/**
+ * @brief Fixes abnormality abbreviations to be consistent
+ * 
+ * @param lab_abnorm The lab abnormality of the lab test
+ * 
+ * @return void
+ * 
+ * Fixes abnormality abbreviations to be consistent with the OMOP standard. This means replacing
+ * < with L, > with H, POS with A and NEG with N. If the abbreviation is not one of these, it is
+ * replaced with NA.
+*/
 void fix_abnorms(std::string &lab_abnorm) {
     if(lab_abnorm == "<") {
         lab_abnorm = "L";
