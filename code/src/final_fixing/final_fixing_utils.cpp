@@ -8,14 +8,33 @@ void fix_phs(std::string &lab_id,
     if((phs.find(concat_string({lab_id, lab_abbrv}, " ")) != phs.end()) & (lab_unit == "NA")) lab_unit = "ph";
 }
 
-int remove_titles(std::string &lab_id,
-                   std::string &lab_abbrv,
-                   int keep) {
-    std::unordered_set<std::string> titles = {"2474 b-pvk-t", "2473 b-pvk", "2474 b-pvkt"}; 
-    //"90 b-pvk+t", "139 u-bakt", "147 vekapak1", "158 b-diffi", "185 u-solut", "248 pt-gfre-md", "273 b-pvk+tkd,ig", "198 fp-lipidit", "316 pu-baktvi1", "412 fs-lipidit", "437 u-tutk-1,ph", "452 b-tvk", "462 fp-kol-ind", "471 b-pvk", "516 b-pvk+tmd", "559 2hgluk", "568 vb-he-tase", "618 s-hbvpak", "672 s-keliseu", "695 pt-gluk-r1", "723 cb-het-ion", "760 b-baktivi", "761 s-urokaer", "777 pt-gluk-2h", "798 vb-vkperus", "803 u-kemseul,ph", "852 pt-kt/v1", "958 cb-bepika", "983 pocabrc", "993 vb-vklaaja"};
-
-    if((titles.find(concat_string({lab_id, lab_abbrv}, " ")) != titles.end())) keep = 0;
-    return(keep);
+/**
+ * @brief Fixes titles that have random units and values even though they are not measurements
+ * 
+ * @param lab_id The lab id of the lab test
+ * @param lab_abbrv The lab abbreviation of the lab test
+ * @param lab_unit The lab unit of the lab test
+ * @param lab_value The lab value of the lab test
+ * 
+ * @return void
+ * 
+ * Makes the units "ordered" to preserve the information that this title has been ordered for the patient.
+*/
+void fix_titles(std::string &lab_id,
+                  std::string &lab_abbrv,
+                  std::string &lab_unit,
+                  std::string &lab_value) {
+    std::unordered_set<std::string> titles = {"2474 b-pvk-t", "2473 b-pvk", "2474 b-pvkt", "90 b-pvk+t", "139 u-bakt", "147 vekapak1", 
+                                              "158 b-diffi", "185 u-solut", "248 pt-gfre-md", "273 b-pvk+tkd,ig",
+                                              "298 fp-lipidit", "316 pu-baktvi1", "412 fs-lipidit", "437 u-tutk-1,ph", "452 b-tvk", 
+                                              "462 fp-kol-ind", "471 b-pvk", "516 b-pvk+tmd", "559 2hgluk", "568 vb-he-tase"
+                                              "618 s-hbvpak", "672 s-keliseu", "695 pt-gluk-r1", "723 cb-het-ion", "760 b-baktjvi",
+                                              "761 s-ruokaer", "774 b-pvk+tkd", "777 pt-gluk-2h", "798 vb-vkperus", "803 u-kemseul,ph", 
+                                              "852 pt-kt/v1", "958 cb-bepika", "983 pocabrc", "993 vb-vklaaja", "994 pes.j‰l"};
+    if((titles.find(concat_string({lab_id, lab_abbrv}, " ")) != titles.end())) {
+        lab_unit = "ordered";
+        lab_value = "NA";
+    }
 }
 
 void fix_inrs(std::string &lab_id,

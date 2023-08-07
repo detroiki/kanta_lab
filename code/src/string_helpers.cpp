@@ -57,3 +57,13 @@ std::string remove_chars(std::string str,
     return(str);
 }
 
+std::string get_omop_identifier(std::string lab_id,
+                                std::string lab_abbreviation,
+                                std::string lab_unit = std::string("")) {
+
+    // Currently identifying the OMOP concept by the lab ID and abbreviation.
+    std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbreviation, lab_unit};
+    std::string omop_identifier = concat_string(omop_identifier_vec, std::string(" "));
+
+    return(omop_identifier);
+} 

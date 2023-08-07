@@ -6,6 +6,7 @@ These are various C++ programs for working with the Kanta lab data files.
 - [Creating Minimal File](#minimal)
 - [Mapping OMOP](#omop)
 - [Unit Fixing](#unit)
+- [Final Fixing](#final)
 
   
 <a name="minimal">
@@ -174,3 +175,7 @@ This is implemented in pyhton, using regex. Fixes include:
 - Making power changes for `ku/l`to `u/ml`, `pg/ml` to `ng/l`, `μg/l` to `ng/ml`, `μg/ml` to `mg/l`.
 
 For all regex commands see: TODO.
+
+<a name="final">
+
+# Final Fixing

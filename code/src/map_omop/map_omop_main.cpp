@@ -9,7 +9,7 @@
  * @return void
  * 
  * Maps the OMOP concetps IDs, using both the lab ID and abbreviation map. 
- * We can map about 60% of the local lab codes this way
+ * We can map about 87% of the data this way
  * 
  * Reads in the minimal data from stdin. The delimiter is expected to be ";"
  * Expects the columns to be:
@@ -88,9 +88,8 @@ int main(int argc, char *argv[]) {
   
         // Finding OMOP mapping
         // Currently identifying the OMOP concept by the lab ID and abbreviation.
-        // We can map about 60% of the local lab codes this way
-        std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbreviation};
-        std::string omop_identifier = concat_string(omop_identifier_vec, std::string(" "));
+        // We can map about 87% of the data this way
+        std::string omop_identifier = get_omop_identifier(lab_id, lab_abbreviation);
         std::string omop_id = get_omop_id(omop_concept_map, omop_lab_source, omop_identifier);
         std::string omop_name = get_omop_name(omop_id, omop_names);
 

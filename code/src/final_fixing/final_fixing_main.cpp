@@ -50,13 +50,13 @@ int main(int argc, char *argv[])
         remove_illegal_units(lab_unit);
         fix_phs(lab_id, lab_abbrv, lab_unit);  // Phs often have no units
         fix_inrs(lab_id, lab_abbrv, lab_unit); // INRs often have no units
+        fix_titles(lab_id, lab_abbrv, lab_unit, lab_value); // Titles often have random units and values even though they are not measurements
 
         // Seeing if there are lines to be fully removed from the data
         int keep = 1;
         keep = remove_illegal_measure_year(date_time, keep);
         keep = fix_percentages(lab_value, lab_unit, lab_abnorm, keep);
         keep = remove_illegal_values(lab_value, lab_abnorm, lab_abbrv, keep);
-        keep = remove_titles(lab_id, lab_abbrv, keep);
 
         shuffle_lab_abnorm_info(lab_value, lab_abnorm, lab_unit);
         
