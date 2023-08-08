@@ -2,7 +2,22 @@
 
 These are various C++ programs for working with the Kanta lab data files.
 
-# Table of Contents
+# Usage
+
+The whole pipeline can be easily run by simply replacing the
+paths for the results directory (`res_dir`) and the original data directory (`data_dir`) in the
+Makefile.
+Then running
+
+```
+make run_all
+```
+
+This will run all the steps in the pipeline and create all the necessary folders and files.
+
+The pipeline can also be run step by step. See the Makefile for the exact commands and steps.
+
+# Pipeline
 - [Creating Minimal File](#minimal)
 - [Mapping OMOP](#omop)
 - [Unit Fixing](#unit)

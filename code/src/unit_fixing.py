@@ -1,14 +1,18 @@
 import pandas as pd
 import re
 from collections import defaultdict
+import sys
 
 unit_tbl = defaultdict(int)
 unit_fix_tbl = defaultdict(int)
 
+res_dir = sys.argv[1]
+
+
 count = 0
-with open("/media/volume/users/detrokir/processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="utf-8") as fin:
-    with open("/media/volume/users/detrokir/processed/data/kanta_lab_minimal_fixed_units.csv", 'w', encoding="utf-8") as fout_min:
-        with open("/media/volume/users/detrokir/processed/reports/counts/unit_fixes.csv", 'w', encoding="utf-8") as fout_fix:
+with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="utf-8") as fin:
+    with open(res_dir + "processed/data/kanta_lab_minimal_fixed_units.csv", 'w', encoding="utf-8") as fout_min:
+        with open(res_dir + "processed/reports/counts/unit_fixes.csv", 'w', encoding="utf-8") as fout_fix:
 
             first_line = 1
             for line in fin:
