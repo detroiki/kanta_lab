@@ -32,9 +32,9 @@ int main(int argc, char *argv[]) {
     int first_line = 1; // Indicates header line
     while(std::getline(in_file, line)) {
         if (first_line == 1) {
-            res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;SEX;YEAR_OF_BIRTH"
+            res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME"
                      << "\n";
-            error_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME;SEX;YEAR_OF_BIRTH"
+            error_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME"
                        << "\n";
             first_line = 0;
             continue;
@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
 
         std::vector<std::string> line_vec(split(line, ";"));
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
+        std::string lab_date_time = line_vec[1];
+        std::string lab_service_provider = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
@@ -52,9 +52,6 @@ int main(int argc, char *argv[]) {
         std::string lab_abnorm = remove_chars(line_vec[8], ' ');
         std::string omop_id = line_vec[9];
         std::string omop_name = line_vec[10];
-        std::string sex = line_vec[11];
-        std::string yob = line_vec[12];
-
 
         // Fixing values
         fix_phs(lab_id, lab_abbrv, lab_unit);  // Phs often have no units
@@ -62,7 +59,7 @@ int main(int argc, char *argv[]) {
         // Seeing if there are lines to be fully removed from the data
         int keep = decide_keep_rows(omop_id, lab_unit, omop_max_units);
         if (keep == 1) {
-            res_file << finregid << ";" << date_time << ";" << service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << ";" << sex << ";" << yob << "\n";
+            res_file << finregid << ";" << lab_date_time << ";" << lab_service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << "\n";
         } else {
             error_file << line << "\n";
         }
