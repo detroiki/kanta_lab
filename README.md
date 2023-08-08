@@ -26,7 +26,7 @@ The pipeline can also be run step by step. See the Makefile for the exact comman
   
 <a name="minimal">
   
-# Creating Minimal File
+## Creating Minimal File
 
 Reduces the original files to a single file with columns
 <a name="minimalcolumns">
@@ -47,7 +47,7 @@ for file_no in 1:10:
   cat finregistry_[file_no].csv.finreg_ID | exec/minimal [res_path] [file_no] [thl_sote_fix_name_map.tsv] [lab_id_map.tsv]
 ```
 
-## Current Pipeline
+## Current Steps
 
 ### Reading Files
 1. Reads in duplicate lines from all previous files 
@@ -122,13 +122,13 @@ std::string dup_line = concat_string(dup_vec, std::string(""));
 
 <a name="omop"/>
 
-# Mapping OMOP
+## Mapping OMOP
 
 Maps the OMOP concepts, using both the lab ID and abbreviation map. We can map about 60% of the local lab codes and 87% of the data this way.
 
 The lab ID and abbreviations are mapped to the correct source table, if possible and otherwise hierarchical to the best matching source table. The four tables are LABfi the nation wide table, LABfi_HUS the HUS table, LABfi_TMP the Tampere table, and LABfi_TKU the Turku table. The hierarchy for local lab IDs from non-major hospitals is HUS, TMP, TKU.
 
-## Usage
+### Usage
 
 The program takes in the minimal file created in the previous step and maps the lab measurements to OMOP concepts. The program takes in the following arguments
 
@@ -136,7 +136,7 @@ The program takes in the minimal file created in the previous step and maps the 
 - `omop_concept_map_path`: The path to the OMOP concept ID map. Mapping from lab IDs and abbreviations to OMOP concept IDs. The delimiter is expected to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. The columns names are irrelevant but they need to be in the correct order. LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
 
 You can find the map here: TODO
-## Resulting file columns
+### Resulting file columns
 
 Adds columns 
 
@@ -145,7 +145,7 @@ Adds columns
 
 to the [Minimal File Columns](#minimalcolumns).
 
-## Current Pipeline
+### Current Steps
 
 1. Reads in the OMOP concept maps. The OMOP concept ID map has separate maps for each lab source LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
 
@@ -164,7 +164,7 @@ to the [Minimal File Columns](#minimalcolumns).
 
 <a name="unit">
 
-# Unit Fixing
+## Unit Fixing
 
 This is implemented in pyhton, using regex. Fixes include:
 
@@ -193,7 +193,7 @@ For all regex commands see: TODO.
 
 <a name="final">
 
-# Final Fixing
+## Final Fixing
 
  This program performs final fixes to the data. It is run after the data has been processed
  and the OMOP IDs have been added. The fixes are:
