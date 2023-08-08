@@ -31,7 +31,7 @@ The pipeline can also be run step by step. See the Makefile for the exact comman
 Reduces the original files to a single file with columns
 <a name="minimalcolumns">
 
-#### Minimal File Columns
+### Minimal File Columns
   1. `FINREGISTRYID` - Pseudoanonimized IDs
   2. `LAB_DATE_TIME` - Date and time of lab measurement
   3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
@@ -69,8 +69,8 @@ std::unordered_map<std::string, std::string> thl_sote_map;
     std::unordered_map<std::string, std::string> thl_abbrv_map;
 ``` 
 
-### For each line from std::cin
-#### Creates a new file with columns
+#### For each line from std::cin
+##### Creates a new file with columns
   0. `FINREGISTRYID` - Pseudoanonimized IDs
   1. `LAB_DATE_TIME` - Date and time of lab measurement
   2. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
@@ -110,12 +110,6 @@ std::string dup_line = concat_string(dup_vec, std::string(""));
 8. Adding only non-duplicate lines to the file
 9. Adding line to duplicate line map `all_dup_lines`
 10. Adding lines with neither lab value, nor lab abnormality information to a file `[res_path]/processed/reports/problem_rows/missing_data_rows_file_[file_no].csv
-
-## Steps left to do
-- Provide all maps
-  - Preprocessing of THL SOTE or provide map
-  - THL lab ID map easy to access
-
 ## Important
 - Currently the process takes a lot of space before compression (over 100GB)
   - It is in principal possible to skip all the error file creations if necessary to save some space. However, this still needs to be implemented
