@@ -2,9 +2,9 @@ orig_data_dir = "/media/volume/users/vllorens/data/kanta_lab_20233001/stage0/"
 res_dir = "/media/volume/users/detrokir/"
 
 # These are provided in the data folder
-thl_sote_map_path = "data/thl_sote_fix_name_map.tsv"
-thl_lab_map_path = "data/lab_id_min.csv"
-omop_map_path = "data/omop_map.tsv"
+thl_sote_map_path = "data/thl_sote_map_named.tsv"
+thl_lab_map_path = "data/thl_lab_id_abbrv_map.csv"
+omop_map_path = "data/omop_concept_map.tsv"
 
 run_all:
 	mkdir -p $(res_dir)processed/data
@@ -18,6 +18,10 @@ run_all:
 	zstd -v -T24 --ultra -22 --rm $(res_dir)processed/data/kanta_lab_minimal_omop.csv
 	python3.9 code/exec/unit_fixing.py $(res_dir)
 	make final_fixing
+	cat $(res_dir)processed/data/kanta_lab_final.csv | awk '{FS=";", OFS=""}{if(NR>1){print $1, ",", $2, ",", $3, ",", "\"", $4, "\",", $5, ",", "\"", $6, "\",", $7, ",", $8, ",", $9, "," $10, "," $11} else {print "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,OMOP_ID,OMO_NAME"}}' > $(res_dir)processed/data/kanta_lab_2023-08-14.csv
+	rm $(res_dir)processed/data/kanta_lab_2023-08-14.csv.zst
+	rm  $(res_dir)processed/data/kanta_lab_final.csv 
+	zstd -v -T24 --ultra -22 $(res_dir)processed/data/kanta_lab_2023-08-14.csv.zst
 
 create_minimal: 
 	for file_no in 1 2 3 4 5 6 7 8 9 10 ; do \
@@ -49,4 +53,3 @@ map_omop:
 final_fixing:
 	cat $(res_dir)processed/data/kanta_lab_minimal_fixed_units.csv | code/exec/final_fixing $(res_dir)
 	rm -f $(res_dir)processed/data/kanta_lab_minimal_fixed_units.csv
-	zstd -v -T24 --ultra -22 $(res_dir)processed/data/kanta_lab_minimal_final.csv 
