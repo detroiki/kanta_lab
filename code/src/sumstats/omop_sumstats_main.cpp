@@ -1,28 +1,26 @@
 #include "../header.h"
 
+
 int main(int argc, char *argv[]) {
-    std::string new_omops_path = argv[1];
-    std::string res_path = argv[2];
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+    std::string res_path = argv[1];
 
     // Opening results file
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_minimal_omop_new.csv"};
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/reports/omop_maps/omop_sumstats.csv"};
     std::string full_res_path = concat_string(full_res_path_vec);
     std::ofstream res_file;
     res_file.open(full_res_path);
     check_out_open(res_file, full_res_path);
 
     // Reading in maps for new omop concepts
-    std::unordered_map<std::string, std::string> new_omops;
-    std::unordered_map<std::string, std::string> omop_names;
-    get_new_omop_concepts(new_omops, omop_names, new_omops_path);
-
+    std::unordered_map<std::string, std::vector<double>> omops;
 
     // Reading
     std::string line;
     int first_line = 1; // Indicates header line
     while(std::getline(std::cin, line)) {
         if (first_line == 1) {
-            res_file << line << "\n";
             first_line = 0;
             continue;
         }
@@ -40,13 +38,17 @@ int main(int argc, char *argv[]) {
         std::string omop_id = line_vec[9];
         std::string omop_name = line_vec[10];
 
-        std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(";"));
-        if(new_omops.find(omop_identifier) != new_omops.end()) {
-            omop_id = new_omops[omop_identifier];
-            omop_name = omop_names[omop_id];
+        if(!(omop_id == "NA" || omop_name == "NA" || lab_value == "NA" || lab_unit == "binary")) {
+            std::string omop_identifier = get_omop_identifier(omop_id, omop_name, lab_unit, std::string(";"));
+            omops[omop_identifier].push_back(std::stod(lab_value));
         }
-
-        res_file << finregid << ";" << lab_date_time << ";" << lab_service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << "\n";
     }
+
+    write_omop_sumstats(omops, res_file);  
     res_file.close();
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "[s]" << std::endl;
 }

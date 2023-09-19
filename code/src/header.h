@@ -6,9 +6,14 @@
 #include <regex>
 #include <unordered_map>
 #include <unordered_set>
+#include <numeric>
+#include <cmath>
 #include <algorithm>
+#include <chrono>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 using namespace std;
+using namespace boost::gregorian;
 
 // Helper functions
 std::vector<std::string> split(const std::string &s, const char *delim);
@@ -20,7 +25,8 @@ std::string remove_chars(std::string str, char remove_char);
 std::string clean_units(std::string lab_unit);
 std::string get_omop_identifier(std::string lab_id,
                                 std::string lab_abbreviation,
-                                std::string lab_unit);
+                                std::string lab_unit,
+                                std::string sep);
 
 // Helper functions for minimal file creation
 void fix_nas(std::vector<std::string> &final_line_vec);
@@ -49,7 +55,11 @@ void write_dup_lines_file(std::string &res_path,
 void write_top_lab_data(std::string file_path,
                         std::string res_path, 
                         std::unordered_set<std::string> keep_omop_ids);
-
+void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> omops,
+                         std::ofstream &res_file);
+void write_indvs_omops_sumstats( std::unordered_map<std::string, std::unordered_map<std::string, std::vector<double>>>& indvs_omops_values,
+                                std::string res_path
+                                );
 
 // Reading files function
 void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omops,
@@ -72,6 +82,10 @@ void read_omop_file(std::string omop_concept_map_path,
                     std::unordered_map<std::string, std::string> &omop_names);
 void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
                          std::string file_path);
+void read_indvs_files(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
+                      std::string indvs_path);
+void read_omops_file(std::unordered_set<std::string> &relevant_omops,
+                     std::string omops_path);
 
 // Helper functions for OMOP mapping
 std::string get_omop_lab_source(std::string lab_id_source,
@@ -122,3 +136,9 @@ void get_omop_max_units(std::unordered_map<std::string, std::string> &omop_max_u
 int decide_keep_rows(std::string omop_id,
                      std::string lab_unit,
                      std::unordered_map<std::string, std::string> &omop_max_units);
+
+// Math helper function
+double get_mean(std::vector<double> values_vec);
+double get_median(std::vector<double> values_vec);
+double get_sd(std::vector<double> values_vec, double mean);
+double get_quantile(std::vector<double> values, double quantile);

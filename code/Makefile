@@ -1,5 +1,29 @@
 FLAGS = -std=c++11 -static -Wall
 
+indv_susmtats: bin/indv_sumstats_main.o bin/file_helpers.o bin/string_helpers.o bin/sumstats_utils.o
+	g++ $(FLAGS) bin/indv_sumstats_main.o bin/file_helpers.o bin/string_helpers.o bin/sumstats_utils.o -o exec/indv_sumstats
+
+bin/indv_sumstats_main.o: src/sumstats/indv_sumstats_main.cpp
+	$(info Buildung Main indv_sumstats...)  g++ -c $(FLAGS) -o bin/indv_sumstats_main.o src/sumstats/indv_sumstats_main.cpp
+
+omop_sumstats: bin/omop_sumstats_main.o bin/file_helpers.o bin/string_helpers.o bin/sumstats_utils.o
+	g++ $(FLAGS) bin/omop_sumstats_main.o bin/file_helpers.o bin/string_helpers.o bin/sumstats_utils.o -o exec/omop_sumstats
+
+bin/omop_sumstats_main.o: src/sumstats/omop_sumstats_main.cpp
+	$(info Buildung Main omop_sumstats...)  g++ -c $(FLAGS) -o bin/omop_sumstats_main.o src/sumstats/omop_sumstats_main.cpp
+
+bin/sumstats_utils.o: src/sumstats/sumstats_utils.cpp
+	$(info Buildung Main omop_sumstats...)  g++ -c $(FLAGS) -o bin/sumstats_utils.o src/sumstats/sumstats_utils.cpp
+
+add_omop_concepts: bin/add_omop_concepts_main.o bin/file_helpers.o bin/string_helpers.o bin/add_omop_concepts_utils.o
+	g++ $(FLAGS) bin/add_omop_concepts_main.o bin/file_helpers.o bin/string_helpers.o bin/add_omop_concepts_utils.o -o exec/add_omop_concepts
+
+bin/add_omop_concepts_main.o: src/final_fixing/add_omop_concepts_main.cpp
+	$(info Buildung Main add_omop_concepts...)  g++ -c $(FLAGS) -o bin/add_omop_concepts_main.o src/final_fixing/add_omop_concepts_main.cpp
+
+bin/add_omop_concepts_utils.o: src/final_fixing/add_omop_concepts_utils.cpp
+	$(info Buildung Main add_omop_concepts...)  g++ -c $(FLAGS) -o bin/add_omop_concepts_utils.o src/final_fixing/add_omop_concepts_utils.cpp
+
 ## Minimal
 minimal: bin/minimal_main.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
 	g++ $(FLAGS) bin/minimal_main.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o exec/minimal
