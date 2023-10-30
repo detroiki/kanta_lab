@@ -200,3 +200,17 @@ For all regex commands see: TODO.
    These are lines where often there is random information in the lab value column. 
  - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
    marked with binary in the lab unit column.
+
+### Addinge new OMOP concept mappings
+
+- We have created a list of lab IDs that commonly appear with lab abbreviations and units mapped to a known OMOP concept (these are likely codes used by service providers not yet OMOP mapped).
+
+
+Criteria:  
+      1. This lab ID and unit appear at least 1000x with this abbreviation 
+      2. This lab ID makes up at least 1% of the data mapped to this OMOP concept (this means it is worth adding this abbreviation as it adds a significant amount of extra data to this OMOP concept). 
+
+Overall this adds xxx lab ids and a total of xxxx lab values to the OMOP mapped data.
+
+
+The list of new mappings can be found here: TODO
