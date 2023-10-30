@@ -183,7 +183,7 @@ This is implemented in pyhton, using regex. Fixes include:
 - Removing information `/100leuk`and `/24h` for the same reason as above.
 - Making power changes for `ku/l`to `u/ml`, `pg/ml` to `ng/l`, `μg/l` to `ng/ml`, `μg/ml` to `mg/l`.
 
-For all regex commands see: TODO.
+For all regex commands see: [code/src/unit_fixing.py](https://github.com/detroiki/kanta_lab/blob/main/code/src/unit_fixing.py)
 
 <a name="final">
 
@@ -213,4 +213,4 @@ Criteria:
 Overall this adds xxx lab ids and a total of xxxx lab values to the OMOP mapped data.
 
 
-The list of new mappings can be found here: TODO
+The list of new mappings can be found here: [data/new_omop_mappings.tsv](https://github.com/detroiki/kanta_lab/blob/main/data/new_omop_mappings.tsv)
