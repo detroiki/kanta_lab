@@ -33,7 +33,7 @@ void read_omop_file(std::string omop_concept_map_path,
         std::string name = line_vec[5];
 
         // OMOP identifier is mape up of the lab ID and abbreviation
-        std::string omop_identifier = concat_string({lab_id, abbreviation}, " ");
+        std::string omop_identifier = concat_string(std::vector<std::string>({lab_id, abbreviation}), " ");
 
         // The OMOP concept ID map has separate maps for each lab source
         // LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU

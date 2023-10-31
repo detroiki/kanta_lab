@@ -2,6 +2,8 @@
 docu/
 results/
 tests/
+.transfer
+
 
 settings.json
 ## R
