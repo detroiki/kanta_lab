@@ -24,6 +24,10 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                         line_arr[5] = re.sub(r'"(.*)"', r'\1', line_arr[5]) # Remove "" around some of the abbreviations
                         if(lab_unit != "NA"): 
                             lab_unit = lab_unit.lower().strip()  
+
+                            # Remove lonely nonsense signs
+                            lab_unit = re.sub(r"(\?|\!|§|')+", "", lab_unit)
+                            lab_unit = re.sub(r"^\*+$", "", lab_unit)
                             lab_unit = re.sub(r'^$', 'NA', lab_unit)
 
                             # es
@@ -57,8 +61,10 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
 
                             # mmol
                             lab_unit = re.sub(r"^(m)?mmo(l)?/", "mmol/", lab_unit)
+
                             # mol
                             lab_unit = re.sub(r"mo(t|l|i)?(l)?", "mol", lab_unit)
+                            lab_unit = re.sub(r"nol", "mol", lab_unit)
 
                             # mmol/l and mmol/mol
                             lab_unit = re.sub(r"^mmol.?(l|i|mol).?$", "mmol/l", lab_unit)
@@ -79,7 +85,7 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r"^inrarvo$", "inr", lab_unit)
 
                             #mosm/kg20 - miliosmoles per kilogram of water
-                            lab_unit = re.sub(r"^mosm/kg.*$", "mosm/kgh2o", lab_unit)
+                            lab_unit = re.sub(r"^mo(l)?sm/kg.*$", "mosm/kgh2o", lab_unit)
 
                             # Osuus
                             lab_unit = re.sub(r"^tilo(s)?$", "osuus", lab_unit)
@@ -90,23 +96,26 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r"klp", "kpl", lab_unit)
                             lab_unit = re.sub(r"sol(y|µ|u)", "kpl", lab_unit)
                             lab_unit = re.sub(r"pisteet", "kpl",lab_unit)
+
                             # Viewfield
                             lab_unit = re.sub(r"n(ä)?kö(ke)?k(enttä)?", "nk", lab_unit)
                             lab_unit = re.sub(r"s(y|µ)n(fält|f)?$", "nk",lab_unit)
+
                             # Counts per viewfield
                             lab_unit = re.sub(r"^(kpla)/nk", "kpl/nk", lab_unit)
                             lab_unit = re.sub(r"^kpl.?nk$", "kpl/nk",lab_unit)
+                            # there is nothing else to do but count units per viewfield
+                            lab_unit = re.sub(r"/nk$", "kpl/nk",lab_unit)
 
                             # Tiiteri
                             lab_unit = re.sub(r"^.*ti(i)?t(t)?er(i)?.*$", "titre",lab_unit)
-
-                            
 
                             #Imuno assay
                             lab_unit = re.sub(r"^elia(u|µ)", "eliau",lab_unit)
                             lab_unit = re.sub(r"^a(u|µ)/ml$", "au/ml",lab_unit)
 
                             # f-calpro
+                            lab_unit = re.sub(r"ug/g(f)?", "µg/g", lab_unit)
                             lab_unit = re.sub(r"gulos(t.*)$", "gstool",lab_unit)
                             lab_unit = re.sub(r"(u|µ)g/g stool", "µg/gstool",lab_unit)
 
@@ -132,6 +141,9 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r"aru", "au",lab_unit)
                             lab_unit = re.sub(r"liter", "l",lab_unit)
                             lab_unit = re.sub(r"iu", "u", lab_unit)
+                            lab_unit = re.sub(r"au", "u", lab_unit)
+                            lab_unit = re.sub(r"ru", "u", lab_unit)
+
 
                             # Days
                             lab_unit = re.sub(r"/d$", "/24h",lab_unit)
@@ -139,8 +151,9 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
  
                             # Translations
                             lab_unit = re.sub(r"nk$", "field",lab_unit)
-                            lab_unit = re.sub(r"kpl", "count",lab_unit)
-                            lab_unit = re.sub(r"lausunto", "lomake", lab_unit)
+                            lab_unit = re.sub(r"kpl", "u",lab_unit) # kpl and counts often interchangeably used with u = unit
+
+                            lab_unit = re.sub(r"lausunto", "form", lab_unit)
                             lab_unit = re.sub(r"lomake", "form", lab_unit)
                             lab_unit = re.sub(r"^indeksi$", "index",lab_unit)
                             lab_unit = re.sub(r"arvio", "estimate",lab_unit)
@@ -149,15 +162,17 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
 
                             # Removing redundant and inconsistant information
                             lab_unit = re.sub(r"/100le(uk)$", "",lab_unit)
-                            lab_unit = re.sub(r"/24h$", "",lab_unit)
-                            lab_unit = re.sub(r"/l/(37c|ph7|ph74)?", "/l", lab_unit)
-
+                            lab_unit = re.sub(r"/l/(4|37c|ph7|ph74)?", "/l", lab_unit)
+                            lab_unit = re.sub(r"nmol(bce)?/mmol(krea?)", "nmol/mmol", lab_unit)
 
                             # Power changes
                             lab_unit = re.sub(r"^ku/l$", "u/ml", lab_unit)
                             lab_unit = re.sub(r"^pg/ml$", "ng/l", lab_unit)
                             lab_unit = re.sub(r"^µg/l$", "ng/ml", lab_unit)
                             lab_unit = re.sub(r"^(µ|u)g/ml$", "mg/l", lab_unit)
+
+                            # All completley empty fields are NA
+                            lab_unit = re.sub(r'^\s+$', 'NA', lab_unit)
 
                             fout_fix.write(line_arr[5] + ";" + line_arr[7] + ";" + lab_unit + "\n")
                             
