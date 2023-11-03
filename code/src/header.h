@@ -35,7 +35,7 @@ std::string clean_units(std::string lab_unit);
 std::string get_omop_identifier(std::string lab_id,
                                 std::string lab_abbreviation,
                                 std::string lab_unit,
-                                std::string sep);
+                                std::string sep = std::string(" "));
 
 // Helper functions for minimal file creation
 void fix_nas(std::vector<std::string> &final_line_vec);

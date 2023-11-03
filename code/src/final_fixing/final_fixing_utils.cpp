@@ -16,7 +16,7 @@ void fix_phs(std::string &lab_id,
              std::string &lab_unit) {
     std::unordered_set<std::string> phs = {"8522 p-ph", "9010 s-ca-ion", "1530 u-ph", "9225 p-ca-ion", "8869 u-ph-huu", "8423 s-ph", "5098 s-ph(akt)", "586 c++/7.40", "13900 p-ca-ion.", "8523 s-ph"};
 
-    if((phs.find(concat_string({lab_id, lab_abbrv}, " ")) != phs.end()) & (lab_unit == "NA")) lab_unit = "ph";
+    if((phs.find(concat_string(std::vector<std::string>({lab_id, lab_abbrv}), " ")) != phs.end()) & (lab_unit == "NA")) lab_unit = "ph";
 }
 
 /**
@@ -41,10 +41,32 @@ void fix_titles(std::string &lab_id,
                                               "462 fp-kol-ind", "471 b-pvk", "516 b-pvk+tmd", "559 2hgluk", "568 vb-he-tase"
                                               "618 s-hbvpak", "672 s-keliseu", "695 pt-gluk-r1", "723 cb-het-ion", "760 b-baktjvi",
                                               "761 s-ruokaer", "774 b-pvk+tkd", "777 pt-gluk-2h", "798 vb-vkperus", "803 u-kemseul,ph", 
-                                              "852 pt-kt/v1", "958 cb-bepika", "983 pocabrc", "993 vb-vklaaja", "994 pes.j‰l"};
-    if((titles.find(concat_string({lab_id, lab_abbrv}, " ")) != titles.end())) {
+                                              "852 pt-kt/v1", "958 cb-bepika", "983 pocabrc", "993 vb-vklaaja", "994 pes.j‰l",
+                                              "2475 b-pvk+tkd"};
+    if((titles.find(concat_string(std::vector<std::string>({lab_id, lab_abbrv}), " ")) != titles.end())) {
         lab_unit = "ordered";
         lab_value = "NA";
+    }
+}
+
+/**
+ * @brief Converts units from e6/l to e9/l
+ * 
+ * @param lab_value The lab value of the lab test
+ * @param lab_unit The lab unit of the lab test
+ * 
+ * @return void
+ * 
+ * Converts units from e6/l to e9/l.
+*/
+void unit_conversion(std::string lab_value,
+                     std::string lab_unit) {
+    // Convert e6/l to e9/l
+    if(lab_unit == "e6/l") {
+        double lab_value_double = std::stod(lab_value);
+        lab_value_double = lab_value_double / 1000;
+        lab_value = std::to_string(lab_value_double);
+        lab_unit = "e9/l";
     }
 }
 
@@ -64,7 +86,7 @@ void fix_inrs(std::string &lab_id,
               std::string &lab_unit) {
     std::unordered_set<std::string> inrs = {"4520 p-tt-inr", "4520 p-inr", "955 p-inr."};
 
-    if((inrs.find(concat_string({lab_id, lab_abbrv}, " ")) != inrs.end()) & (lab_unit == "NA")) lab_unit = "inr";
+    if((inrs.find(concat_string(std::vector<std::string>({lab_id, lab_abbrv}), " ")) != inrs.end()) & (lab_unit == "NA")) lab_unit = "inr";
 }
 
 /**

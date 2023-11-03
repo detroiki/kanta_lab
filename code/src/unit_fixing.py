@@ -35,7 +35,7 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r'^\b\d+(?=e\d+)', '', lab_unit)
                             lab_unit = re.sub(r"(x)?(10)?e(?=\d)", "e", lab_unit)
                             lab_unit = re.sub(r"(x)?10(\^|\*)", "e", lab_unit)
-                            lab_unit = re.sub(r"e(0)?(?=[0-9]+.?l)", "e", lab_unit)
+                            lab_unit = re.sub(r"(à)?e(0)?(?=[0-9]+.?l)", "e", lab_unit)
                             lab_unit = re.sub(r"^\^(?=[0-9]+.?l)", "e", lab_unit)
 
 
@@ -43,6 +43,7 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r"(y|µ)ks(ikkö)?", "u", lab_unit)
                             lab_unit = re.sub(r"y", "µ", lab_unit) # Most ys do not mean anything
                             lab_unit = re.sub(r"lµ", "ly", lab_unit) # Except for lymph stuff
+                            lab_unit = re.sub(r"ug", "µg", lab_unit) # ther is no unit grams
 
                             # mµ/l
                             lab_unit = re.sub(r"m([a-z]?)µ", "mµ", lab_unit) # i.e. mlµ and miµ
@@ -84,8 +85,13 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             # INR
                             lab_unit = re.sub(r"^inrarvo$", "inr", lab_unit)
 
+                            # FEU
+                            lab_unit = re.sub(r"^mg/lfeu$", "mg/l", lab_unit)
+
+
                             #mosm/kg20 - miliosmoles per kilogram of water
                             lab_unit = re.sub(r"^mo(l)?sm/kg.*$", "mosm/kgh2o", lab_unit)
+                            
 
                             # Osuus
                             lab_unit = re.sub(r"^tilo(s)?$", "osuus", lab_unit)
@@ -112,12 +118,15 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
 
                             #Imuno assay
                             lab_unit = re.sub(r"^elia(u|µ)", "eliau",lab_unit)
+                            lab_unit = re.sub(r"^eliau/m$", "eliau/ml",lab_unit)
+
                             lab_unit = re.sub(r"^a(u|µ)/ml$", "au/ml",lab_unit)
 
                             # f-calpro
-                            lab_unit = re.sub(r"ug/g(f)?", "µg/g", lab_unit)
+                            lab_unit = re.sub(r"(u|µ)g/g(f)?", "µg/g", lab_unit)
                             lab_unit = re.sub(r"gulos(t.*)$", "gstool",lab_unit)
-                            lab_unit = re.sub(r"(u|µ)g/g stool", "µg/gstool",lab_unit)
+                            lab_unit = re.sub(r"(u|µ)g/g(\s+)?stool", "µg/g",lab_unit)
+
 
                             # Promille
                             lab_unit = re.sub(r"^promil(l)?$", "promille",lab_unit)
@@ -138,12 +147,10 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
                             lab_unit = re.sub(r"(c)?aste(c)?", "aste",lab_unit)
                             lab_unit = re.sub(r"sek", "s",lab_unit)
                             lab_unit = re.sub(r"ve/", "responseequivalent/",lab_unit)
+                            lab_unit = re.sub(r"^ve$", "responseequivalent",lab_unit)
                             lab_unit = re.sub(r"aru", "au",lab_unit)
                             lab_unit = re.sub(r"liter", "l",lab_unit)
-                            lab_unit = re.sub(r"iu", "u", lab_unit)
-                            lab_unit = re.sub(r"au", "u", lab_unit)
-                            lab_unit = re.sub(r"ru", "u", lab_unit)
-
+                            #lab_unit = re.sub(r"^(i|a|r|e)u", "u", lab_unit)
 
                             # Days
                             lab_unit = re.sub(r"/d$", "/24h",lab_unit)
@@ -162,8 +169,10 @@ with open(res_dir + "processed/data/kanta_lab_minimal_omop.csv", 'r', encoding="
 
                             # Removing redundant and inconsistant information
                             lab_unit = re.sub(r"/100le(uk)$", "",lab_unit)
-                            lab_unit = re.sub(r"/l/(4|37c|ph7|ph74)?", "/l", lab_unit)
-                            lab_unit = re.sub(r"nmol(bce)?/mmol(krea?)", "nmol/mmol", lab_unit)
+                            lab_unit = re.sub(r"/l(/)?(4|37c|ph7|ph74)?", "/l", lab_unit)
+                            lab_unit = re.sub(r"nmol(bce)?/mmol(krea)?", "nmol/mmol", lab_unit)
+                            lab_unit = re.sub(r"/mol(krea)?", "/mol", lab_unit)
+
 
                             # Power changes
                             lab_unit = re.sub(r"^ku/l$", "u/ml", lab_unit)
