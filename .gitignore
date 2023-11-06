@@ -3,6 +3,7 @@ docu/
 results/
 tests/
 .transfer
+.tar.xz
 
 
 settings.json
