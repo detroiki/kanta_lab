@@ -157,6 +157,8 @@ int main(int argc, char *argv[]) {
                     // Mapped column values
                     std::string service_provider_name = get_service_provider_name(thl_sote_map, service_provider_oid);
                     std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, lab_name);
+                    // Cleaning potential "" in lab-abbreviation
+                    lab_abbrv = remove_chars(lab_abbrv, '\"');
 
                     // Only saving if we have either the value or at least the abnormality
                     // and an lab ID
