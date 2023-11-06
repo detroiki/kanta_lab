@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
 
         std::vector<std::string> line_vec(splitString(line, ','));
         std::string finregid = line_vec[0];
-        std::string lab_date_time = line_vec[1];
-        std::string lab_service_provider = line_vec[2];
+        std::string date_time = line_vec[1];
+        std::string service_provider = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
@@ -84,5 +84,5 @@ int main(int argc, char *argv[]) {
     
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    std::cout << "Time took overall = " << std::chrono::duration_cast<std::chrono::hours> (end - begin).count() << "[h]" << std::endl;
+    std::cout << "Time took overall = " << std::chrono::duration_cast<std::chrono::minutes> (end - begin).count() << "[min]" << std::endl;
 }
