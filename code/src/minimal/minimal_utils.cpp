@@ -276,6 +276,7 @@ std::string get_lab_abbrv(std::unordered_map<std::string, std::string> &thl_abbr
 }
 
 void write_row_count_report(std::string &report_path,
+                            std::string &date,
                             unsigned long long &total_line_count,
                             unsigned long long &valid_line_count,
                             unsigned long long &skip_count,
@@ -299,10 +300,11 @@ void write_row_count_report(std::string &report_path,
 
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
+                          std::string &date,
                           std::string &report_path,
                           std::unordered_map<std::string, int> &all_dup_lines) {
     // File paths
-    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, ".csv"};    
+    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".csv"};    
     std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
 
     // Opening

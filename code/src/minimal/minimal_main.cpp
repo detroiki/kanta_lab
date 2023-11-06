@@ -50,24 +50,27 @@
  * 
 */
 int main(int argc, char *argv[]) {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     /// READING IN ARGUMENTS
     std::string res_path = argv[1]; // Path to results folder
     std::string file = argv[2]; // File number
-    std::string thl_sote_path = argv[3]; // Path to THL SOTE organisations name map
-    std::string thl_abbrv_path = argv[4]; // Path to official abbreviations map
+    std::string date = argv[3]; // Date of file
+    std::string thl_sote_path = argv[4]; // Path to THL SOTE organisations name map
+    std::string thl_abbrv_path = argv[5]; // Path to official abbreviations map
     
     /// OUTPUT FILE PATHS   
     // Results file
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/minimal_file_", file, ".csv"};    
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_file_", file, "_", date, ".csv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
     // Row counts file
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, ".csv"};    
+    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, "_", date, ".csv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
     // Problem rows file
-    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, ".csv"};    
+    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, "_", date, ".csv"};    
     std::string error_path = concat_string(error_path_vec, std::string(""));
     // Missing rows file
-    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, ".csv"};
+    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".csv"};
     std::string missing_path = concat_string(missing_path_vec, std::string(""));
 
     // Opening results and error files
@@ -162,7 +165,6 @@ int main(int argc, char *argv[]) {
                             res_file << finregistry_id << ";" <<  date_time << ";" << service_provider_name << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" <<  lab_abnormality << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
-
                         // Duplicate line
                         } else {
                             ++dup_count;
@@ -174,6 +176,14 @@ int main(int argc, char *argv[]) {
                 }
             }  
         }
+
+        // Write every 10000000 lines
+        total_line_count++;
+        if(total_line_count % 10000000 == 0) {
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+            std::cout << "Lines read = " << total_line_count << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+        }
     }
 
     // Closing
@@ -182,20 +192,10 @@ int main(int argc, char *argv[]) {
     res_file.close(); 
 
     // Writing final files
-    write_row_count_report(report_path, total_line_count, valid_line_count,skip_count, dup_count, na_count);
-    write_dup_lines_file(res_path, file, report_path, all_dup_lines);
-}
+    write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count);
+    write_dup_lines_file(res_path, file, date, report_path, all_dup_lines);
 
-std::string clean_units(std::string lab_unit) {
-    lab_unit = remove_chars(lab_unit, ' ');
-    lab_unit = remove_chars(lab_unit, '_');
-    lab_unit = remove_chars(lab_unit, ',');
-    lab_unit = remove_chars(lab_unit, '.');
-    lab_unit = remove_chars(lab_unit, '-');
-    lab_unit = remove_chars(lab_unit, ')');
-    lab_unit = remove_chars(lab_unit, '(');
-    lab_unit = remove_chars(lab_unit, '{');
-    lab_unit = remove_chars(lab_unit, '}');
-
-    return(lab_unit);
+    // Time
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[h]" << std::endl;
 }
