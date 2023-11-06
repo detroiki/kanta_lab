@@ -26,6 +26,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                     end = timeit.timeit()
                     print("Lines read = " + str(end-start))
                 line_arr = re.split(''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', line.strip())
+                for elem_idx in range(0, len(line_arr)): line_arr[elem_idx] = line_arr[elem_idx].strip('"')
                 if not first_line:
                     if(len(line_arr) > 7):
                         lab_unit = line_arr[7]
@@ -191,7 +192,10 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             lab_unit = re.sub(r'^\s+$', 'NA', lab_unit)
 
                             lab_abbrv = line_arr[5].strip()
+                            if(lab_abbrv != "NA"): lab_abbrv = '"' + lab_abbrv + '"'
+                            lab_abbrv = '"' + lab_abbrv + '"'
                             orig_lab_unit = line_arr[7].strip()
+                            if(orig_lab_unit != "NA"): orig_lab_unit = '"' + orig_lab_unit + '"'
 
                             fout_fix.write(lab_abbrv + "," + orig_lab_unit + "," + lab_unit + "\n")
                             
@@ -199,5 +203,11 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
 
                 else:
                     first_line = 0
-                
+
+                if not first_line:
+                    if(line_arr[3] != "NA" and line_arr[3] != ""): line_arr[3] = '"' + line_arr[3] + '"'
+                    if(line_arr[5] != "NA" and line_arr[5] != ""): line_arr[5] = '"' + line_arr[5] + '"'
+                    if(line_arr[7] != "NA" and line_arr[7] != ""): line_arr[7] = '"' + line_arr[7] + '"'
+                    if(line_arr[9] != "NA" and line_arr[9] != ""): line_arr[9] = '"' + line_arr[9] + '"'
+
                 fout_min.write(",".join(line_arr) + "\n")
