@@ -22,9 +22,13 @@
 */
 int main(int argc, char *argv[])
 {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     std::string res_path = argv[1];
+    std::string date = argv[2];
+
     // Opening results file
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_minimal_final.csv"};
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_", date, "_final_fix.csv"};
     std::string full_res_path = concat_string(full_res_path_vec);
     std::ofstream res_file;
     res_file.open(full_res_path);
@@ -40,19 +44,19 @@ int main(int argc, char *argv[])
     // Reading
     std::string line;
     int first_line = 1; // Indicates header line
+    int n_lines = 0;
     while (std::getline(std::cin, line))
     {
         if (first_line == 1)
         {
-            res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME"
-                     << "\n";
-            error_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME"
-                       << "\n";
+            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,OMOP_ID,OMOP_NAME" << "\n";
+            error_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,OMOP_ID,OMOP_NAME" << "\n";
+
             first_line = 0;
             continue;
         }
 
-        std::vector<std::string> line_vec(split(line, ";"));
+        std::vector<std::string> line_vec(splitString(line, ','));
         std::string finregid = line_vec[0];
         std::string date_time = line_vec[1];
         std::string service_provider = line_vec[2];
@@ -81,12 +85,31 @@ int main(int argc, char *argv[])
         shuffle_lab_abnorm_info(lab_value, lab_abnorm, lab_unit);
         
         if (keep == 1) {
-            res_file << finregid << ";" << date_time << ";" << service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" << lab_abnorm << ";" << omop_id << ";" << omop_name << "\n";
-        } else {
-            error_file << line << "\n";
+        // OMOP name can contain ";" or "," so we need to put it in quotes   
+            if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
+            if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
+            if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
+            if(omop_name != "NA") omop_name = concat_string(std::vector<std::string>({"\"", omop_name, "\""}));
+
+            // Writing to results file
+            res_file << finregid  << "," << date_time << "," << service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," << omop_id << "," << omop_name << "\n";              
+            } else {
+                error_file << line << "\n";
+        }
+
+        // Write every 10000000 lines
+        n_lines++;
+        if(n_lines % 10000000 == 0) {
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+            std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
         }
     }
     error_file.close();
     res_file.close();
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
 }
 

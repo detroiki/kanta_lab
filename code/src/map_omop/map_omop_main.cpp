@@ -70,19 +70,19 @@ int main(int argc, char *argv[]) {
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
             // Column headers
-            res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY;OMOP_ID;OMOP_NAME" << "\n";
+            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,OMOP_ID,OMOP_NAME" << "\n";
             first_line = 0;
             continue;
         }
 
         // Splitting line
-        std::vector<std::string> line_vec = split(line, ";");
-        std::string finregistryid = line_vec[0];
+        std::vector<std::string> line_vec = splitString(line, ',');
+        std::string finregid = line_vec[0];
         std::string date_time = line_vec[1];
         std::string service_provider = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
-        std::string lab_abbreviation = remove_chars(line_vec[5], ' ');
+        std::string lab_abbrv = remove_chars(line_vec[5], ' ');
         std::string lab_value = line_vec[6];
         std::string lab_unit = line_vec[7];
         std::string lab_abnormality = line_vec[8];  
@@ -93,18 +93,18 @@ int main(int argc, char *argv[]) {
         // Finding OMOP mapping
         // Currently identifying the OMOP concept by the lab ID and abbreviation.
         // We can map about 87% of the data this way
-        std::string omop_identifier = concat_string(std::vector<std::string>({lab_id, lab_abbreviation}), "_");
+        std::string lab_id_abbrv = get_lab_id_abbrv(lab_id, lab_abbrv);
         // also print only the first ten elements in omop_concept_map
-        std::string omop_id = get_omop_id(omop_concept_map, omop_lab_source, omop_identifier);
+        std::string omop_id = get_omop_id(omop_concept_map, omop_lab_source, lab_id_abbrv);
         std::string omop_name = get_omop_name(omop_id, omop_names);
 
         // Writing to results file
-        if(omop_name == "NA") {
-            res_file << finregistryid  << ";" <<  date_time << ";" << service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbreviation << ";" << lab_value << ";" << lab_unit << ";" <<  lab_abnormality << ";" << omop_id << ";" << omop_name << "\n";
-        } else {         
-            // OMOP name can contain ";" or "," so we need to put it in quotes   
-            res_file << finregistryid  << ";" <<  date_time << ";" << service_provider << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbreviation << ";" << lab_value << ";" << lab_unit << ";" <<  lab_abnormality << ";" << omop_id << ";\"" << omop_name << "\"\n";
-        }
+        if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
+        if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
+        if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
+        if(omop_name != "NA") omop_name = concat_string(std::vector<std::string>({"\"", omop_name, "\""}));
+
+        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," <<  lab_value << "," << lab_unit << "," << lab_abnormality << "," <<omop_id << "," << omop_name << "\n";
 
         // Write every 10000000 lines
         n_lines++;
@@ -119,5 +119,5 @@ int main(int argc, char *argv[]) {
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[h]" << std::endl;
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
 }

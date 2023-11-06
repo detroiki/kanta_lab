@@ -70,19 +70,22 @@ std::string remove_chars(std::string str,
 }
 
 std::string get_omop_identifier(std::string lab_id,
-                                std::string lab_abbreviation,
+                                std::string lab_abbrv,
                                 std::string lab_unit,
                                 std::string sep) {
 
     // Currently identifying the OMOP concept by the lab ID and abbreviation.
-    std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbreviation, lab_unit};
+    lab_id = concat_string(std::vector<std::string>({"\"", lab_id,  "\""}));
+    lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv,  "\""}));
+
+    std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbrv, lab_unit};
     std::string omop_identifier = concat_string(omop_identifier_vec, sep);
 
     return(omop_identifier);
 } 
 
 /** 
- * @brief Splits a string based on a given delimiter
+ * @brief Splits a string based on a given delimiter ignoring any delimiter inside "".
  * 
  * @param input string to split
  * @param delimiter delimiter to split on
@@ -113,4 +116,70 @@ std::vector<std::string> splitString(const std::string &input,
   tokens.push_back(token); // Add the last token
   
   return tokens;
+}
+
+/**
+ * @brief Cleans units by removing characters like " ", "_", etc
+ * 
+ * @param lab_unit Unit to clean
+ * 
+ * @return Cleaned unit
+ * 
+ * @details
+ * Removes all character in the string " ", "_", ",", ".", "-", ")", "(", "{", "}", "'", "?", "!".
+*/
+std::string clean_units(std::string lab_unit) {
+    lab_unit = remove_chars(lab_unit, ' ');
+    lab_unit = remove_chars(lab_unit, '_');
+    lab_unit = remove_chars(lab_unit, ',');
+    lab_unit = remove_chars(lab_unit, '.');
+    lab_unit = remove_chars(lab_unit, '-');
+    lab_unit = remove_chars(lab_unit, ')');
+    lab_unit = remove_chars(lab_unit, '(');
+    lab_unit = remove_chars(lab_unit, '{');
+    lab_unit = remove_chars(lab_unit, '}');
+    lab_unit = remove_chars(lab_unit, '\'');
+    lab_unit = remove_chars(lab_unit, '?');
+    lab_unit = remove_chars(lab_unit, '!');
+
+    return(lab_unit);
+}
+
+/**
+ * @brief Creates a single string combining the OMOP ID and OMOP Name that can be 
+ * used to identify the concept and written directly to results files
+*/
+std::string get_omop_info(std::string omop_id, std::string omop_name) {
+    omop_name =  concat_string(std::vector<std::string>({"\"", omop_name,  "\""}));
+    std::string omop_info = concat_string(std::vector<std::string>({omop_id, omop_name}), std::string(","));
+    return(omop_info);
+}
+
+/**
+ * @brief Creates a single string combining the lab abbreviation and its unit that can be 
+ * used to identify the concept and written directly to results files
+*/
+std::string get_lab_info(std::string lab_abbrv, std::string lab_unit) {
+    lab_abbrv =  concat_string(std::vector<std::string>({"\"", lab_abbrv,  "\""}));
+    std::string lab_info = concat_string(std::vector<std::string>({lab_abbrv, lab_unit}), std::string(","));
+    return(lab_info);
+}
+
+/**
+ * @brief Creates a single string combining the Lab ID, the lab info (see get_lab_info function),
+ *  and the omop_info (see get_omop_info function) that can be 
+ * used to identify the concept and written directly to results files
+*/
+std::string get_lab_id_omop_info(std::string lab_id, 
+                                 std::string lab_info,
+                                 std::string omop_info) {
+    lab_id =  concat_string(std::vector<std::string>({"\"", lab_id,  "\""}));
+    std::string lab_id_omop_info = concat_string(std::vector<std::string>({lab_id, lab_info, omop_info}), std::string(","));
+    return(lab_id_omop_info);                             
+}
+
+std::string get_lab_id_abbrv(std::string lab_id, 
+                             std::string lab_abbrv) {
+    std::string lab_id_abbrv = concat_string(std::vector<std::string>({lab_id, lab_abbrv}), std::string("_"));
+    return(lab_id_abbrv); 
 }

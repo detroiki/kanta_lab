@@ -376,7 +376,7 @@ void write_relevant_sumstats_files( std::unordered_map<std::string, std::unorder
 
         // Header
         res_file << "FINREGISTRYID" << ";";
-        res_file << concat_string(relevant_omops, (std::string(";"))) << std::endl;
+        res_file << concat_string(relevant_omops, (std::string(","))) << std::endl;
 
         // Each row is a single individual
         for(auto indv_omop_sumstats: indvs_omop_sumstats) {

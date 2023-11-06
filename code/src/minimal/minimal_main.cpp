@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
     /// READING IN OTHER FILES
     // Duplicate line map, including counts for current file
     std::unordered_map<std::string, int> all_dup_lines;
-    get_previous_dup_lines(all_dup_lines, file, res_path);
+    get_previous_dup_lines(all_dup_lines, file, date, res_path);
 
     // Getting THL SOTE organisations name map. 
     // See: https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/sote-organisaatio-rekisteri
@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
 
     /// READING IN DATA
     std::string line;
+    cout << "Starting reading file " << file << endl;
     while(std::getline(std::cin, line)) {
         ++total_line_count;
         if(total_line_count % 10000000 == 0) {
@@ -118,8 +119,9 @@ int main(int argc, char *argv[]) {
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID;LAB_DATE_TIME;LAB_SERVICE_PROVIDER;LAB_ID;LAB_ID_SOURCE;LAB_ABBREVIATION;LAB_VALUE;LAB_UNIT;LAB_ABNORMALITY\n"; 
+                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY\n"; 
                 ++valid_line_count;
+                cout << "Header written, check if delimiter correct first element on line 1 is: " << final_line_vec[0] << endl;
             } else {
                 // Fixing the NA indicators to actual NAs
                 fix_nas(final_line_vec);
@@ -162,7 +164,11 @@ int main(int argc, char *argv[]) {
                             // Increasing line count for this file to one
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
-                            res_file << finregistry_id << ";" <<  date_time << ";" << service_provider_name << ";" << lab_id << ";" << lab_id_source << ";" << lab_abbrv << ";" << lab_value << ";" << lab_unit << ";" <<  lab_abnormality << "\n";
+                            if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
+                            if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
+                            if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
+
+                            res_file << finregistry_id << "," <<  date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
                         // Duplicate line
@@ -197,5 +203,5 @@ int main(int argc, char *argv[]) {
 
     // Time
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[h]" << std::endl;
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
 }

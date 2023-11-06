@@ -16,26 +16,32 @@ using namespace std;
 using namespace boost::gregorian;
 
 // Helper functions
-const char* find_separator(std::ifstream &config_file);
+char find_delim(std::string file_path);
 std::vector<std::string> splitString(const std::string &input, 
                                      char delimiter);
 std::vector<std::string> split(const std::string &s, const char *delim);
 
-std::string concat_string(const std::vector<std::string> &elems, std::string sep = std::string(""));
-std::string concat_string(const std::unordered_set<std::string> &elems, std::string sep = std::string(""));
+std::string concat_string(const std::vector<std::string> &elems, std::string delim = std::string(""));
+std::string concat_string(const std::unordered_set<std::string> &elems, std::string delim = std::string(""));
 
 void check_out_open(std::ofstream &file_stream, std::string file_path);
-void check_in_open(std::ifstream &file_stream, std::string file_path);
+int check_in_open(std::ifstream &file_stream, std::string file_path, int stop_if_not_open = 1); 
 
 std::string to_lower(std::string str);
 std::string remove_chars(std::string str, char remove_char);
 std::string clean_units(std::string lab_unit);
 
-
+std::string get_omop_info(std::string omop_id, std::string omop_name);
+std::string get_lab_info(std::string lab_abbrv, std::string lab_unit);
+std::string get_lab_id_omop_info(std::string lab_id, 
+                                 std::string lab_info,
+                                 std::string omop_info);
+std::string get_lab_id_abbrv(std::string lab_id, 
+                             std::string lab_abbrv);
 std::string get_omop_identifier(std::string lab_id,
-                                std::string lab_abbreviation,
+                                std::string lab_abbrv,
                                 std::string lab_unit,
-                                std::string sep = std::string(" "));
+                                std::string delim = std::string(" "));
 
 // Helper functions for minimal file creation
 void fix_nas(std::vector<std::string> &final_line_vec);
@@ -50,6 +56,7 @@ std::string get_lab_abbrv(std::unordered_map<std::string, std::string> &thl_abbr
                           std::string &lab_id_source,
                           std::string &lab_name);
 void write_row_count_report(std::string &report_path,
+                            std::string &date,
                             unsigned long long &total_line_count,
                             unsigned long long &valid_line_count,
                             unsigned long long &skip_count,
@@ -57,6 +64,7 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &na_count);
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
+                          std::string &date,
                           std::string &report_path,
                           std::unordered_map<std::string, int> &all_dup_lines);
 
@@ -71,11 +79,9 @@ void write_indvs_omops_sumstats( std::unordered_map<std::string, std::unordered_
                                 );
 
 // Reading files function
-void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omops,
-                           std::unordered_map<std::string, std::string> &omop_names,   
-                           std::string file_path);
 void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines, 
                             std::string file,
+                            std::string date,
                             std::string res_path);
 void read_thl_sote_map(std::unordered_map<std::string, std::string> &thl_sote_map,
                        std::string thl_sote_path);
@@ -93,6 +99,10 @@ void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std:
                          std::string file_path);
 void read_indvs_files(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
                       std::string indvs_path);
+void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omops,
+                           std::unordered_map<std::string, std::string> &omop_names,   
+                           std::string file_path,
+                           int min_count);
 
 // Sumstats
 void read_indvs_date_file(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,

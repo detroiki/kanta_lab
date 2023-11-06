@@ -118,13 +118,14 @@ void read_omop_file(std::string omop_concept_map_path,
     // Opening file
     std::ifstream omop_in;
     omop_in.open(omop_concept_map_path); check_in_open(omop_in, omop_concept_map_path);
-    const char *delim = find_delim(omop_in);
+
+    char delim = find_delim(omop_concept_map_path);
 
     // Reading
     std::string line;
     while(std::getline(omop_in, line)) {
         // Splitting line
-        std::vector<std::string> line_vec = split(line, delim);
+        std::vector<std::string> line_vec = splitString(line, delim);
         std::string lab_id = remove_chars(line_vec[0], ' ');
         std::string source = remove_chars(line_vec[1], ' ');
         std::string abbreviation = remove_chars(line_vec[2], ' ');
@@ -133,12 +134,12 @@ void read_omop_file(std::string omop_concept_map_path,
         std::string omop_name = line_vec[5];
 
         // OMOP identifier is mape up of the lab ID and abbreviation
-        std::string omop_identifier = concat_string(std::vector<std::string>({lab_id, abbreviation}), "_");
+        std::string lab_id_abbrv = get_lab_id_abbrv(lab_id, abbreviation);
 
         // The OMOP concept ID map has separate maps for each lab source
         // LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
         if((omop_id == "\"\"") | (omop_id == "")) omop_id = "NA";
-        omop_concept_map[source][omop_identifier] = omop_id;
+        omop_concept_map[source][lab_id_abbrv] = omop_id;
         // The mapping to the OMOP name is unique for each group ID
         omop_names[omop_id] = omop_name;
     }
@@ -164,7 +165,8 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
     // Opening file
     std::ifstream in_file;
     in_file.open(file_path); check_in_open(in_file, file_path); 
-
+    char delim = find_delim(file_path);
+    
     // Reading
     std::string line;
     int first_line = 1; // Indicates header line
@@ -173,7 +175,7 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
             first_line = 0;
             continue;
         }
-        std::vector<std::string> line_vec = split(line, ";");
+        std::vector<std::string> line_vec = splitString(line, delim);
 
         std::string lab_id = line_vec[0];
         std::string lab_abbrv = line_vec[1];
@@ -184,7 +186,7 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
         int omop_count = std::stoi(line_vec[6]);
 
         if(omop_count >= min_count) {
-            std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(";"));
+            std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(","));
             new_omops[omop_identifier] = omop_id;
             omop_names[omop_id] = omop_name;
         }

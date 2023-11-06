@@ -11,30 +11,46 @@
 */
 void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines, 
                             std::string file,
+                            std::string date,
                             std::string res_path) {
     // For first file, nothing to read in yet
     if(file != "1") {
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        cout << "Reading in previous duplicate line files" << endl;
         int crnt_file_no = std::stoi(file);
         // Read in all previous duplines files
         for(int file_no=1; file_no < crnt_file_no; file_no++) {
+            std::chrono::steady_clock::time_point file_begin = std::chrono::steady_clock::now();
+
             // File path
-            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), ".csv"};    
+            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), "_", date, ".csv"};    
             std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
-            cout << duplines_path << endl;
 
             // Opening file
-            std::ifstream duplines_file; duplines_file.open(duplines_path); check_in_open(duplines_file, duplines_path);
+            std::ifstream duplines_file; 
+            duplines_file.open(duplines_path); 
+            int file_open = check_in_open(duplines_file, duplines_path, 0);
 
-            // Reading in lines
-            std::string line;
-            while(std::getline(duplines_file, line)) {
-                std::vector<std::string> line_vec = split(line, "\t");
-                // Adding file specific counts
-                all_dup_lines[line_vec[0]] = 0;
+            if(file_open == 1) {
+                // Reading in lines
+                std::string line;
+                while(std::getline(duplines_file, line)) {
+                    std::vector<std::string> line_vec = splitString(line, '\t');
+                    // Adding file specific counts
+                    all_dup_lines[line_vec[0]] = 0;
+                }
+                duplines_file.close();
             }
-            duplines_file.close();
-        }
+
+            std::chrono::steady_clock::time_point file_end = std::chrono::steady_clock::now();
+
+            std::cout << "Reading duplicate lines from file " << std::to_string(file_no) << " took = " << std::chrono::duration_cast<std::chrono::minutes>(file_end - file_begin).count() << "[min]" << std::endl;
+        }  
+         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+        std::cout << "Time took reading all duplicate line files in = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
     }
+
 }
 
 /**
@@ -49,6 +65,7 @@ void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines,
 */
 void read_thl_sote_map(std::unordered_map<std::string, std::string> &thl_sote_map,
                    std::string thl_sote_path) {
+    cout << "Reading in THL Sote map" << endl;
     // Opening file
     std::ifstream lab_file; lab_file.open(thl_sote_path); check_in_open(lab_file, thl_sote_path);
 
@@ -79,13 +96,15 @@ void read_thl_sote_map(std::unordered_map<std::string, std::string> &thl_sote_ma
 **/
 void read_thl_lab_id_abbrv_map(std::unordered_map<std::string, std::string> &thl_abbrv_map,
                                std::string thl_abbrv_path) {
+    cout << "Reading in national lab ID - abbreviation map." << endl;
     // Opening file
     std::ifstream abbrv_file; abbrv_file.open(thl_abbrv_path); check_in_open(abbrv_file, thl_abbrv_path);
+    char delim = find_delim(thl_abbrv_path);
 
     // Reading in lines
     std::string line;
     while(std::getline(abbrv_file, line)) {
-        std::vector<std::string> line_vec = split(line, "\t");
+        std::vector<std::string> line_vec = splitString(line, delim);
 
         std::string lab_id = line_vec[0];
         std::string lab_abbrv = line_vec[1];
@@ -102,13 +121,13 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             std::ofstream &error_file,
                                             int &lines_valid_status) {
     int n_cols(25);
-    const char *delim = ";";
+    char delim = ';';
     std::vector<std::string> new_line_vec;
 
     /// LINE VECTORS
     std::vector<std::string> final_line_vec(25);
     // Split values and copy into line vector
-    std::vector<std::string> line_vec(split(line, delim));   
+    std::vector<std::string> line_vec(splitString(line, delim));   
 
     // Seemingly correctly defined line
     if(int(line_vec.size()) == n_cols) {
@@ -127,7 +146,7 @@ std::vector<std::string> read_correct_lines(std::string &line,
         std::string new_line;
         std::getline(std::cin, new_line); 
         ++total_line_count;
-        new_line_vec = split(new_line, delim);
+        new_line_vec = splitString(new_line, delim);
     // Checking that new line has too few columns also -> likely a continuation of the previous line
     if(int(new_line_vec.size()) < n_cols) {
         // Concatinating back last element of previous line with first of new line
