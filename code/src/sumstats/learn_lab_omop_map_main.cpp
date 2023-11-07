@@ -15,24 +15,24 @@ void find_new_omop_candidates(std::unordered_map<std::string, int> &new_omop_can
                               std::unordered_map<std::string, std::string> &omop_mapped_data,
                               std::unordered_set<std::string> &duplicate_mappings) {
         for(auto &lab : lab_data) {
-        // take apart elements
-        std::vector<std::string> lab_info_vec(splitString(lab.first, ','));
-        std::string lab_id = lab_info_vec[0];
-        std::string lab_abbrv = lab_info_vec[1];
-        std::string lab_unit = lab_info_vec[2];
-        std::string omop_id = lab_info_vec[3];
-        std::string omop_name = lab_info_vec[4];
+            // take apart elements
+            std::vector<std::string> lab_info_vec(splitString(lab.first, ','));
+            std::string lab_id = lab_info_vec[0];
+            std::string lab_abbrv = lab_info_vec[1];
+            std::string lab_unit = lab_info_vec[2];
+            std::string omop_id = lab_info_vec[3];
+            std::string omop_name = lab_info_vec[4];
 
-        if(omop_id == "NA") {
-            std::string lab_info = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\"", lab_unit}), std::string(","));
-            std::string omop_info = concat_string(std::vector<std::string>({omop_id, "\"",  omop_name, "\""}), std::string(","));
-            if((omop_mapped_data.find(lab_info) != omop_mapped_data.end()) &&
-                (duplicate_mappings.find(lab_info) == duplicate_mappings.end())) {
-                std::string omop_info = omop_mapped_data[lab_info];
-                std::string lab_id_omop_info = concat_string(std::vector<std::string>({lab_id, lab_info, omop_info}), std::string(","));
-                new_omop_candidates[lab_id_omop_info] += lab.second;
+            if(omop_id == "NA") {
+                std::string lab_info = get_lab_info(lab_abbrv, lab_unit);
+                
+                if((omop_mapped_data.find(lab_info) != omop_mapped_data.end()) &&
+                    (duplicate_mappings.find(lab_info) == duplicate_mappings.end())) {
+                    std::string omop_info = omop_mapped_data[lab_info];
+                    std::string lab_id_omop_info = get_lab_id_omop_info(lab_id, lab_info, omop_info);
+                    new_omop_candidates[lab_id_omop_info] += lab.second;
+                }
             }
-        }
     }
 }
 
@@ -57,7 +57,7 @@ void write_new_omop_candidates_file(std::string res_path,
     res_file.open(crnt_res_path);
     check_out_open(res_file, crnt_res_path);
     
-    res_file << "LAB_ID,LAB_ABBRV,LAB_UNI,OMOP_ID,OMOP_NAME,LAB_COUNT,OMOP_COUNT" << std::endl;
+    res_file << "LAB_ID,LAB_ABBRV,LAB_UNIT,OMOP_ID,OMOP_NAME,LAB_COUNT,OMOP_COUNT" << std::endl;
     for (auto &new_omop_candidate : new_omop_candidates) {
         res_file << new_omop_candidate.first << "," << new_omop_candidate.second;
         // get parts of new_omop_candidate.first
@@ -69,8 +69,10 @@ void write_new_omop_candidates_file(std::string res_path,
         std::string omop_name = new_omop_candidate_vec[4];
 
         // concate those in omop_mapped_data 
-        std::string lab_omop_info = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\"", lab_unit, omop_id, "\"", omop_name, "\"" }), std::string(","));
-        res_file << ";" << omop_mapped_count_data[lab_omop_info] << std::endl;
+        std::string lab_info = get_lab_info(lab_abbrv, lab_unit);
+        std::string omop_info = get_omop_info(omop_id, omop_name);
+        std::string lab_omop_info = concat_string(std::vector<std::string>({lab_info, omop_info}), std::string(","));
+        res_file << "," << omop_mapped_count_data[lab_omop_info] << std::endl;
     }
 
     res_file.close();
@@ -142,6 +144,7 @@ int main(int argc, char *argv[])
             lab_data[lab_id_omop_info] = count;
         }
     }
+    in_file.close();
 
     // Do same for omop_mapped_data
     crnt_in_path = concat_string(std::vector<std::string>({res_path, "_omop_mapped_lababbrv_counts.csv"}));
@@ -176,7 +179,7 @@ int main(int argc, char *argv[])
         }
     }
     in_file.close();
-
+    
     std::unordered_map<std::string, int> new_omop_candidates;
     find_new_omop_candidates(new_omop_candidates, lab_data, omop_mapped_data, duplicate_mappings);
     write_new_omop_candidates_file(res_path, new_omop_candidates, omop_mapped_count_data);
