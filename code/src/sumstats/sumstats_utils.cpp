@@ -44,11 +44,9 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &o
         std::string omop_id = split(omop_identifier, ";")[0];
         std::string omop_name = split(omop_identifier, ";")[1];
         std::string lab_unit = split(omop_identifier, ";")[2];
-
-        add_quotation(omop_name);
-        add_quotation(lab_unit);
-
+        
         // write to file 
+        add_quotation(lab_unit); add_quotation(omop_name);
         res_file << omop_id << "," << omop_name << "," << lab_unit << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << "," << n_indvs << "\n";
     }
 

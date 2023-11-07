@@ -104,17 +104,10 @@ int main(int argc, char *argv[]) {
         res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," <<  lab_value << "," << lab_unit << "," << lab_abnormality << "," <<omop_id << "," << omop_name << "\n";
 
         // Write every 10000000 lines
-        n_lines++;
-        if(n_lines % 10000000 == 0) {
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-            std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
-        }
+        n_lines++; write_line_update(n_lines, begin);
     }
 
     res_file.close(); 
 
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
+    write_end_run_summary(begin);
 }

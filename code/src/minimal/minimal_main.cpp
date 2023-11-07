@@ -184,12 +184,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Write every 10000000 lines
-        total_line_count++;
-        if(total_line_count % 10000000 == 0) {
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-            std::cout << "Lines read = " << total_line_count << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
-        }
+        total_line_count++; write_line_update(total_line_count, begin);
     }
 
     // Closing
@@ -201,7 +196,5 @@ int main(int argc, char *argv[]) {
     write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count);
     write_dup_lines_file(res_path, file, date, report_path, all_dup_lines);
 
-    // Time
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
+    write_end_run_summary(begin);
 }

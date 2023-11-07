@@ -1,6 +1,35 @@
 #include "header.h"
 
 /**
+ * @brief Writes update every 10000000 lines about how long the program has taken so far
+ * 
+ * @param n_lines Number of lines read so far
+ * @param begin Time point when the program started
+ * 
+ * @return void
+*/
+void write_line_update(int n_lines, 
+                       std::chrono::steady_clock::time_point &begin) {
+    if(n_lines % 10000000 == 0) {
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+        std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+    } 
+}
+
+/**
+ * @brief Writes end of run summary about how long the program has taken
+ * 
+ * @param begin Time point when the program started
+ * 
+ * @return void
+*/
+void write_end_run_summary(std::chrono::steady_clock::time_point &begin) {
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
+}
+
+/**
  * @brief Checks whether the std::ofstream is open
  * 
  * @param file_stream std::ofstream to be checked

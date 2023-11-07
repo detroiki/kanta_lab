@@ -18,6 +18,8 @@
  * Reads in lab data from stdin and adds OMOP concepts to it.
 */
 int main(int argc, char *argv[]) {
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     std::string new_omops_path = argv[1];
     std::string res_path = argv[2];
     std::string date = argv[3];
@@ -40,6 +42,7 @@ int main(int argc, char *argv[]) {
     // Reading
     std::string line;
     int first_line = 1; // Indicates header line
+    int n_lines = 0;
     while(std::getline(std::cin, line)) {
         if (first_line == 1) {
             res_file << line << "\n";
@@ -70,7 +73,14 @@ int main(int argc, char *argv[]) {
 
         // Writing to results file
 
-        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," <<omop_id << "," << omop_name << "\n";      
+        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," <<omop_id << "," << omop_name << "\n";     
+
+        // Write every 10000000 lines
+        n_lines++; write_line_update(n_lines, begin);
     }
     res_file.close();
+
+    write_end_run_summary(begin);
 }
+
+

@@ -179,13 +179,11 @@ int main(int argc, char *argv[])
         }
     }
     in_file.close();
-    
+
     std::unordered_map<std::string, int> new_omop_candidates;
     find_new_omop_candidates(new_omop_candidates, lab_data, omop_mapped_data, duplicate_mappings);
     write_new_omop_candidates_file(res_path, new_omop_candidates, omop_mapped_count_data);
 
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+    write_end_run_summary(begin);
 }
 

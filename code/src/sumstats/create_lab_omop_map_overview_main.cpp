@@ -52,13 +52,7 @@ int main(int argc, char *argv[])
             omop_mapped_count_data[lab_omop_info]++;
         }
 
-        n_lines++;
-        if (n_lines % 10000000 == 0)
-        {
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-            std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
-        }
+        n_lines++; write_line_update(n_lines, begin);
     }
 
 
@@ -87,7 +81,5 @@ int main(int argc, char *argv[])
 
     res_file.close();
 
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+    write_end_run_summary(begin);
 }

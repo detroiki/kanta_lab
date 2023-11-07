@@ -16,6 +16,9 @@ using namespace std;
 using namespace boost::gregorian;
 
 // Helper functions
+void write_line_update(int n_lines, std::chrono::steady_clock::time_point &begin);
+void write_end_run_summary(std::chrono::steady_clock::time_point &begin);
+
 char find_delim(std::string file_path);
 std::vector<std::string> splitString(const std::string &input, 
                                      char delimiter);

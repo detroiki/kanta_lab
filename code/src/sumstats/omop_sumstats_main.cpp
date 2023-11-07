@@ -14,10 +14,8 @@ int main(int argc, char *argv[])
     std::string line;
     int first_line = 1; // Indicates header line
     int n_lines = 0;
-    while (std::getline(std::cin, line))
-    {
-        if (first_line == 1)
-        {
+    while (std::getline(std::cin, line)) {
+        if (first_line == 1) {
             first_line = 0;
             continue;
         }
@@ -35,25 +33,16 @@ int main(int argc, char *argv[])
         std::string omop_id = line_vec[9];
         std::string omop_name = line_vec[10];
 
-        if (!(omop_id == "NA" || lab_value == "NA"))
-        {
+        if (!(omop_id == "NA" || lab_value == "NA")) {
             std::string omop_identifier = get_omop_identifier(omop_id, omop_name, lab_unit, std::string("_"));
             omops[omop_identifier].push_back(std::stod(lab_value));
             omop_indvs[omop_identifier].insert(finregid);
         }
 
-        n_lines++;
-        if (n_lines % 10000000 == 0)
-        {
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-            std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
-        }
+        n_lines++; write_line_update(n_lines, begin);
     }
 
     write_omop_sumstats(omops, omop_indvs, res_path);
 
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
+    write_end_run_summary(begin);
 }
