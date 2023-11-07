@@ -31,10 +31,14 @@ run_all:
 	make learn_lab_omop_map
 	make add_new_omop_concepts
 
+	# Creating final summary statistics
+	make omop_sumstats
+	make indv_sumstats
+
 create_minimal: 
 	for file_no in 1 2 3 4 5 6 7 8 9 10 ; do \
 		echo "Processing file $$file_no" ; \
-		zstdcat $(orig_data_dir)"finregistry_$$file_no.csv.finreg_IDs.zst" | head -100 | exec/minimal $(res_dir) $$file_no $(date) $(thl_sote_map_path) $(thl_lab_map_path) ; \
+		zstdcat $(orig_data_dir)"finregistry_$$file_no.csv.finreg_IDs.zst" | exec/minimal $(res_dir) $$file_no $(date) $(thl_sote_map_path) $(thl_lab_map_path) ; \
 	done 
 
 concat_files:
