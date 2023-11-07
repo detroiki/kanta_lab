@@ -66,10 +66,7 @@ int main(int argc, char *argv[]) {
             omop_name = omop_names[omop_id];
         }
         
-        if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
-        if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
-        if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
-        if(omop_name != "NA") omop_name = concat_string(std::vector<std::string>({"\"", omop_name, "\""}));
+        add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(omop_name);
 
         // Writing to results file
 

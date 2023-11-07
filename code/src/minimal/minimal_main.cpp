@@ -166,9 +166,7 @@ int main(int argc, char *argv[]) {
                             // Increasing line count for this file to one
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
-                            if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
-                            if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
-                            if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
+                            add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); 
 
                             res_file << finregistry_id << "," <<  date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
                             // Increasing valid line count

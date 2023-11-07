@@ -28,6 +28,8 @@ void check_out_open(std::ofstream &file_stream, std::string file_path);
 int check_in_open(std::ifstream &file_stream, std::string file_path, int stop_if_not_open = 1); 
 
 std::string to_lower(std::string str);
+void add_quotation(std::string &str);
+
 std::string remove_chars(std::string str, char remove_char);
 std::string clean_units(std::string lab_unit);
 
@@ -69,14 +71,11 @@ void write_dup_lines_file(std::string &res_path,
                           std::unordered_map<std::string, int> &all_dup_lines);
 
 // Writing functions
-void write_top_lab_data(std::string file_path,
-                        std::string res_path, 
-                        std::unordered_set<std::string> keep_omop_ids);
-void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> omops,
+void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &omops,
+                         std::unordered_map<std::string, std::unordered_set<std::string>> &omop_indvs,
                          std::string res_path);
-void write_indvs_omops_sumstats( std::unordered_map<std::string, std::unordered_map<std::string, std::vector<double>>>& indvs_omops_values,
-                                std::string res_path
-                                );
+void write_indvs_omops_sumstats( std::unordered_map<std::string, std::unordered_map<std::string, std::vector<double>>> &indvs_omops_values,
+                                std::string res_path);
 
 // Reading files function
 void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines, 

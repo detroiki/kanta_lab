@@ -183,3 +183,7 @@ std::string get_lab_id_abbrv(std::string lab_id,
     std::string lab_id_abbrv = concat_string(std::vector<std::string>({lab_id, lab_abbrv}), std::string("_"));
     return(lab_id_abbrv); 
 }
+
+void add_quotation(std::string &str) {
+    if(str != "NA") str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
+}

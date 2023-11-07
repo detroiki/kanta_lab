@@ -99,10 +99,7 @@ int main(int argc, char *argv[]) {
         std::string omop_name = get_omop_name(omop_id, omop_names);
 
         // Writing to results file
-        if(lab_id != "NA") lab_id = concat_string(std::vector<std::string>({"\"", lab_id, "\""}));
-        if(lab_abbrv != "NA") lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv, "\""}));
-        if(lab_unit != "NA") lab_unit = concat_string(std::vector<std::string>({"\"", lab_unit, "\""}));
-        if(omop_name != "NA") omop_name = concat_string(std::vector<std::string>({"\"", omop_name, "\""}));
+        add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(omop_name);
 
         res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," <<  lab_value << "," << lab_unit << "," << lab_abnormality << "," <<omop_id << "," << omop_name << "\n";
 
