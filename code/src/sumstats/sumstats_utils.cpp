@@ -12,7 +12,8 @@
  * The omop values are sorted and the mean, median, standard deviation, first and third quantiles, min, max and number
  * of elements are calculated and written to the file.
 **/
-void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> omops,
+void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &omops,
+                         std::unordered_map<std::string, std::unordered_set<std::string>> &omop_indvs,
                          std::string res_path) {
 
     // Opening results file
@@ -23,7 +24,7 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> om
     check_out_open(res_file, full_res_path);
 
     // write header in all caps
-    res_file << "OMOP_ID;OMOP_NAME;LAB_UNIT;MEAN;MEDIAN;SD;FIRST_QUANTILE;THIRD_QUANTILE;MIN;MAX;N_ELEMS\n";
+    res_file << "OMOP_ID,OMOP_NAME,LAB_UNIT,MEAN,MEDIAN,SD,FIRST_QUANTILE,THIRD_QUANTILE,MIN,MAX,N_ELEMS,N_INDVS\n";
 
     for(auto omop: omops) {
         std::string omop_identifier = omop.first;
@@ -38,13 +39,17 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> om
         double min = values[0];
         double max = values[values.size()-1];
         int n_elems = values.size();
+        int n_indvs = omop_indvs[omop_identifier].size();
 
         std::string omop_id = split(omop_identifier, ";")[0];
         std::string omop_name = split(omop_identifier, ";")[1];
         std::string lab_unit = split(omop_identifier, ";")[2];
 
+        add_quotation(omop_name);
+        add_quotation(lab_unit);
+
         // write to file 
-        res_file << omop_id << ";" << omop_name << ";" << lab_unit << ";" << mean << ";" << median << ";" << sd << ";" << first_quantile << ";" << third_quantile << ";" << min << ";" << max << ";" << n_elems << "\n";
+        res_file << omop_id << "," << omop_name << "," << lab_unit << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << "," << n_indvs << "\n";
     }
 
     res_file.close();
@@ -73,7 +78,7 @@ void write_indvs_omops_sumstats(std::unordered_map<std::string, std::unordered_m
     check_out_open(res_file, full_res_path);
 
     // Write header in all caps
-    res_file << "FINREGISTRYID;OMOP_ID;LAB_UNIT;MEAN;MEDIAN;SD;FIRST_QUANTILE;THIRD_QUANTILE;MIN;MAX;N_ELEMS" << std::endl;
+    res_file << "FINREGISTRYID,OMOP_ID,LAB_UNIT,MEAN,MEDIAN,SD,FIRST_QUANTILE,THIRD_QUANTILE,MIN,MAX,N_ELEMS" << std::endl;
     for(auto indv_data: indvs_omops_values) {
         std::string finregid = indv_data.first;
           for(auto omop:  indv_data.second) {
@@ -96,7 +101,7 @@ void write_indvs_omops_sumstats(std::unordered_map<std::string, std::unordered_m
             int n_elems = values.size();
 
             // Writing to file
-            res_file << finregid << ";" << omop_id << ";" << lab_unit << ";" << mean << ";" << median << ";" << sd << ";" << first_quantile << ";" << third_quantile << ";" << min << ";" << max << ";" << n_elems << std::endl;
+            res_file << finregid << "," << omop_id << "," << lab_unit << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << std::endl;
         }
     }
 }

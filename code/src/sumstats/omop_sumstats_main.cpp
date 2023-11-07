@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 
     // Reading in maps for new omop concepts
     std::unordered_map<std::string, std::vector<double>> omops;
+    std::unordered_map<std::string, std::unordered_set<std::string>> omop_indvs;
 
     // Reading
     std::string line;
@@ -34,10 +35,11 @@ int main(int argc, char *argv[])
         std::string omop_id = line_vec[9];
         std::string omop_name = line_vec[10];
 
-        if (!(omop_id == "NA" || omop_name == "NA" || lab_value == "NA"))
+        if (!(omop_id == "NA" || lab_value == "NA"))
         {
             std::string omop_identifier = get_omop_identifier(omop_id, omop_name, lab_unit, std::string("_"));
             omops[omop_identifier].push_back(std::stod(lab_value));
+            omop_indvs[omop_identifier].insert(finregid);
         }
 
         n_lines++;
@@ -49,7 +51,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    write_omop_sumstats(omops, res_path);
+    write_omop_sumstats(omops, omop_indvs, res_path);
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
