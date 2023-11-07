@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 
         // Writing to results file
 
-        res_file << finregid  << "," << date_time << "," <<service_provider << "," << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," <<omop_id << "," << omop_name << "\n";      
+        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," <<omop_id << "," << omop_name << "\n";      
     }
     res_file.close();
 }
