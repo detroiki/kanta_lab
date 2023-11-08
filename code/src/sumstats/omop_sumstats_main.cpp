@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
         std::string omop_name = line_vec[10];
 
         if (!(omop_id == "NA" || lab_value == "NA")) {
-            std::string omop_identifier = get_omop_identifier(omop_id, omop_name, lab_unit, std::string("_"));
+            add_quotation(omop_name); add_quotation(lab_unit);
+            std::string omop_identifier = concat_string(std::vector<std::string>({omop_id, omop_name, lab_unit}), ",");
             omops[omop_identifier].push_back(std::stod(lab_value));
             omop_indvs[omop_identifier].insert(finregid);
         }
-
         n_lines++; write_line_update(n_lines, begin);
     }
 

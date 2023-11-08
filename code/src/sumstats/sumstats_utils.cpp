@@ -17,7 +17,7 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &o
                          std::string res_path) {
 
     // Opening results file
-    std::vector<std::string> full_res_path_vec = {res_path, "omop_sumstats.csv"};
+    std::vector<std::string> full_res_path_vec = {res_path, "_omop_sumstats.csv"};
     std::string full_res_path = concat_string(full_res_path_vec);
     std::ofstream res_file;
     res_file.open(full_res_path);
@@ -26,6 +26,7 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &o
     // write header in all caps
     res_file << "OMOP_ID,OMOP_NAME,LAB_UNIT,MEAN,MEDIAN,SD,FIRST_QUANTILE,THIRD_QUANTILE,MIN,MAX,N_ELEMS,N_INDVS\n";
 
+    cout << "Starting summary statistics" << endl;
     for(auto omop: omops) {
         std::string omop_identifier = omop.first;
         std::vector<double> values = omop.second;
@@ -41,13 +42,8 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &o
         int n_elems = values.size();
         int n_indvs = omop_indvs[omop_identifier].size();
 
-        std::string omop_id = split(omop_identifier, ";")[0];
-        std::string omop_name = split(omop_identifier, ";")[1];
-        std::string lab_unit = split(omop_identifier, ";")[2];
-        
         // write to file 
-        add_quotation(lab_unit); add_quotation(omop_name);
-        res_file << omop_id << "," << omop_name << "," << lab_unit << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << "," << n_indvs << "\n";
+        res_file << omop_identifier << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << "," << n_indvs << "\n";
     }
 
     res_file.close();
