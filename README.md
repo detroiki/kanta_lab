@@ -164,10 +164,10 @@ This is implemented in pyhton, using regex. Fixes include:
 
 - Turning empty units to NAs
 - Fixing and unifying all `10e5`, `10^9` etc. to one form `e5`, `e9` etc.
-- Fixing and unifying all forms of `(y|μ)ks(ikkö)` and `iu` to `u`
+- Fixing and unifying all forms of `(y|μ)ks(ikkö)` to `u`
 - Fixing and unifying all forms of `kopio(t), sol(y|μ|u), kpl, pisteet` to `count`.
 - Fixing and unifying all `n(ä)kö(ke)k(enttä)`to `field`
-- Fixing and unifying all `gulost`to `gstool`.
+- Fixing and unifying all `gulost` and `gstool` to `g`, since the fact that it is `g stool`is clear from the measurement.
 - Fixing and unfiying all `(til)osuus` to `osuus`. 
 - Fixing and unifying all `tiiteri` to `titer`.
 - Fixing and unifying all `mosm/kg` to `mosm_kgh2o`.
@@ -200,17 +200,4 @@ For all regex commands see: [code/src/unit_fixing.py](https://github.com/detroik
    These are lines where often there is random information in the lab value column. 
  - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
    marked with binary in the lab unit column.
-
-### Addinge new OMOP concept mappings
-
-- We have created a list of lab IDs that commonly appear with lab abbreviations and units mapped to a known OMOP concept (these are likely codes used by service providers not yet OMOP mapped).
-
-
-Criteria:  
-      1. This lab ID and unit appear at least 1000x with this abbreviation 
-      2. This lab ID makes up at least 1% of the data mapped to this OMOP concept (this means it is worth adding this abbreviation as it adds a significant amount of extra data to this OMOP concept). 
-
-Overall this adds xxx lab ids and a total of xxxx lab values to the OMOP mapped data.
-
-
-The list of new mappings can be found here: [data/new_omop_mappings.tsv](https://github.com/detroiki/kanta_lab/blob/main/data/new_omop_mappings.tsv)
+ - Adding units to INR and pH measurements because they often lack their unit and it is very clear what it shoul be.
