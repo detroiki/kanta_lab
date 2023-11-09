@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         shuffle_lab_abnorm_info(lab_value, lab_abnorm, lab_unit);
         
         if (keep == 1) {
-        // OMOP name can contain ";" or "," so we need to put it in quotes   
+            // These fields might contain ";" or "," so we need to put it in quotes   
             add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(omop_name);
             // Writing to results file
             res_file << finregid  << "," << date_time << "," << service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," << omop_id << "," << omop_name << "\n";              
