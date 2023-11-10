@@ -11,12 +11,13 @@
 #include <algorithm>
 #include <chrono>
 #include <boost/date_time/gregorian/gregorian.hpp>
+#include <filesystem>
 
 using namespace std;
 using namespace boost::gregorian;
 
 // Helper functions
-void write_line_update(int n_lines, std::chrono::steady_clock::time_point &begin);
+void write_line_update(int n_lines, std::chrono::steady_clock::time_point &begin, int line_limit = 10000000);
 void write_end_run_summary(std::chrono::steady_clock::time_point &begin);
 
 char find_delim(std::string file_path);
@@ -97,10 +98,6 @@ std::vector<std::string> read_correct_lines(std::string &line,
 void read_omop_file(std::string omop_concept_map_path,
                     std::unordered_map<std::string, std::unordered_map<std::string, std::string>>  &omop_concept_map,
                     std::unordered_map<std::string, std::string> &omop_names);
-void get_lab_indv_counts(std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count,
-                         std::string file_path);
-void read_indvs_files(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
-                      std::string indvs_path);
 void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omops,
                            std::unordered_map<std::string, std::string> &omop_names,   
                            std::string file_path,
@@ -126,10 +123,6 @@ std::string get_omop_id(std::unordered_map<std::string, std::unordered_map<std::
                         std::string omop_identifier);
 std::string get_omop_name(std::string omop_id,
                           std::unordered_map<std::string, std::string> &omop_names);
-
-// Helper functions for top OMOP concepts file creation
-void get_keep_omop_ids(std::unordered_set<std::string> &keep_omop_ids, 
-                       std::unordered_map<std::string, std::unordered_set<std::string>> &lab_indv_count);
 
 // Helpfer functions final fixing
 int fix_percentages(std::string &lab_value, 
@@ -159,39 +152,10 @@ void fix_titles(std::string &lab_id,
                   std::string &lab_unit,
                   std::string &lab_value);
 
-// OMOP final fixing
-void get_omop_unit_counts(std::unordered_map<std::string, std::unordered_map<std::string, int>> &omop_unit_count,
-                          std::string file_path);
-void get_omop_max_units(std::unordered_map<std::string, std::string> &omop_max_units,
-                        std::string file_path);
-int decide_keep_rows(std::string omop_id,
-                     std::string lab_unit,
-                     std::unordered_map<std::string, std::string> &omop_max_units);
-
 // Math helper function
 double get_mean(std::vector<double> values_vec);
 double get_median(std::vector<double> values_vec);
 double get_sd(std::vector<double> values_vec, double mean);
 double get_quantile(std::vector<double> values, double quantile);
-
-
-// Sumstats config file functions
-void read_config_file(std::string config_path,
-                      std::unordered_map<std::string, std::string> &configs);
-void read_indvs_date_file_from_config(std::unordered_map<std::string, std::string> &configs,
-                              std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
-                              int stop_if_not_found);
-void read_indvs_file_from_config(std::unordered_map<std::string, std::string> &configs,
-                                          std::unordered_set<std::string> &relevant_indvs,
-                                          int stop_if_not_found);
-void read_omops_file_from_config(std::unordered_map<std::string, std::string> &configs,
-                              std::unordered_set<std::string> &relevant_omops,
-                              int stop_if_not_found);
-void read_indvs_omop_sumstats_from_config(std::unordered_map<std::string, std::string> &configs,
-                                          std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string,  std::string>>> &indvs_omop_sumstats,
-                                          std::unordered_set<std::string> &relevant_omops,
-                                          std::unordered_set<std::string> &relevant_indvs);
-std::vector<std::string> read_relevant_sumstats_from_config(std::unordered_map<std::string, std::string> &configs);
-
 
 
