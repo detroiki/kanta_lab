@@ -9,8 +9,9 @@
  * @return void
 */
 void write_line_update(int n_lines, 
-                       std::chrono::steady_clock::time_point &begin) {
-    if(n_lines % 10000000 == 0) {
+                       std::chrono::steady_clock::time_point &begin,
+                       int line_limit) {
+    if(n_lines % line_limit == 0) {
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
         std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
@@ -145,5 +146,6 @@ char find_delim(std::string file_path) {
         if(n_lines == 1000) break;
     }
 
+    in_file.close();
     return(delim);
 }
