@@ -119,7 +119,8 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             unsigned long long &total_line_count,
                                             unsigned long long &skip_count,
                                             std::ofstream &error_file,
-                                            int &lines_valid_status) {
+                                            int &lines_valid_status,
+                                            std::string write_reports) {
     int n_cols(25);
     char delim = ';';
     std::vector<std::string> new_line_vec;
@@ -182,12 +183,12 @@ std::vector<std::string> read_correct_lines(std::string &line,
     /// Writing lines to error files
     // Line is invalid
     if((lines_valid_status == 1) | (lines_valid_status == 3)) {
-        error_file << concat_string(line_vec, ";") << "\n";
+        if(write_reports == "True") error_file << concat_string(line_vec, ";") << "\n";
         ++skip_count;
     }  
     // Newline is also invalid
     if(lines_valid_status == 2) {
-        error_file <<  concat_string(new_line_vec, ";") << "\n";
+        if(write_reports == "True") error_file <<  concat_string(new_line_vec, ";") << "\n";
     }
     return final_line_vec;
 }
@@ -301,6 +302,7 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
                             unsigned long long &na_count) {
+    cout << "Writing row line report" << endl;
     // Opening 
     std::ofstream report_file;
     report_file.open(report_path); check_out_open(report_file, report_path);
@@ -322,6 +324,7 @@ void write_dup_lines_file(std::string &res_path,
                           std::string &date,
                           std::string &report_path,
                           std::unordered_map<std::string, int> &all_dup_lines) {
+    cout << "Writing duplicate lines file" << endl;
     // File paths
     std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".csv"};    
     std::string duplines_path = concat_string(duplines_path_vec, std::string(""));

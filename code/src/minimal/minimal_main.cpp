@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
     std::string date = argv[3]; // Date of file
     std::string thl_sote_path = argv[4]; // Path to THL SOTE organisations name map
     std::string thl_abbrv_path = argv[5]; // Path to official abbreviations map
+    std::string write_reports = argv[6];  // Write reports or not
     
     /// OUTPUT FILE PATHS   
     // Results file
@@ -73,12 +74,15 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".csv"};
     std::string missing_path = concat_string(missing_path_vec, std::string(""));
 
+    std::ofstream error_file; std::ofstream missing_file;
+    if (write_reports == "True") {
+        error_file.open(error_path);
+        missing_file.open(missing_path);
+        check_out_open(error_file, error_path);
+        check_out_open(missing_file, missing_path);
+    }
     // Opening results and error files
-    std::ofstream error_file;
-    std::ofstream missing_file;
-    std::ofstream res_file;
-    res_file.open(full_res_path); error_file.open(error_path);  missing_file.open(missing_path);
-    check_out_open(res_file, full_res_path); check_out_open(error_file, error_path); check_out_open(missing_file, missing_path);
+    std::ofstream res_file; res_file.open(full_res_path); check_out_open(res_file, full_res_path); 
 
     /// READING IN OTHER FILES
     // Duplicate line map, including counts for current file
@@ -109,11 +113,8 @@ int main(int argc, char *argv[]) {
     cout << "Starting reading file " << file << endl;
     while(std::getline(std::cin, line)) {
         ++total_line_count;
-        if(total_line_count % 10000000 == 0) {
-            cout << total_line_count << "\n";
-        }
         // Getting current line as vector
-        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file, lines_valid_status);
+        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file, lines_valid_status, write_reports);
 
         // Line or newline is valid
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
@@ -178,18 +179,20 @@ int main(int argc, char *argv[]) {
                 // Invalid line because of NAs in both value, and abnormality or NA in lab ID
                 } else {
                     ++na_count;       
-                    missing_file << concat_string(final_line_vec, ";") << "\n";
+                    if(write_reports == "True") missing_file << concat_string(final_line_vec, ";") << "\n";
                 }
             }  
         }
 
         // Write every 10000000 lines
-        total_line_count++; write_line_update(total_line_count, begin);
+        write_line_update(total_line_count, begin);
     }
 
     // Closing
-    error_file.close();
-    missing_file.close();
+    if(write_reports == "True") {
+        error_file.close();
+        missing_file.close();
+    }
     res_file.close(); 
 
     // Writing final files

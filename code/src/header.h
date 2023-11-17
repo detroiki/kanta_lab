@@ -94,7 +94,8 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             unsigned long long &total_line_count,
                                             unsigned long long &skip_count,
                                             std::ofstream &error_file,
-                                            int &lines_valid_status);
+                                            int &lines_valid_status,
+                                            std::string write_reports="True");
 void read_omop_file(std::string omop_concept_map_path,
                     std::unordered_map<std::string, std::unordered_map<std::string, std::string>>  &omop_concept_map,
                     std::unordered_map<std::string, std::string> &omop_names);

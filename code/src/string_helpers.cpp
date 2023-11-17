@@ -97,7 +97,7 @@ std::string get_omop_identifier(std::string lab_id,
  * Splits string and ignored delimiter inside "". 
  */
 std::vector<std::string> splitString(const std::string &input, 
-                                     char delimiter) {
+                                     char delim) {
   std::vector<std::string> tokens;
   std::istringstream ss(input);
   std::string token;
@@ -106,7 +106,7 @@ std::vector<std::string> splitString(const std::string &input,
   for (char c : input) {
     if (c == '"') {
       inQuotedString = !inQuotedString; // Toggle quoted string state
-    } else if ((c == delimiter && !inQuotedString)) {
+    } else if ((c == delim && !inQuotedString)) {
       tokens.push_back(token);
       token.clear();
     } else {
