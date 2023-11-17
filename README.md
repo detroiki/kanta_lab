@@ -4,10 +4,12 @@ These are various C++ programs for working with the Kanta lab data files.
 
 # Usage
 
-The whole pipeline can be easily run by simply replacing the
-paths for the results directory (`res_dir`) and the original data directory (`data_dir`) in the
-Makefile.
-Then running
+
+The whole pipeline can be easily run by simply uploading the directory `upload` to your environment and
+replacing the paths and flags in the start of the Makefile. Also note you might have to activate an
+environment to run python since one of the scripts is python.
+
+Then you can simply run
 
 ```
 make run_all

@@ -2,9 +2,9 @@ import pandas as pd
 import re
 from collections import defaultdict
 import sys
-import timeit
+import time
 
-start = timeit.timeit()
+start = time.time()
 print("Starting unit fixing")
 
 unit_tbl = defaultdict(int)
@@ -23,8 +23,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
             for line in fin:
                 count = count + 1 
                 if(count % 10000000 == 0): 
-                    end = timeit.timeit()
-                    print("Lines read = " + str(end-start))
+                    print("Lines read = " + str(count) + " Time took = " + str(time.time()-start))
                 line_arr = re.split(''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', line.strip())
                 for elem_idx in range(0, len(line_arr)): line_arr[elem_idx] = line_arr[elem_idx].strip('"')
                 if not first_line:
@@ -204,10 +203,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                 else:
                     first_line = 0
 
-                if not first_line:
-                    if(line_arr[3] != "NA" and line_arr[3] != ""): line_arr[3] = '"' + line_arr[3] + '"'
-                    if(line_arr[5] != "NA" and line_arr[5] != ""): line_arr[5] = '"' + line_arr[5] + '"'
-                    if(line_arr[7] != "NA" and line_arr[7] != ""): line_arr[7] = '"' + line_arr[7] + '"'
-                    if(line_arr[9] != "NA" and line_arr[9] != ""): line_arr[9] = '"' + line_arr[9] + '"'
+                for elem_idx in range(0, len(line_arr)):
+                      if line_arr[elem_idx].find(",") != -1: line_arr[elem_idx] = '"' + line_arr[elem_idx] + '"'
 
                 fout_min.write(",".join(line_arr) + "\n")
