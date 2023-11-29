@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY\n"; 
+                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY;REFERENCE_VALUE_TEXT;DATE_SYSTEM;DATA_SYSTEM_VERSION\n"; 
                 ++valid_line_count;
                 cout << "Header written, check if delimiter correct first element on line 1 is: " << final_line_vec[0] << endl;
             } else {
@@ -128,27 +128,30 @@ int main(int argc, char *argv[]) {
                 fix_nas(final_line_vec);
 
                 // Column values directly from line
-                std::string finregistry_id = final_line_vec[1];
-                std::string date_time = final_line_vec[11];
-                std::string service_provider_oid = final_line_vec[6];
-                std::string lab_value = final_line_vec[19];
-                std::string lab_unit = final_line_vec[20];
-                std::string lab_abnormality = final_line_vec[22];
+                std::string finregistry_id = final_line_vec[4];
+                std::string lab_date_time = final_line_vec[11];
+                std::string service_provider_oid = final_line_vec[15];
+                std::string lab_value = final_line_vec[35];
+                std::string lab_unit = final_line_vec[36];
+                std::string lab_abnormality = final_line_vec[37];
+                std::string ref_value_text = final_line_vec[44];
+                std::string data_system = final_line_vec[18];
+                std::string data_system_ver = final_line_vec[22];
 
                 // Removing characters like " ", "_", etc from unit
                 lab_unit = clean_units(lab_unit);
 
                 // Column values needed for mapping and cleaning
-                std::string lab_name = final_line_vec[14];
-                std::string local_lab_id = final_line_vec[15];
-                std::string thl_lab_id = final_line_vec[16];
+                std::string local_lab_abbrv = final_line_vec[31];
+                std::string local_lab_id = final_line_vec[32];
+                std::string thl_lab_id = final_line_vec[0];
 
                 // Lab ID, and source depend on data
                 std::string lab_id; 
                 std::string lab_id_source;
 
                 // Duplicate line
-                std::vector<std::string> dup_vec = {finregistry_id, date_time, service_provider_oid, lab_id, lab_name, lab_value, lab_unit};
+                std::vector<std::string> dup_vec = {finregistry_id, lab_date_time, service_provider_oid, lab_id, local_lab_abbrv, lab_value, lab_unit};
                 std::string dup_line = concat_string(dup_vec, std::string("")); 
                 // Only saving non-duplicated lines
                 if(all_dup_lines.find(dup_line) == all_dup_lines.end()) {
@@ -157,7 +160,7 @@ int main(int argc, char *argv[]) {
 
                     // Mapped column values
                     std::string service_provider_name = get_service_provider_name(thl_sote_map, service_provider_oid);
-                    std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, lab_name);
+                    std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, local_lab_abbrv);
                     // Cleaning potential "" in lab-abbreviation
                     lab_abbrv = remove_chars(lab_abbrv, '\"');
 
@@ -169,7 +172,7 @@ int main(int argc, char *argv[]) {
                             // Writing line to file
                             add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); 
 
-                            res_file << finregistry_id << "," <<  date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
+                            res_file << finregistry_id << "," <<  lab_date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
                         // Duplicate line
