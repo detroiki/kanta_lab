@@ -121,12 +121,12 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             std::ofstream &error_file,
                                             int &lines_valid_status,
                                             std::string write_reports) {
-    int n_cols(25);
-    char delim = ';';
+    int n_cols(46);
+    char delim = '\t';
     std::vector<std::string> new_line_vec;
 
     /// LINE VECTORS
-    std::vector<std::string> final_line_vec(25);
+    std::vector<std::string> final_line_vec(46);
     // Split values and copy into line vector
     std::vector<std::string> line_vec(splitString(line, delim));   
 
@@ -203,7 +203,7 @@ std::vector<std::string> read_correct_lines(std::string &line,
  * @details Different NA indicators are Puuttuu, "", TYHJÄ, _, -1 (except in value column)
 */
 void fix_nas(std::vector<std::string> &final_line_vec) {
-    int n_cols(25);
+    int n_cols(46);
     // Replacing different NA indicators with NA
     for(int elem_idx=0; elem_idx < n_cols; elem_idx++) {
         // Replacing NAs
@@ -211,6 +211,7 @@ void fix_nas(std::vector<std::string> &final_line_vec) {
             (final_line_vec[elem_idx] == "\"\"") | 
             (final_line_vec[elem_idx] == "TYHJÄ") | 
             (final_line_vec[elem_idx] == "_") |
+            (final_line_vec[elem_idx] == "NULL") |
             ((final_line_vec[elem_idx] == "-1") & (elem_idx != 19))) { // -1 in value not considered NA
             final_line_vec[elem_idx] = "NA";
             }

@@ -120,7 +120,7 @@ int main(int argc, char *argv[]) {
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY;REFERENCE_VALUE_TEXT;DATE_SYSTEM;DATA_SYSTEM_VERSION\n"; 
+                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
                 ++valid_line_count;
                 cout << "Header written, check if delimiter correct first element on line 1 is: " << final_line_vec[0] << endl;
             } else {
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
                 std::string lab_abnormality = final_line_vec[37];
                 std::string ref_value_text = final_line_vec[44];
                 std::string data_system = final_line_vec[18];
-                std::string data_system_ver = final_line_vec[22];
+                std::string data_system_ver = final_line_vec[20];
 
                 // Removing characters like " ", "_", etc from unit
                 lab_unit = clean_units(lab_unit);
@@ -170,19 +170,18 @@ int main(int argc, char *argv[]) {
                             // Increasing line count for this file to one
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
-                            add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); 
+                            add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(ref_value_text); add_quotation(data_system); add_quotation(data_system_ver);
 
-                            res_file << finregistry_id << "," <<  lab_date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
+                            res_file << finregistry_id << "," <<  lab_date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "," << ref_value_text << "," << data_system << "," << data_system_ver << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
-                        // Duplicate line
-                        } else {
-                            ++dup_count;
-                        }
-                // Invalid line because of NAs in both value, and abnormality or NA in lab ID
+                    // Duplicate line
+                    } else {
+                        ++na_count;       
+                        if(write_reports == "True") missing_file << concat_string(final_line_vec, ";") << "\n";
+                    } 
                 } else {
-                    ++na_count;       
-                    if(write_reports == "True") missing_file << concat_string(final_line_vec, ";") << "\n";
+                    ++dup_count;
                 }
             }  
         }

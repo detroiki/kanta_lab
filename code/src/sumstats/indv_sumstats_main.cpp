@@ -67,12 +67,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Write every 10000000 lines
-        n_lines++;
-        if(n_lines % 10000000 == 0) {
-            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-            std::cout << "Lines read = " << n_lines << " Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[min]" << std::endl;
-        }
+        n_lines++; write_line_update(n_lines, begin);
     }
     
     std::cout << "Starting summary stats" << std::endl;
@@ -82,7 +77,5 @@ int main(int argc, char *argv[]) {
     // close lab file
     lab_file.close();
     
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
-    std::cout << "Time took overall = " << std::chrono::duration_cast<std::chrono::minutes> (end - begin).count() << "[h]" << std::endl;
+    write_end_run_summary(begin);
 }
