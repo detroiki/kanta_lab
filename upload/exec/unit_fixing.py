@@ -1,9 +1,9 @@
 import re
 from collections import defaultdict
 import sys
-import timeit
+import time
 
-start = timeit.timeit()
+start = time.time()
 print("Starting unit fixing")
 
 unit_tbl = defaultdict(int)
@@ -22,8 +22,8 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
             for line in fin:
                 count = count + 1 
                 if(count % 10000000 == 0): 
-                    end = timeit.timeit()
-                    print("Lines read = " + count + " Time took = " + end-start)
+                    end = time.time()
+                    print("Lines read = " + str(count) + " Time took = " + str(round((end-start)/60)) + " [min]")
                 line_arr = re.split(''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)''', line.strip())
                 for elem_idx in range(0, len(line_arr)): line_arr[elem_idx] = line_arr[elem_idx].strip('"')
                 if not first_line:
@@ -176,7 +176,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
 
                             # Removing redundant and inconsistant information
                             lab_unit = re.sub(r"/100le(uk)$", "",lab_unit)
-                            lab_unit = re.sub(r"/l(/)?(4|37c|ph7|ph74)?", "/l", lab_unit)
+                            lab_unit = re.sub(r"/l(/)?(4|37c|ph7|ph74)+", "/l", lab_unit)
                             lab_unit = re.sub(r"nmol(bce)?/mmol(krea)?", "nmol/mmol", lab_unit)
                             lab_unit = re.sub(r"/mol(krea)?", "/mol", lab_unit)
 
