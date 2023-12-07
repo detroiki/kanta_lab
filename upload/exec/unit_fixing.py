@@ -16,7 +16,7 @@ date = sys.argv[3]
 count = 0
 with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
     with open(res_dir + "processed/data/kanta_lab_" + date + "_fixed_units.csv", 'w', encoding="utf-8") as fout_min:
-        with open(res_dir + "processed/reports/counts/" + date + "unit_fixes.csv", 'w', encoding="utf-8") as fout_fix:
+        with open(res_dir + "processed/reports/counts/" + date + "_unit_fixes.csv", 'w', encoding="utf-8") as fout_fix:
 
             first_line = 1
             for line in fin:
@@ -190,13 +190,14 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             # All completley empty fields are NA
                             lab_unit = re.sub(r'^\s+$', 'NA', lab_unit)
 
-                            lab_abbrv = line_arr[5].strip()
-                            if(lab_abbrv != "NA"): lab_abbrv = '"' + lab_abbrv + '"'
-                            lab_abbrv = '"' + lab_abbrv + '"'
-                            orig_lab_unit = line_arr[7].strip()
-                            if(orig_lab_unit != "NA"): orig_lab_unit = '"' + orig_lab_unit + '"'
-
-                            fout_fix.write(lab_abbrv + "," + orig_lab_unit + "," + lab_unit + "\n")
+                            # Recording all unit changes
+                            if lab_unit != line_arr[7].strip():
+                                lab_abbrv = line_arr[5].strip()
+                                if(lab_abbrv != "NA"): lab_abbrv = '"' + lab_abbrv + '"'
+                                lab_abbrv = '"' + lab_abbrv + '"'
+                                orig_lab_unit = line_arr[7].strip()
+                                if(orig_lab_unit != "NA"): orig_lab_unit = '"' + orig_lab_unit + '"'
+                                fout_fix.write(lab_abbrv + "," + orig_lab_unit + "," + lab_unit + "\n")
                             
                         line_arr[7] = lab_unit.strip()
 
