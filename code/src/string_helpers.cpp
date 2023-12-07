@@ -184,6 +184,7 @@ std::string get_lab_id_abbrv(std::string lab_id,
     return(lab_id_abbrv); 
 }
 
-void add_quotation(std::string &str) {
-    if(str != "NA") str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
+void add_quotation(std::string &str,
+                   char delim) {
+    if(str.find(delim) != std::string::npos) str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
 }

@@ -32,7 +32,8 @@ void check_out_open(std::ofstream &file_stream, std::string file_path);
 int check_in_open(std::ifstream &file_stream, std::string file_path, int stop_if_not_open = 1); 
 
 std::string to_lower(std::string str);
-void add_quotation(std::string &str);
+void add_quotation(std::string &str,
+                   char delim);
 
 std::string remove_chars(std::string str, char remove_char);
 std::string clean_units(std::string lab_unit);
@@ -67,7 +68,8 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &valid_line_count,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
-                            unsigned long long &na_count);
+                            unsigned long long &na_count,
+                            unsigned long long &hetu_count);
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
                           std::string &date,
