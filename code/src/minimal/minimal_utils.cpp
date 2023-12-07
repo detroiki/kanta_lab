@@ -302,18 +302,20 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &valid_line_count,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
-                            unsigned long long &na_count) {
+                            unsigned long long &na_count,
+                            unsigned long long &hetu_count) {
     cout << "Writing row line report" << endl;
     // Opening 
     std::ofstream report_file;
     report_file.open(report_path); check_out_open(report_file, report_path);
 
     // Writing 
-    report_file << "All rows: " << total_line_count << "\n";
-    report_file << "Usable rows: " << valid_line_count << "\n";
-    report_file << "Skipped rows: " << skip_count << "\n";
-    report_file << "Duplicate rows: " << dup_count << "\n";
-    report_file << "Missing value rows: " << na_count << "\n";
+    report_file << "All:" << "\t" << total_line_count << "\n";
+    report_file << "Usable: "  << "\t" <<  valid_line_count << "\n";
+    report_file << "Skipped: "  << "\t" <<  skip_count << "\n";
+    report_file << "Duplicate: "  << "\t" <<  dup_count << "\n";
+    report_file << "Missing: "  << "\t" <<  na_count << "\n";
+    report_file << "Non-official_hetu: "  << "\t" <<  hetu_count << "\n";
     report_file << endl;
 
     // Closing
