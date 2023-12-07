@@ -69,7 +69,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
 
                             # mmol/l and mmol/mol
                             lab_unit = re.sub(r"^mmol.?(l|i).?$", "mmol/l", lab_unit)
-                            lab_unit = re.sub(r"molkrea", "mol", lab_unit)
+                            lab_unit = re.sub(r"krea", "", lab_unit)
                             lab_unit = re.sub(r"^mmol.?mol.?$", "mmol/mol", lab_unit)
 
 
@@ -80,7 +80,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             lab_unit = re.sub(r"^.?mg.?l$", "mg/l", lab_unit)
 
                             # GFR
-                            lab_unit = re.sub(r"(^ml/min.*|^ml/.*/17.*|^ml.?min.?173m2$)$", "ml/min/173m2", lab_unit)
+                            lab_unit = re.sub(r"^ml/min.*", "ml/min/1.73m2", lab_unit)
 
                             # INR
                             lab_unit = re.sub(r"^inrarvo$", "inr", lab_unit)
@@ -99,7 +99,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             lab_unit = re.sub(r"(kopio(t)?(a)?|klp|sol(y|µ|u)|sol(y|µ|u)a|pisteet)", "kpl",lab_unit)
 
                             # Viewfield
-                            lab_unit = re.sub(r"(n(ä)?kö(ke)?k(enttä)?|s(y|µ)n(fält|f)?$)", "nk", lab_unit)
+                            lab_unit = re.sub(r"(n(ä)?kö(ke)?k(enttä|entt)?|s(y|µ)n(fält|f)?$)", "nk", lab_unit)
 
                             # Counts per viewfield
                             lab_unit = re.sub(r"(^(kpla)/nk|^kpl.?nk$|/nk$)", "kpl/nk", lab_unit)
@@ -114,7 +114,7 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             lab_unit = re.sub(r"^a(u|µ)/ml$", "au/ml",lab_unit)
 
                             # f-calpro
-                            lab_unit = re.sub(r"gulos(t.*)$", "gstool",lab_unit)
+                            lab_unit = re.sub(r"(gulos(t.*)$|gulo)", "gstool",lab_unit)
                             lab_unit = re.sub(r"((u|µ)g/g(\s+)?stool|(u|µ)g/g(f)?)", "µg/g",lab_unit)
 
 
@@ -144,14 +144,14 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             lab_unit = re.sub(r"kpl", "u",lab_unit) # kpl and counts often interchangeably used with u = unit
 
                             lab_unit = re.sub(r"(lausunto|lomake)", "form", lab_unit)
-                            lab_unit = re.sub(r"^indeksi$", "index",lab_unit)
+                            lab_unit = re.sub(r"indeksi", "index",lab_unit)
                             lab_unit = re.sub(r"arvio", "estimate",lab_unit)
                             lab_unit = re.sub(r"suhde", "ratio",lab_unit)
                             lab_unit = re.sub(r"krt", "times",lab_unit)
 
                             # Removing redundant and inconsistant information
                             lab_unit = re.sub(r"/100le(uk)$", "/100leuk",lab_unit)
-                            lab_unit = re.sub(r"/l(/)?(4|37c|ph7|ph74)+", "/l", lab_unit)
+                            lab_unit = re.sub(r"/l(/|)?(4|37c|ph7|ph74)+", "/l", lab_unit)
                             lab_unit = re.sub(r"nmol(bce)?/mmol", "nmol/mmol", lab_unit)
 
 
