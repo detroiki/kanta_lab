@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
             // Column headers
-            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,OMOP_ID,OMOP_NAME,LAB_ABNORMALITY,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
+            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,OMO_ID,OMOP_NAME,LAB_ABNORMALITY,MEASUREMENT_STATUS,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
             first_line = 0;
             continue;
         }
@@ -87,9 +87,10 @@ int main(int argc, char *argv[]) {
         std::string lab_value = line_vec[6];
         std::string lab_unit = line_vec[7];
         std::string lab_abnormality = line_vec[8];  
-        std::string ref_value_text = line_vec[9];
-        std::string data_system = line_vec[10];
-        std::string data_system_ver = line_vec[11];
+        std::string measure_status = line_vec[9];  
+        std::string ref_value_text = line_vec[10];
+        std::string data_system = line_vec[11];
+        std::string data_system_ver = line_vec[12];
 
         // Getting current lab source (LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU)
         std::string omop_lab_source = get_omop_lab_source(lab_id_source, service_provider_name);
@@ -103,8 +104,7 @@ int main(int argc, char *argv[]) {
         std::string omop_name = get_omop_name(omop_id, omop_names);
 
         // Writing line to file
-
-        std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, ref_value_text, data_system, data_system_ver};
+        std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, measure_status, ref_value_text, data_system, data_system_ver};
         // Making sure that all columns with the delimiter in the text are in quotation marks
         for(int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], delim);
         res_file << concat_string(final_line_vec, std::string(1, delim)) << "\n";

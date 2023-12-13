@@ -10,11 +10,9 @@
 #include <cmath>
 #include <algorithm>
 #include <chrono>
-#include <boost/date_time/gregorian/gregorian.hpp>
 #include <filesystem>
 
 using namespace std;
-using namespace boost::gregorian;
 
 // Helper functions
 void write_line_update(int n_lines, std::chrono::steady_clock::time_point &begin, int line_limit = 10000000);
@@ -69,7 +67,8 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
                             unsigned long long &na_count,
-                            unsigned long long &hetu_count);
+                            unsigned long long &hetu_count,
+                            unsigned long long &stat_count);
 void write_dup_lines_file(std::string &res_path,
                           std::string &file,
                           std::string &date,
@@ -107,8 +106,7 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
                            int min_count);
 
 // Sumstats
-void read_indvs_date_file(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
-                      std::string indvs_path);
+
 void read_indvs_file(std::unordered_set<std::string> &relevant_indvs,
                       std::string indvs_path);
 void read_omops_file(std::unordered_set<std::string> &relevant_omops,

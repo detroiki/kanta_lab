@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
 
 
     // Reading
+    char delim = ',';
     std::string line;
     int first_line = 1; // Indicates header line
     int n_lines = 0;
@@ -50,18 +51,21 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        std::vector<std::string> line_vec(splitString(line, ','));
+        std::vector<std::string> line_vec(splitString(line, delim));
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
+        std::string lab_date_time = line_vec[1];
+        std::string service_provider_name = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
         std::string lab_value = remove_chars(line_vec[6], ' ');
         std::string lab_unit = remove_chars(line_vec[7], ' ');
-        std::string lab_abnorm = remove_chars(line_vec[8], ' ');
-        std::string omop_id = line_vec[9];
-        std::string omop_name = line_vec[10];
+        std::string omop_id = line_vec[8];
+        std::string omop_name = line_vec[9];
+        std::string lab_abnormality = remove_chars(line_vec[10], ' ');
+        std::string ref_value_text = line_vec[11];
+        std::string data_system = line_vec[12];
+        std::string data_system_ver = line_vec[13];
 
         std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(","));
         if(new_omops.find(omop_identifier) != new_omops.end()) {
@@ -69,11 +73,11 @@ int main(int argc, char *argv[]) {
             omop_name = omop_names[omop_id];
         }
         
-        add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(omop_name);
-
-        // Writing to results file
-
-        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," <<lab_unit << "," << lab_abnorm << "," <<omop_id << "," << omop_name << "\n";     
+        // Writing line to file
+        std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, ref_value_text, data_system, data_system_ver};
+        // Making sure that all columns with the delimiter in the text are in quotation marks
+        for(int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], delim);
+        res_file << concat_string(final_line_vec, std::string(1, delim)) << "\n";
 
         // Write every 10000000 lines
         n_lines++; write_line_update(n_lines, begin);

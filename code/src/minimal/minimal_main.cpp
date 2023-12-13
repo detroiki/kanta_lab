@@ -106,6 +106,7 @@ int main(int argc, char *argv[]) {
     unsigned long long total_line_count = 0; // All lines
     unsigned long long na_count = 0;
     unsigned long long hetu_count = 0;
+    unsigned long long stat_count = 0;
 
     // This code is used for wrongly split lines writing to error file
     int lines_valid_status = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
@@ -122,7 +123,7 @@ int main(int argc, char *argv[]) {
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
+                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,MEASUREMENT_STATUS,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
                 ++valid_line_count;
                 cout << "Header written, check if delimiter correct first element on line 1 is: " << line_vec[0] << endl;
             } else {
@@ -133,6 +134,7 @@ int main(int argc, char *argv[]) {
                 std::string finregid = line_vec[4];
                 std::string lab_date_time = line_vec[11];
                 std::string service_provider_oid = line_vec[28];
+                std::string measure_stat = line_vec[34];
                 std::string lab_value = line_vec[35];
                 std::string lab_unit = line_vec[36];
                 std::string lab_abnormality = line_vec[37];
@@ -142,9 +144,15 @@ int main(int argc, char *argv[]) {
 
                 // Skipping lines with not official hetu root, doing this here to avoid keeping hetu_root in later files
                 std::string hetu_root = line_vec[30];
-                if(hetu_root != "1.2.246.21") {
+                if((hetu_root != "1.2.246.21")) {
                     error_file << line << "\n";
                     ++hetu_count;
+                    continue;
+                } 
+                // Skipping lines with measurement status = unfinished, W = wrong, X = no result, I = sample in the lab waiting for result
+                if((measure_stat == "K") | (measure_stat == "W") | (measure_stat == "X") | (measure_stat == "I")) {
+                    error_file << line << "\n";
+                    ++stat_count;
                     continue;
                 }
 
@@ -181,7 +189,7 @@ int main(int argc, char *argv[]) {
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
                             char delim = ',';
-                            std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, ref_value_text, data_system, data_system_ver};
+                            std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, measure_stat, ref_value_text, data_system, data_system_ver};
                             // Making sure that all columns with the delimiter in the text are in quotation marks
                             for(int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], delim);
                             res_file << concat_string(final_line_vec, std::string(1, delim)) << "\n";
@@ -211,7 +219,7 @@ int main(int argc, char *argv[]) {
     res_file.close(); 
 
     // Writing final files
-    write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count, hetu_count);
+    write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count, hetu_count, stat_count);
     write_dup_lines_file(res_path, file, date, report_path, all_dup_lines);
 
     write_end_run_summary(begin);

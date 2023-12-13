@@ -303,7 +303,8 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
                             unsigned long long &na_count,
-                            unsigned long long &hetu_count) {
+                            unsigned long long &hetu_count,
+                            unsigned long long &stat_count) {
     cout << "Writing row line report" << endl;
     // Opening 
     std::ofstream report_file;
@@ -315,6 +316,7 @@ void write_row_count_report(std::string &report_path,
     report_file << "Skipped: "  << "\t" <<  skip_count << "\n";
     report_file << "Duplicate: "  << "\t" <<  dup_count << "\n";
     report_file << "Missing: "  << "\t" <<  na_count << "\n";
+    report_file << "Bad_measure_status: "  << "\t" <<  stat_count << "\n";
     report_file << "Non-official_hetu: "  << "\t" <<  hetu_count << "\n";
     report_file << endl;
 

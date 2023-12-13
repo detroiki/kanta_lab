@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 
     // Reading
     std::string line;
+    char delim = ',';
     int first_line = 1; // Indicates header line
     int n_lines = 0;
     while (std::getline(std::cin, line)) {
@@ -23,23 +24,26 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        std::vector<std::string> line_vec(splitString(line, ','));
+       std::vector<std::string> line_vec(splitString(line, delim));
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
+        std::string lab_date_time = line_vec[1];
+        std::string service_provider_name = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
         std::string lab_value = remove_chars(line_vec[6], ' ');
         std::string lab_unit = remove_chars(line_vec[7], ' ');
-        std::string lab_abnorm = remove_chars(line_vec[8], ' ');
-        std::string omop_id = line_vec[9];
-        std::string omop_name = line_vec[10];
+        std::string omop_id = line_vec[8];
+        std::string omop_name = line_vec[9];
+        std::string lab_abnormality = remove_chars(line_vec[10], ' ');
+        std::string ref_value_text = line_vec[11];
+        std::string data_system = line_vec[12];
+        std::string data_system_ver = line_vec[13];
 
         // Create identifiers for the data
         std::string lab_info = get_lab_info(lab_abbrv, lab_unit);
         std::string omop_info = get_omop_info(omop_id, omop_name);
-        std::string lab_omop_info = concat_string(std::vector<std::string>({lab_info, omop_info}), std::string(","));
+        std::string lab_omop_info = concat_string(std::vector<std::string>({lab_info, omop_info}), std::string(std::string(1, delim)));
         std::string lab_id_omop_info = get_lab_id_omop_info(lab_id, lab_info, omop_info);
 
         // Adding to all lab data
@@ -64,7 +68,7 @@ int main(int argc, char *argv[])
 
     res_file << "LAB_ID,LAB_ABBRV,LAB_UNIT,OMOP_ID,OMOP_NAME,LAB_COUNT,INDV_COUNT" << std::endl;
     for (auto &lab : lab_count_data) {
-        res_file << lab.first << "," << lab.second << "," << lab_indv_data[lab.first].size() << std::endl;
+        res_file << lab.first << delim << lab.second << delim << lab_indv_data[lab.first].size() << std::endl;
     }    
 
     res_file.close();
@@ -76,7 +80,7 @@ int main(int argc, char *argv[])
     
     res_file << "LAB_ABBRV,LAB_UNIT,OMOP_ID,OMOP_NAME,COUNT" << std::endl;
     for (auto &omop_mapped : omop_mapped_count_data) {
-        res_file << omop_mapped.first << "," << omop_mapped.second << std::endl;
+        res_file << omop_mapped.first << delim << omop_mapped.second << std::endl;
     }
 
     res_file.close();

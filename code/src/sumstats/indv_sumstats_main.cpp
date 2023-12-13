@@ -1,5 +1,51 @@
 #include "../header.h"
+#include <boost/date_time/gregorian/gregorian.hpp>
+using namespace boost::gregorian;
 
+/**
+ * @brief Reads the sample file with individuals start and end date to the study
+ * 
+ * @param relevant_indvs unordered map of relevant individuals to fill in. Made up of finregid -> <start, end> date
+ * @param indvs_path path to the individuals sample file
+ * 
+ * @return void
+ * 
+ * @details 
+ * Reads the sample file with individuals start and end date to the study. The information is stored in the unordered
+ * map relevant_indvs. The keys are the finregids and the values are tuples of start and end dates.
+*/
+void read_indvs_date_file(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
+                          std::string indvs_path) {
+    // Opening sample file
+    std::ifstream indvs_file;
+    indvs_file.open(indvs_path);
+    check_in_open(indvs_file, indvs_path);
+    std::string indv_line;
+
+    int first_line = 1;
+    while(std::getline(indvs_file, indv_line)) {
+        if (first_line == 1) {
+            first_line = 0;
+            continue;
+        }
+
+        // Getting relevant information
+        std::vector<std::string> line_vec(split(indv_line, "\t"));
+        std::string finregid = line_vec[0];
+        std::string start_date = line_vec[2];
+        std::string end_date = line_vec[3];
+
+        // Converting dates to date objects
+        date start_date_obj(from_simple_string(start_date));
+        date end_date_obj(from_simple_string(end_date));
+
+        // Creating tuple of dates <start, end>
+        std::tuple<date, date> indv_dates(start_date_obj, end_date_obj);
+
+        // Assining to individual
+        relevant_indvs[finregid] = indv_dates;
+    }
+}
 
 int main(int argc, char *argv[]) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

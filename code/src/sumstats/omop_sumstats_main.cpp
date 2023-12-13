@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     std::unordered_map<std::string, std::unordered_set<std::string>> omop_indvs;
 
     // Reading
+    char delim = ',';
     std::string line;
     int first_line = 1; // Indicates header line
     int n_lines = 0;
@@ -20,21 +21,24 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        std::vector<std::string> line_vec(splitString(line, ','));
+        std::vector<std::string> line_vec(splitString(line, delim));
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
+        std::string lab_date_time = line_vec[1];
+        std::string service_provider_name = line_vec[2];
         std::string lab_id = remove_chars(line_vec[3], ' ');
         std::string lab_id_source = line_vec[4];
         std::string lab_abbrv = remove_chars(line_vec[5], ' ');
         std::string lab_value = remove_chars(line_vec[6], ' ');
         std::string lab_unit = remove_chars(line_vec[7], ' ');
-        std::string lab_abnorm = remove_chars(line_vec[8], ' ');
-        std::string omop_id = line_vec[9];
-        std::string omop_name = line_vec[10];
+        std::string omop_id = line_vec[8];
+        std::string omop_name = line_vec[9];
+        std::string lab_abnormality = remove_chars(line_vec[10], ' ');
+        std::string ref_value_text = line_vec[11];
+        std::string data_system = line_vec[12];
+        std::string data_system_ver = line_vec[13];
 
         if (!(omop_id == "NA" || lab_value == "NA")) {
-            add_quotation(omop_name); add_quotation(lab_unit);
+            add_quotation(omop_name, delim); add_quotation(lab_unit, delim);
             std::string omop_identifier = concat_string(std::vector<std::string>({omop_id, omop_name, lab_unit}), ",");
             omops[omop_identifier].push_back(std::stod(lab_value));
             omop_indvs[omop_identifier].insert(finregid);
