@@ -1,5 +1,32 @@
 #include "../header.h"
 
+
+void read_lab_id_abbrv_map(std::string file_path,
+                           std::map<std::string, std::unordered_set<std::string>> &elems) {
+   // open
+    std::ifstream in_file;
+    in_file.open(file_path);
+    check_in_open(in_file, file_path, 1);
+    // Read
+    std::string line;
+    std::map<std::string, std::unordered_set<std::string>> phs;
+    char delim = find_delim(file_path);
+    while (std::getline(in_file, line)) {
+        std::vector<std::string> line_vec = split(line, &delim);
+        elems[line_vec[0]].insert(line_vec[1]);
+    }
+    in_file.close();
+
+    // Print first 10 elems of elems
+    std:cout << "Printing first 10 elems of " << file_path << std::endl;
+    for(auto &elem: elems) {
+        std::cout << elem.first << " <--> ";
+        for(auto &elem2: elem.second)
+            std::cout << elem2 << " ";
+        std::cout << std::endl;
+    }
+}
+
 /**
  * @brief Fixes phs that often have no units
  * 
@@ -13,24 +40,13 @@
 */
 void fix_phs(std::string &lab_id,
              std::string &lab_abbrv,
-             std::string &lab_unit) {
-    std::unordered_set<std::string> phs = {"103268_4 u-tutk-1,u-ph", "0067 u-ph", "11554 s-ph", "50100 s-ph", "50099 fp-ph", "1528 cp-ph", 
-        "13039 u-ph-o", "0531 vb-ph","00026 u-ph", "0431 fs-ph", "0685 ab-ph", "0074 ua-ph", "45093 s-ph",
-        "627598_5 u-kemseula,u-ph", "247 u-ph", "10193 pf-ph", "45213 uv-ph", "21701 u-ph", "5345 pf-ph", "8591 sp-ph", "1531 vb-ph",
-        "21701 u-ph.*", "6001530 u-ph", "50100 fs-ph", "9242 mb-ph", "3667 u-ph", "1527 ab-ph", "3367 u-ph-0", "10099 u-ph",
-        "50099 p-ph", "103 b-ph", "0526 fs-ph", "600334 u-ph", "1600334 u-ph", "8522 p-ph", "9010 s-ca-ion", "1530 u-ph",
-        "9225 p-ca-ion", "8869 u-ph-huu", "8423 s-ph", "5098 s-ph(akt)", "586 c++/7.40", "13900 p-ca-ion.", "8523 s-ph",
-        "0320 ab-ph", "0431 uv-ph", "1528 cb-ph", "602090 u-ph", "2600334 u-ph", "14234 cb-phpika", "0410 ab-ph", "0341 vb-ph",
-        "50292 di-ph", "8910 uv-ph", "3667 u-ph-o", "9035 pf-ph", "627598_5 u-kemseul,u-ph", "50099 fs-ph", 
-        "0007 ab-ph(t)", "1364 u-phv", "1531 vp-ph", "8025 pf-ph", "0056 u-ph-huu", "14230 vb-phpika", "0303 u-ph-o*", "0103 b-ph",
-        "11570 vb-ph-vt", "8270 vb-ph", "9452 ab-ph", "10730 ab-ph", "0415 cb-ph", "1531 b-ph", "0695 cb-ph",  "0225 ub-ph",
-        "45094 p-ph", "0918 cb-ph", "103667 u-ph-o", "0528 cb-ph", "602556_4 pikau-sti,u-ph", "8591 -ph", "602556_4 pikau-stix,u-ph",
-        "0614 u-ph", "0375 u-ph*", "606025 vb-ph", "8915 ua-ph", "50056 pf-ph", "17261 ub-ph", "11128 ab-ph(t)", "0683 fs-ph",
-        "0325 u-ph", "45219 ua-ph", "595 ph", "00025 u-ph", "12130 fl-ph", "50161 uv-ph", "610 pf-ph", "20032 pf-ph", "1532 zb-ph",
-        "5098 s-ph", "0350 u-ph", "21701 u-ph.", "0375 u-ph", "2103667 u-ph-o", "11554 s-ph*", "9018 -ph", "0061 ab-ph(t)",
-        "2431 pf-ph", "50160 ua-ph", "101543_1 vb-he-tase,vb-ph", "5402 mb-ph", "0368 u-ph-hy", "0105 u-ph", "1527 ap-ph"};
-
-    if((phs.find(concat_string(std::vector<std::string>({lab_id, lab_abbrv}), " ")) != phs.end()) & (lab_unit == "NA")) lab_unit = "ph";
+             std::string &lab_unit,
+             std::map<std::string, std::unordered_set<std::string>> &phs) {
+    if(phs.find(lab_id) != phs.end()) {
+        if(phs[lab_id].find(lab_abbrv) != phs[lab_id].end()) {
+            if(lab_unit == "NA") lab_unit = "ph";
+        }
+    } 
 }
 
 
@@ -49,18 +65,13 @@ void fix_phs(std::string &lab_id,
 void fix_titles(std::string &lab_id,
                   std::string &lab_abbrv,
                   std::string &lab_unit,
-                  std::string &lab_value) {
-    std::unordered_set<std::string> titles = {"2474 b-pvk-t", "2473 b-pvk", "2474 b-pvkt", "90 b-pvk+t", "139 u-bakt", "147 vekapak1", 
-                                              "158 b-diffi", "185 u-solut", "248 pt-gfre-md", "273 b-pvk+tkd,ig",
-                                              "298 fp-lipidit", "316 pu-baktvi1", "412 fs-lipidit", "437 u-tutk-1,ph", "452 b-tvk", 
-                                              "462 fp-kol-ind", "471 b-pvk", "516 b-pvk+tmd", "559 2hgluk", "568 vb-he-tase"
-                                              "618 s-hbvpak", "672 s-keliseu", "695 pt-gluk-r1", "723 cb-het-ion", "760 b-baktjvi",
-                                              "761 s-ruokaer", "774 b-pvk+tkd", "777 pt-gluk-2h", "798 vb-vkperus", "803 u-kemseul,ph", 
-                                              "852 pt-kt/v1", "958 cb-bepika", "983 pocabrc", "993 vb-vklaaja", "994 pes.j‰l",
-                                              "2475 b-pvk+tkd"};
-    if((titles.find(concat_string(std::vector<std::string>({lab_id, lab_abbrv}), " ")) != titles.end())) {
-        lab_unit = "ordered";
-        lab_value = "NA";
+                  std::string &lab_value,
+                  std::map<std::string, std::unordered_set<std::string>> &titles) {
+
+    if(titles.find(lab_id) != titles.end()) {
+        if(titles[lab_id].find(lab_abbrv) != titles[lab_id].end()) {
+            if(lab_unit == "NA") lab_unit = "ph";
+        }
     }
 }
 
@@ -135,7 +146,7 @@ int remove_illegal_measure_year(std::string &date_time,
     std::string year = date_time.substr(0, 4);
     try {
         int year_int = std::stoi(year);
-        if(year_int < 2014) {
+        if(year_int < 2014 || year_int > 2023) {
             keep = 0;
         } 
     } catch(...) {
@@ -184,6 +195,27 @@ int remove_illegal_values(std::string &lab_value,
         // This means we end up having neither lab value nor abnormality
         if(lab_abnorm == "NA") keep = 0;
     }
+    return(keep);
+}
+
+/**
+ * @brief Removes illegal values that are not numbers
+ * 
+ * @param lab_value The lab value of the lab test
+ * @param lab_abnorm The lab abnormality of the lab test
+ * @param lab_abbrv The lab abbreviation of the lab test
+ * @param keep Whether the line should be kept or not
+ * 
+ * @return void
+ * 
+ * If the lab value is not a number, the line is removed. Additionally, negative values
+ * are removed except for -h-ind, ab-hb-met, be and vekaas.
+*/
+int remove_bad_measure_status(std::string measure_status,
+                              int keep) {
+    if(measure_status == "NA") return(keep);
+    if(measure_status == "D") return(0);
+    if(measure_status == "P") return(0);
     return(keep);
 }
 
