@@ -23,7 +23,7 @@ void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines,
             std::chrono::steady_clock::time_point file_begin = std::chrono::steady_clock::now();
 
             // File path
-            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), "_", date, ".csv"};    
+            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), "_", date, ".tsv"};    
             std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
 
             // Opening file
@@ -331,7 +331,7 @@ void write_dup_lines_file(std::string &res_path,
                           std::unordered_map<std::string, int> &all_dup_lines) {
     cout << "Writing duplicate lines file" << endl;
     // File paths
-    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".csv"};    
+    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".tsv"};    
     std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
 
     // Opening

@@ -62,16 +62,16 @@ int main(int argc, char *argv[]) {
     
     /// OUTPUT FILE PATHS   
     // Results file
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_file_", file, "_", date, ".zsv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
     // Row counts file
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, "_", date, ".tsv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
     // Problem rows file
-    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, "_", date, ".tsv"};    
     std::string error_path = concat_string(error_path_vec, std::string(""));
     // Missing rows file
-    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".csv"};
+    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".tsv"};
     std::string missing_path = concat_string(missing_path_vec, std::string(""));
 
     std::ofstream error_file; std::ofstream missing_file;
@@ -112,18 +112,20 @@ int main(int argc, char *argv[]) {
     int lines_valid_status = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
 
     /// READING IN DATA
+    char out_delim = '\t';
+    char in_delim = '\t';
     std::string line;
     cout << "Starting reading file " << file << endl;
     while(std::getline(std::cin, line)) {
         ++total_line_count;
         // Getting current line as vector
-        std::vector<std::string> line_vec = splitString(line, '\t');
+        std::vector<std::string> line_vec = split(line, &in_delim);
 
         // Line or newline is valid
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,MEASUREMENT_STATUS,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
+                res_file << get_no_omop_header(out_delim) << "\n";
                 ++valid_line_count;
                 cout << "Header written, check if delimiter correct first element on line 1 is: " << line_vec[0] << endl;
             } else {
@@ -131,16 +133,16 @@ int main(int argc, char *argv[]) {
                 fix_nas(line_vec);
 
                 // Column values directly from line
-                std::string finregid = line_vec[4];
-                std::string lab_date_time = line_vec[11];
-                std::string service_provider_oid = line_vec[28];
-                std::string measure_stat = line_vec[34];
-                std::string lab_value = line_vec[35];
-                std::string lab_unit = line_vec[36];
-                std::string lab_abnormality = line_vec[37];
-                std::string ref_value_text = line_vec[44];
-                std::string data_system = line_vec[18];
-                std::string data_system_ver = line_vec[20];
+                std::string finregid = remove_chars(line_vec[4], ' ');
+                std::string lab_date_time = remove_chars(line_vec[11], ' ');
+                std::string service_provider_oid = remove_chars(line_vec[28], ' ');
+                std::string measure_stat = remove_chars(line_vec[34], ' ');
+                std::string lab_value = remove_chars(line_vec[35], ' ');
+                std::string lab_unit = remove_chars(line_vec[36], ' ');
+                std::string lab_abnormality = remove_chars(line_vec[37], ' ');
+                std::string ref_value_text = remove_chars(line_vec[44], ' ');
+                std::string data_system = remove_chars(line_vec[18], ' ');
+                std::string data_system_ver = remove_chars(line_vec[20], ' ');
 
                 // Skipping lines with not official hetu root, doing this here to avoid keeping hetu_root in later files
                 std::string hetu_root = line_vec[30];
@@ -188,11 +190,10 @@ int main(int argc, char *argv[]) {
                             // Increasing line count for duplicate lines in this file to one (meaning that this line is not actually duplicated)
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
-                            char delim = ',';
                             std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, measure_stat, ref_value_text, data_system, data_system_ver};
                             // Making sure that all columns with the delimiter in the text are in quotation marks
-                            for(int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], delim);
-                            res_file << concat_string(final_line_vec, std::string(1, delim)) << "\n";
+                            for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
+                            res_file << concat_string(final_line_vec, std::string(1, out_delim)) << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
                     // Line is missing all interesting data
