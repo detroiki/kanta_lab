@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                 continue;
             }
             
-            std::vector<std::string> line_vec(splitString(line, in_delim));
+            std::vector<std::string> line_vec(split(line, &in_delim));
             std::string finregid = line_vec[0];
             std::string lab_date_time = line_vec[1];
             std::string service_provider_name = line_vec[2];
