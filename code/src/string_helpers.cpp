@@ -69,17 +69,32 @@ std::string remove_chars(std::string str,
     return(str);
 }
 
-std::string get_omop_identifier(std::string lab_id,
-                                std::string lab_abbrv,
-                                std::string lab_unit,
-                                std::string sep) {
+std::string get_lab_id_omop_identifier(std::string lab_id,
+                                       std::string lab_abbrv,
+                                       std::string lab_unit,
+                                       char sep) {
 
     // Currently identifying the OMOP concept by the lab ID and abbreviation.
-    add_quotation(lab_id, sep[0]);
-    add_quotation(lab_abbrv, sep[0]);
-    add_quotation(lab_unit, sep[0]);
+    add_quotation(lab_id, sep);
+    add_quotation(lab_abbrv, sep);
+    add_quotation(lab_unit, sep);
     std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbrv, lab_unit};
-    std::string omop_identifier = concat_string(omop_identifier_vec, sep);
+    std::string omop_identifier = concat_string(omop_identifier_vec, &sep);
+
+    return(omop_identifier);
+} 
+
+std::string get_omop_identifier(std::string omop_id,
+                                std::string omop_name,
+                                std::string lab_unit,
+                                char sep) {
+
+    // Currently identifying the OMOP concept by the lab ID and abbreviation.
+    add_quotation(omop_id, sep);
+    add_quotation(omop_name, sep);
+    add_quotation(lab_unit, sep);
+    std::vector<std::string> omop_identifier_vec = {omop_id, omop_name, lab_unit};
+    std::string omop_identifier = concat_string(omop_identifier_vec, &sep);
 
     return(omop_identifier);
 } 
@@ -189,6 +204,5 @@ void add_quotation(std::string &str,
                    char delim) {
     if(str.find(delim) != std::string::npos) {
         str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
-        std::cout << "Quotation added to: " << str << std::endl;
     }
 }
