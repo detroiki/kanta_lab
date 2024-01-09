@@ -163,3 +163,9 @@ std::string get_header(char delim) {
     std::string header = concat_string(header_vec, std::string(1, delim));
     return(header);
 }
+
+std::string get_header_final(char delim) {
+    std::vector<std::string> header_vec = {"FINREGISTRYID", "LAB_DATE_TIME", "LAB_SERVICE_PROVIDER", "LAB_ID", "LAB_ID_SOURCE", "LAB_ABBREVIATION", "LAB_VALUE", "LAB_UNIT", "OMOP_ID", "OMOP_NAME", "LAB_ABNORMALITY", "MEASUREMENT_STATUS", "REFERENCE_VALUE_TEXT"};
+    std::string header = concat_string(header_vec, std::string(1, delim));
+    return(header);
+}
