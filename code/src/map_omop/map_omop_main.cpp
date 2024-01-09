@@ -66,24 +66,25 @@ int main(int argc, char *argv[]) {
     int n_lines = 0;
     
     // Reading
-    char delim = ',';
+    char out_delim = '\t';
+    char in_delim = '\t';
     std::string line;
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
             // Column headers
-            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,OMO_ID,OMOP_NAME,LAB_ABNORMALITY,MEASUREMENT_STATUS,REFERENCE_VALUE_TEXT,DATA_SYSTEM,DATA_SYSTEM_VERSION\n"; 
+            res_file << get_header(out_delim) << "\n";
             first_line = 0;
             continue;
         }
 
         // Splitting line
-        std::vector<std::string> line_vec = splitString(line, delim);
+        std::vector<std::string> line_vec = split(line, &in_delim);
         std::string finregid = line_vec[0];
         std::string lab_date_time = line_vec[1];
         std::string service_provider_name = line_vec[2];
-        std::string lab_id = remove_chars(line_vec[3], ' ');
+        std::string lab_id = line_vec[3];
         std::string lab_id_source = line_vec[4];
-        std::string lab_abbrv = remove_chars(line_vec[5], ' ');
+        std::string lab_abbrv = line_vec[5];
         std::string lab_value = line_vec[6];
         std::string lab_unit = line_vec[7];
         std::string lab_abnormality = line_vec[8];  
@@ -106,8 +107,10 @@ int main(int argc, char *argv[]) {
         // Writing line to file
         std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, measure_status, ref_value_text, data_system, data_system_ver};
         // Making sure that all columns with the delimiter in the text are in quotation marks
-        for(int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], delim);
-        res_file << concat_string(final_line_vec, std::string(1, delim)) << "\n";
+        if(out_delim != '\t') {
+            for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
+        }
+        res_file << concat_string(final_line_vec, std::string(1, out_delim)) << "\n";
 
         // Write every 10000000 lines
         n_lines++; write_line_update(n_lines, begin);

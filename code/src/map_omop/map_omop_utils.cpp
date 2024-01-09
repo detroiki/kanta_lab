@@ -186,7 +186,7 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
         int omop_count = std::stoi(line_vec[6]);
 
         if(omop_count >= min_count) {
-            std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(","));
+            std::string omop_identifier = get_lab_id_omop_identifier(lab_id, lab_abbrv, lab_unit, delim);
             new_omops[omop_identifier] = omop_id;
             omop_names[omop_id] = omop_name;
         }
