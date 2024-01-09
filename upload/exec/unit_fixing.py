@@ -18,7 +18,7 @@ count = 0
 with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
     with open(res_dir + "processed/data/kanta_lab_" + date + "_fixed_units.csv", 'w', encoding="utf-8") as fout_min:
         with open(res_dir + "processed/reports/counts/" + date + "_unit_fixes.csv", 'w', encoding="utf-8") as fout_fix:
-            reader = csv.reader(fin, quotechar='"', doublequote=False, escapechar='\\')            
+            reader = csv.reader(fin, quotechar='"', doublequote=False, escapechar='\\', delimiter="\t")            
             first_line = 1
             for line_arr in reader:
                 count = count + 1 
@@ -166,17 +166,11 @@ with open(kanta_lab_file, 'r', encoding="utf-8") as fin:
                             # Recording all unit changes
                             if lab_unit != line_arr[7].strip():
                                 lab_abbrv = line_arr[5].strip()
-                                if(lab_abbrv != "NA" and lab_abbrv.find(",")): lab_abbrv = '"' + lab_abbrv + '"'
                                 orig_lab_unit = line_arr[7].strip()
-                                if(orig_lab_unit != "NA" and orig_lab_unit.find(",")): orig_lab_unit = '"' + orig_lab_unit + '"'
-                                fout_fix.write(lab_abbrv + "," + orig_lab_unit + "," + lab_unit + "\n")
+                                fout_fix.write(lab_abbrv + "\t" + orig_lab_unit + "\t" + lab_unit + "\n")
                             
                         line_arr[7] = lab_unit.strip()
 
                 else:
                     first_line = 0
-                for elem_idx in range(0, len(line_arr)):
-                      if line_arr[elem_idx].find(',') != -1: 
-                        line_arr[elem_idx] = '"' + line_arr[elem_idx] + '"'
-
-                fout_min.write(",".join(line_arr) + "\n")
+                fout_min.write("\t".join(line_arr) + "\n")
