@@ -15,7 +15,9 @@ int main(int argc, char *argv[])
 
     // Reading
     std::string line;
-    char delim = ',';
+    char in_delim = '\t';
+    char out_delim = '\t';
+
     int first_line = 1; // Indicates header line
     int n_lines = 0;
     while (std::getline(std::cin, line)) {
@@ -24,7 +26,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-       std::vector<std::string> line_vec(splitString(line, delim));
+        std::vector<std::string> line_vec(split(line, &in_delim));
         std::string finregid = line_vec[0];
         std::string lab_date_time = line_vec[1];
         std::string service_provider_name = line_vec[2];
@@ -36,16 +38,17 @@ int main(int argc, char *argv[])
         std::string omop_id = line_vec[8];
         std::string omop_name = line_vec[9];
         std::string lab_abnormality = remove_chars(line_vec[10], ' ');
-        std::string ref_value_text = line_vec[11];
-        std::string data_system = line_vec[12];
-        std::string data_system_ver = line_vec[13];
+        std::string measure_stat = remove_chars(line_vec[11], ' ');
+        std::string ref_value_text = line_vec[12];
+        std::string data_system = line_vec[13];
+        std::string data_system_ver = line_vec[14];
 
         // Create identifiers for the data
-        std::string lab_info = get_lab_info(lab_abbrv, lab_unit);
-        std::string omop_info = get_omop_info(omop_id, omop_name);
-        std::string lab_omop_info = concat_string(std::vector<std::string>({lab_info, omop_info}), std::string(std::string(1, delim)));
-        std::string lab_id_omop_info = get_lab_id_omop_info(lab_id, lab_info, omop_info);
-
+        std::string lab_info = get_lab_info(lab_abbrv, lab_unit, out_delim);
+        std::string omop_info = get_omop_info(omop_id, omop_name, out_delim);
+        std::string lab_omop_info = concat_string(std::vector<std::string>({lab_info, omop_info}), std::string(std::string(1, out_delim)));
+        std::string lab_id_omop_info = get_lab_id_omop_info(lab_id, lab_info, omop_info, out_delim);
+        
         // Adding to all lab data
         lab_indv_data[lab_id_omop_info].insert(finregid);
         lab_count_data[lab_id_omop_info]++;
@@ -66,9 +69,10 @@ int main(int argc, char *argv[])
     res_file.open(crnt_res_path);
     check_out_open(res_file, crnt_res_path);
 
-    res_file << "LAB_ID,LAB_ABBRV,LAB_UNIT,OMOP_ID,OMOP_NAME,LAB_COUNT,INDV_COUNT" << std::endl;
+    std::vector<std::string> lab_header({"LAB_ID", "LAB_ABBRV", "LAB_UNIT", "OMOP_ID", "OMOP_NAME", "LAB_COUNT", "INDV_COUNT"});
+    res_file << concat_string(lab_header, std::string(1, out_delim)) << "\n";
     for (auto &lab : lab_count_data) {
-        res_file << lab.first << delim << lab.second << delim << lab_indv_data[lab.first].size() << std::endl;
+        res_file << lab.first << out_delim << lab.second << out_delim << lab_indv_data[lab.first].size() << "\n";
     }    
 
     res_file.close();
@@ -78,9 +82,10 @@ int main(int argc, char *argv[])
     res_file.open(crnt_res_path);
     check_out_open(res_file, crnt_res_path);
     
-    res_file << "LAB_ABBRV,LAB_UNIT,OMOP_ID,OMOP_NAME,COUNT" << std::endl;
+    std::vector<std::string> omop_mapped_header({"LAB_ABBRV", "LAB_UNIT", "OMOP_ID", "OMOP_NAME", "COUNT"});
+    res_file << concat_string(omop_mapped_header, std::string(1, out_delim)) << "\n";
     for (auto &omop_mapped : omop_mapped_count_data) {
-        res_file << omop_mapped.first << delim << omop_mapped.second << std::endl;
+        res_file << omop_mapped.first << out_delim << omop_mapped.second << "\n";
     }
 
     res_file.close();
