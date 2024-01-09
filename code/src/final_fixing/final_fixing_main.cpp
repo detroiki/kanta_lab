@@ -59,8 +59,8 @@ int main(int argc, char *argv[])
     while (std::getline(std::cin, line)) {
             if(first_line == 1) {
                 // Column headers
-                res_file << get_header(out_delim) << "\n";
-                error_file << get_header(out_delim) << "\n";
+                res_file << get_header_final(out_delim) << "\n";
+                error_file << get_header_final(out_delim) << "\n";
                 
                 first_line = 0;
                 continue;
