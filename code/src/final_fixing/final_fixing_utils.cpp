@@ -18,7 +18,7 @@ void read_lab_id_abbrv_map(std::string file_path,
     in_file.close();
 
     // Print first 10 elems of elems
-    std:cout << "Printing first 10 elems of " << file_path << std::endl;
+    std::cout << "Printing first 10 elems of " << file_path << std::endl;
     for(auto &elem: elems) {
         std::cout << elem.first << " <--> ";
         for(auto &elem2: elem.second)
