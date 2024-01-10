@@ -10,10 +10,10 @@
 
 <a name="run">
  
-# Run
+# Usage
 
 ```c
-exec/minimal [res_path] [file_no] [date] [data/thl_sote_fix_name_map.tsv] [data/lab_id_map.tsv] [write_reports]
+cat finregistry_[file_no].csv.finreg_ID | exec/minimal [res_path] [file_no] [date] [data/thl_sote_fix_name_map.tsv] [data/lab_id_map.tsv] [write_reports]
 ```
 
 The input arguments need be appended in the correct order
