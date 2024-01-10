@@ -57,7 +57,7 @@ std::unordered_map<std::string, std::string> thl_sote_map;
 
 ## For each line from std::cin
    
-1. Reads line and splits using "\t" - Removes all spaces ` ` from the columns data.
+1. Reads line and splits using "\t" - Removes all spaces from each columns data.
 2. Turns all NA markers to actual NAs in the data 
     - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1`, `NA`, `NULL`` (except in value column
 3. Skips rest and writes line to error file if:
