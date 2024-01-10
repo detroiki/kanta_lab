@@ -87,14 +87,14 @@ Columns directly copied from the data:
 ```c
 std::string finregid = remove_chars(line_vec[4], ' ');
 std::string lab_date_time = remove_chars(line_vec[11], ' ');
-                std::string service_provider_oid = remove_chars(line_vec[28], ' ');
-                std::string measure_stat = remove_chars(line_vec[34], ' ');
-                std::string lab_value = remove_chars(line_vec[35], ' ');
-                std::string lab_unit = remove_chars(line_vec[36], ' ');
-                std::string lab_abnormality = remove_chars(line_vec[37], ' ');
-                std::string ref_value_text = remove_chars(line_vec[44], ' ');
-                std::string data_system = remove_chars(line_vec[18], ' ');
-                std::string data_system_ver = remove_chars(line_vec[20], ' ');
+std::string service_provider_oid = remove_chars(line_vec[28], ' ');
+std::string measure_stat = remove_chars(line_vec[34], ' ');
+std::string lab_value = remove_chars(line_vec[35], ' ');
+std::string lab_unit = remove_chars(line_vec[36], ' ');
+std::string lab_abnormality = remove_chars(line_vec[37], ' ');
+std::string ref_value_text = remove_chars(line_vec[44], ' ');
+std::string data_system = remove_chars(line_vec[18], ' ');
+std::string data_system_ver = remove_chars(line_vec[20], ' ');
 ```
 ### Writing
 1. Writes a row count report about the total number of lines, as well as the number of
