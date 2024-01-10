@@ -46,11 +46,11 @@ The input arguments need be appended in the correct order
 
  ## Removed lines
 
- Removed lines and if the `write_reports` argument is set to True,
- written to a file located at directly written to the error file located at
- `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`.
+ Removed lines are directly written to a file located at 
+ `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`, if the `write_reports` argument is set to `.
+ 
  Lines are removed if they have:
- * Hetu roots that are not 1.2.246.21 (they are manually assigned hetus).
+ * Hetu roots that are not `1.2.246.21` (they are manually assigned hetus).
  * A measurement status of `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result).
  
  Lines with no information about the lab value and abnormality or
