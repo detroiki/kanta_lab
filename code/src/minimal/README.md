@@ -1,15 +1,98 @@
-# Input:
-The input arguments need be appended when running the script in the
-following order:
+# Table of Contents
+- [Run](#run)
+- [Important Steps](#important)
+   -  [Duplicates](#dup)
+   -  [Removed Lines](#rem)
+- [Output](#out)
+   - [Columns `LAB_ID`, `LAB_ID_SOURCE`, and `LAB_ABBREVIATION`](#special)
+- [Expected Columns](#expect)
 
-*`res_path`: Path to results directory
-*`file`: File number
-*`date`: Date of file
-*`thl_sote_path`: Path to THL SOTE organisations name map `data/thl_sote_organisations.tsv`
-*`thl_abbrv_path`: Path to official abbreviations map `data/thl_lab_id_abbrv_map.tsv`
-*`write_reports`: Wheter to write report or not, either "True" or "False"
 
-# Expected columns:
+<a name="run">
+ 
+# Run
+
+```c
+exec/minimal [res_path] [file_no] [date] [data/thl_sote_fix_name_map.tsv] [data/lab_id_map.tsv] [write_reports]
+```
+
+The input arguments need be appended in the correct order
+
+* `res_path`: Path to results directory
+* `file`: File number
+* `date`: Date of file
+* `thl_sote_path`: Path to THL SOTE organisations name map `data/thl_sote_organisations.tsv`
+* `thl_abbrv_path`: Path to official abbreviations map `data/thl_lab_id_abbrv_map.tsv`
+* `write_reports`: Wheter to write report or not, either "True" or "False"
+  
+ <a name="important">
+ 
+ # Important Steps
+
+ <a name="dup">
+  
+ ## Duplicates 
+
+ Duplicate lines are removed. A duplicate is defined if all of the following data is the same: 
+ 1. Finregistry ID
+ 2. Date and time
+ 3. Service provider organization
+ 3. Laboratory test name ID
+ 4. Laboratory test name abbreviation
+ 5. Test result value
+ 6. Test result unit
+
+<a name="rem">
+
+ ## Removed lines
+
+ Removed lines and if the `write_reports` argument is set to True,
+ written to a file located at directly written to the error file located at
+ `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`.
+ Lines are removed if they have:
+ * Hetu roots that are not 1.2.246.21 (they are manually assigned hetus).
+ * A measurement status of `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result).
+ 
+ Lines with no information about the lab value and abnormality or
+ a missing Lab ID are removed and if the `write_reports` argument is set to True,
+ written to a file located at
+ `<res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv`,
+
+<a name="out">
+
+ ## Output
+
+ The final files have the following columns:
+ 1. `FINREGISTRYID` - Finregistry ID
+ 2. `LAB_DATE_TIME` - Lab tests date and time
+ 3. `LAB_SERVICE_PROVIDER` - Service provider name
+ 4. `LAB_ID` - Lab test ID
+ 5. `LAB_ID_SOURCE` - Lab test ID source (0: THL, 1: Local)
+ 6. `LAB_ABBREVIATION` - Lab test abbreviation
+ 7. `LAB_VALUE` - Lab test value
+ 8. `LAB_UNIT` - Lab test unit
+ 9. `LAB_ABNORMALITY` - Lab test abnormality
+ 10. `MEASUREMENT_STATUS` - Measurement status
+ 11. `REFERENCE_VALUE_TEXT` - Reference value text
+ 12. `DATA_SYSTEM` - Data system name
+ 13. `DATA_SYSTEM_VERSION` - Data system version
+
+ <a name="special">
+
+ ### Columns `LAB_ID`, `LAB_ID_SOURCE`, and `LAB_ABBREVIATION`
+
+ The columns for lab ID, lab ID source, and lab abbreviation are based on
+ the following original columns:
+* `labooratoriotutkimusoid` 
+    * THL - lab ID source: 0
+    * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
+* `paikallinentutkimusnimikeid`
+    * Local - lab ID source: 1
+    * lab abbreviation from column `paikallinentutkimusnimike`
+
+<a name="expect">
+
+# Expected columns
  1. `laboratoriotutkimusoid` - Laboratory test OID
  2. `asiakirjaoid` - Document OID
  3. `merkintaoid` - Note OID
@@ -57,55 +140,3 @@ following order:
  45. `viitearvoteksti` - Reference value text
  46. `erikoisalalyhenne` - Speciality abbreviation
  
- # Important Steps
- ## Duplicates 
- Duplicate lines are removed. A duplicate is defined if all of the following data is the same: 
- 1. Finregistry ID
- 2. Date and time
- 3. Service provider organization
- 3. Laboratory test name ID
- 4. Laboratory test name abbreviation
- 5. Test result value
- 6. Test result unit
- 
- ## Removed lines
-
- Removed lines and if the `write_reports` argument is set to True,
- written to a file located at directly written to the error file located at
- `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`.
- Lines are removed if they have:
- * Hetu roots that are not 1.2.246.21 (they are manually assigned hetus).
- * A measurement status of `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result).
- 
- Lines with no information about the lab value and abnormality or
- a missing Lab ID are removed and if the `write_reports` argument is set to True,
- written to a file located at
- `<res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv`,
- 
- ## Output
-
- The final files have the following columns:
- 1. `FINREGISTRYID` - Finregistry ID
- 2. `LAB_DATE_TIME` - Lab tests date and time
- 3. `LAB_SERVICE_PROVIDER` - Service provider name
- 4. `LAB_ID` - Lab test ID
- 5. `LAB_ID_SOURCE` - Lab test ID source (0: THL, 1: Local)
- 6. `LAB_ABBREVIATION` - Lab test abbreviation
- 7. `LAB_VALUE` - Lab test value
- 8. `LAB_UNIT` - Lab test unit
- 9. `LAB_ABNORMALITY` - Lab test abnormality
- 10. `MEASUREMENT_STATUS` - Measurement status
- 11. `REFERENCE_VALUE_TEXT` - Reference value text
- 12. `DATA_SYSTEM` - Data system name
- 13. `DATA_SYSTEM_VERSION` - Data system version
- 
- ### Columns `LAB_ID`, `LAB_ID_SOURCE`, and `LAB_ABBREVIATION`
-
- The columns for lab ID, lab ID source, and lab abbreviation are based on
- the following original columns:
-*`labooratoriotutkimusoid` 
-    * THL - lab ID source: 0
-    * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
-*`paikallinentutkimusnimikeid`
-    * Local - lab ID source: 1
-    * lab abbreviation from column `paikallinentutkimusnimike`
