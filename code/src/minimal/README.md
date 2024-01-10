@@ -47,7 +47,7 @@ The input arguments need be appended in the correct order
  ## Removed lines
 
  Removed lines are directly written to a file located at 
- `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`, if the `write_reports` argument is set to `.
+ `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`, if the `write_reports` argument is set to `True`.
  
  Lines are removed if they have:
  * Hetu roots that are not `1.2.246.21` (they are manually assigned hetus).
