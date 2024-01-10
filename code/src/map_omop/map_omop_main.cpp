@@ -22,6 +22,9 @@
  * - LAB_VALUE
  * - LAB_UNIT
  * - LAB_ABNORMALITY
+ * - MEASUREMENT_STATUS
+ * - REFERENCE_VALUE_TEXT
+ * 
  * The column names are irrelevant but they need to be in the correct order.
  * 
  * The lab ID and abbreviations are mapped to the correct source table, if possible and 
@@ -64,31 +67,35 @@ int main(int argc, char *argv[]) {
     // Flag for first line
     int first_line = 1;
     int n_lines = 0;
-
+    
     // Reading
+    char out_delim = '\t';
+    char in_delim = '\t';
     std::string line;
     while(std::getline(std::cin, line)) {
         if(first_line == 1) {
             // Column headers
-            res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY,OMOP_ID,OMOP_NAME" << "\n";
+            res_file << get_header(out_delim) << "\n";
             first_line = 0;
             continue;
         }
 
         // Splitting line
-        std::vector<std::string> line_vec = splitString(line, ',');
+        std::vector<std::string> line_vec = split(line, &in_delim);
         std::string finregid = line_vec[0];
-        std::string date_time = line_vec[1];
-        std::string service_provider = line_vec[2];
-        std::string lab_id = remove_chars(line_vec[3], ' ');
+        std::string lab_date_time = line_vec[1];
+        std::string service_provider_name = line_vec[2];
+        std::string lab_id = line_vec[3];
         std::string lab_id_source = line_vec[4];
-        std::string lab_abbrv = remove_chars(line_vec[5], ' ');
+        std::string lab_abbrv = line_vec[5];
         std::string lab_value = line_vec[6];
         std::string lab_unit = line_vec[7];
         std::string lab_abnormality = line_vec[8];  
+        std::string measure_status = line_vec[9];  
+        std::string ref_value_text = line_vec[10];
 
         // Getting current lab source (LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU)
-        std::string omop_lab_source = get_omop_lab_source(lab_id_source, service_provider);
+        std::string omop_lab_source = get_omop_lab_source(lab_id_source, service_provider_name);
   
         // Finding OMOP mapping
         // Currently identifying the OMOP concept by the lab ID and abbreviation.
@@ -98,10 +105,13 @@ int main(int argc, char *argv[]) {
         std::string omop_id = get_omop_id(omop_concept_map, omop_lab_source, lab_id_abbrv);
         std::string omop_name = get_omop_name(omop_id, omop_names);
 
-        // Writing to results file
-        add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); add_quotation(omop_name);
-
-        res_file << finregid  << "," << date_time << "," <<service_provider << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," <<  lab_value << "," << lab_unit << "," << lab_abnormality << "," <<omop_id << "," << omop_name << "\n";
+        // Writing line to file
+        std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, measure_status, ref_value_text};
+        // Making sure that all columns with the delimiter in the text are in quotation marks
+        if(out_delim != '\t') {
+            for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
+        }
+        res_file << concat_string(final_line_vec, std::string(1, out_delim)) << "\n";
 
         // Write every 10000000 lines
         n_lines++; write_line_update(n_lines, begin);

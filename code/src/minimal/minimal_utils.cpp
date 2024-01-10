@@ -23,7 +23,7 @@ void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines,
             std::chrono::steady_clock::time_point file_begin = std::chrono::steady_clock::now();
 
             // File path
-            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), "_", date, ".csv"};    
+            std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/duplines_", std::to_string(file_no), "_", date, ".tsv"};    
             std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
 
             // Opening file
@@ -121,12 +121,12 @@ std::vector<std::string> read_correct_lines(std::string &line,
                                             std::ofstream &error_file,
                                             int &lines_valid_status,
                                             std::string write_reports) {
-    int n_cols(25);
-    char delim = ';';
+    int n_cols(46);
+    char delim = '\t';
     std::vector<std::string> new_line_vec;
 
     /// LINE VECTORS
-    std::vector<std::string> final_line_vec(25);
+    std::vector<std::string> final_line_vec(46);
     // Split values and copy into line vector
     std::vector<std::string> line_vec(splitString(line, delim));   
 
@@ -203,7 +203,7 @@ std::vector<std::string> read_correct_lines(std::string &line,
  * @details Different NA indicators are Puuttuu, "", TYHJÄ, _, -1 (except in value column)
 */
 void fix_nas(std::vector<std::string> &final_line_vec) {
-    int n_cols(25);
+    int n_cols(46);
     // Replacing different NA indicators with NA
     for(int elem_idx=0; elem_idx < n_cols; elem_idx++) {
         // Replacing NAs
@@ -211,6 +211,7 @@ void fix_nas(std::vector<std::string> &final_line_vec) {
             (final_line_vec[elem_idx] == "\"\"") | 
             (final_line_vec[elem_idx] == "TYHJÄ") | 
             (final_line_vec[elem_idx] == "_") |
+            (final_line_vec[elem_idx] == "NULL") |
             ((final_line_vec[elem_idx] == "-1") & (elem_idx != 19))) { // -1 in value not considered NA
             final_line_vec[elem_idx] = "NA";
             }
@@ -301,18 +302,22 @@ void write_row_count_report(std::string &report_path,
                             unsigned long long &valid_line_count,
                             unsigned long long &skip_count,
                             unsigned long long &dup_count,
-                            unsigned long long &na_count) {
+                            unsigned long long &na_count,
+                            unsigned long long &hetu_count,
+                            unsigned long long &stat_count) {
     cout << "Writing row line report" << endl;
     // Opening 
     std::ofstream report_file;
     report_file.open(report_path); check_out_open(report_file, report_path);
 
     // Writing 
-    report_file << "All rows: " << total_line_count << "\n";
-    report_file << "Usable rows: " << valid_line_count << "\n";
-    report_file << "Skipped rows: " << skip_count << "\n";
-    report_file << "Duplicate rows: " << dup_count << "\n";
-    report_file << "Missing value rows: " << na_count << "\n";
+    report_file << "All:" << "\t" << total_line_count << "\n";
+    report_file << "Usable: "  << "\t" <<  valid_line_count << "\n";
+    report_file << "Skipped: "  << "\t" <<  skip_count << "\n";
+    report_file << "Duplicate: "  << "\t" <<  dup_count << "\n";
+    report_file << "Missing: "  << "\t" <<  na_count << "\n";
+    report_file << "Bad_measure_status: "  << "\t" <<  stat_count << "\n";
+    report_file << "Non-official_hetu: "  << "\t" <<  hetu_count << "\n";
     report_file << endl;
 
     // Closing
@@ -326,7 +331,7 @@ void write_dup_lines_file(std::string &res_path,
                           std::unordered_map<std::string, int> &all_dup_lines) {
     cout << "Writing duplicate lines file" << endl;
     // File paths
-    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".csv"};    
+    std::vector<std::string> duplines_path_vec = {res_path, "processed/reports/problem_rows/", "duplines_", file, "_", date, ".tsv"};    
     std::string duplines_path = concat_string(duplines_path_vec, std::string(""));
 
     // Opening

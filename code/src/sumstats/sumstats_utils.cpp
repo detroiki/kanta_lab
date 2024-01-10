@@ -14,17 +14,21 @@
 **/
 void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &omops,
                          std::unordered_map<std::string, std::unordered_set<std::string>> &omop_indvs,
-                         std::string res_path) {
+                         std::string res_path,
+                         std::string date,
+                         char out_delim) {
 
     // Opening results file
-    std::vector<std::string> full_res_path_vec = {res_path, "_omop_sumstats.csv"};
+    std::vector<std::string> full_res_path_vec = {res_path, "kanta_lab_", date, "_omop_sumstats.tsv"};
     std::string full_res_path = concat_string(full_res_path_vec);
     std::ofstream res_file;
     res_file.open(full_res_path);
     check_out_open(res_file, full_res_path);
 
     // write header in all caps
-    res_file << "OMOP_ID,OMOP_NAME,LAB_UNIT,MEAN,MEDIAN,SD,FIRST_QUANTILE,THIRD_QUANTILE,MIN,MAX,N_ELEMS,N_INDVS\n";
+    std::vector<std::string> header_vec = {"OMOP_ID", "OMOP_NAME", "LAB_UNIT", "MEAN", "MEDIAN", "SD", "FIRST_QUANTILE", "THIRD_QUANTILE", "MIN", "MAX", "N_ELEMS", "N_INDVS"};
+    std::string header = concat_string(header_vec, std::string(1, out_delim));
+    res_file << header << "\n";
 
     cout << "Starting summary statistics" << endl;
     for(auto omop: omops) {
@@ -43,7 +47,8 @@ void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &o
         int n_indvs = omop_indvs[omop_identifier].size();
 
         // write to file 
-        res_file << omop_identifier << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << "," << n_indvs << "\n";
+        std::vector<std::string> res_vec = {omop_identifier, std::to_string(mean), std::to_string(median), std::to_string(sd), std::to_string(first_quantile), std::to_string(third_quantile), std::to_string(min), std::to_string(max), std::to_string(n_elems), std::to_string(n_indvs)};
+        res_file << concat_string(res_vec, std::string(1, out_delim)) << "\n";
     }
 
     res_file.close();
@@ -71,8 +76,10 @@ void write_indvs_omops_sumstats(std::unordered_map<std::string, std::unordered_m
     res_file.open(full_res_path);
     check_out_open(res_file, full_res_path);
 
+    char out_delim = '\t';
     // Write header in all caps
-    res_file << "FINREGISTRYID,OMOP_ID,LAB_UNIT,MEAN,MEDIAN,SD,FIRST_QUANTILE,THIRD_QUANTILE,MIN,MAX,N_ELEMS" << std::endl;
+    std::vector<std::string> header_vec = {"FINREGISTRYID", "OMOP_ID", "LAB_UNIT", "MEAN", "MEDIAN", "SD", "FIRST_QUANTILE", "THIRD_QUANTILE", "MIN", "MAX", "N_ELEMS"};
+    res_file << concat_string(header_vec, std::string(1, out_delim)) << "\n";
     for(auto indv_data: indvs_omops_values) {
         std::string finregid = indv_data.first;
           for(auto omop:  indv_data.second) {
@@ -95,7 +102,9 @@ void write_indvs_omops_sumstats(std::unordered_map<std::string, std::unordered_m
             int n_elems = values.size();
 
             // Writing to file
-            res_file << finregid << "," << omop_id << "," << lab_unit << "," << mean << "," << median << "," << sd << "," << first_quantile << "," << third_quantile << "," << min << "," << max << "," << n_elems << std::endl;
+            std::vector<std::string> res_vec = {finregid, omop_id, lab_unit, std::to_string(mean), std::to_string(median), std::to_string(sd), std::to_string(first_quantile), std::to_string(third_quantile), std::to_string(min), std::to_string(max), std::to_string(n_elems)};
+
+            res_file << concat_string(res_vec, std::string(1, out_delim)) << "\n";
         }
     }
 }
@@ -185,218 +194,4 @@ double get_sd(std::vector<double> values,
     double variance = sum_of_squares / (values.size()-1);
     double sd = std::sqrt(variance);
     return(sd);
-}
-
-/**
- * @brief reads in the individuals OMOP summary statistics file
- * 
- * @param indvs_omop_sumstats unordered map of individual omop summary statistics to fill in
- * @param indvs_omops_sumstats_path path to the individuals OMOP summary statistics file
- * @param relevant_omops unordered set of relevant omop identifiers. If empty, all omop identifiers are relevant.
- * @param relevant_indvs unordered map of relevant individuals. If empty, all individuals are relevant.
- * 
- * @return void
- * 
- * @details
- * Reads in the individuals OMOP summary statistics file. If relevant omop identifiers and individuals are passed, only
- * the relevant information is read in. Otherwise, all information is read in. The information is stored in the unordered
- * map indvs_omop_sumstats. The keys are the finregids and the values are unordered maps of omop identifiers and their
- * summary statistics. The summary statistics are stored in a vector of strings in the following order: mean, median, sd,
- * first quantile, third quantile, min, max, n_elems. This has to be the exact order they appear in the file.
-*/
-void read_indvs_omops_sumstats(std::string indvs_omops_sumstats_path,
-                               std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>> &indvs_omop_sumstats,
-                               std::unordered_set<std::string> &relevant_omops,
-                               std::unordered_set<std::string> &relevant_indvs) {
-    // Opening file
-    std::ifstream indvs_omops_sumstats_file;
-    indvs_omops_sumstats_file.open(indvs_omops_sumstats_path);
-    check_in_open(indvs_omops_sumstats_file, indvs_omops_sumstats_path);
-    std::string line;
-
-    int first_line = 1;
-    while(std::getline(indvs_omops_sumstats_file, line)) {
-        std::vector<std::string> col_names;
-        if (first_line == 1) {
-            col_names = split(line, ";");
-            first_line = 0;
-            continue;
-        }
-
-        std::vector<std::string> line_vec(split(line, ";"));
-        std::string finregid = line_vec[0];
-        std::string omop_identifier = line_vec[1];
-
-        // If not information for relevant indvs and omops passed, using all information
-        if(relevant_indvs.empty() || (relevant_indvs.find("finregid") != relevant_indvs.end())) {
-            if(relevant_omops.empty() || (relevant_omops.find(omop_identifier) != relevant_omops.end())) {
-                std::unordered_map<std::string, std::string> sumstats;
-                // Iterate over all sumstats
-                for(long unsigned int elem_idx = 0; elem_idx <= col_names.size()-2; elem_idx++) {
-                    sumstats[col_names[elem_idx+2]] = line_vec[elem_idx];
-                }
-                indvs_omop_sumstats[finregid][omop_identifier] = sumstats;
-            }
-        }
-
-    }
-}
-
-/**
- * @brief Reads the sample file with individuals start and end date to the study
- * 
- * @param relevant_indvs unordered map of relevant individuals to fill in. Made up of finregid -> <start, end> date
- * @param indvs_path path to the individuals sample file
- * 
- * @return void
- * 
- * @details 
- * Reads the sample file with individuals start and end date to the study. The information is stored in the unordered
- * map relevant_indvs. The keys are the finregids and the values are tuples of start and end dates.
-*/
-void read_indvs_date_file(std::unordered_map<std::string, std::tuple<date, date>> &relevant_indvs,
-                          std::string indvs_path) {
-    // Opening sample file
-    std::ifstream indvs_file;
-    indvs_file.open(indvs_path);
-    check_in_open(indvs_file, indvs_path);
-    std::string indv_line;
-
-    int first_line = 1;
-    while(std::getline(indvs_file, indv_line)) {
-        if (first_line == 1) {
-            first_line = 0;
-            continue;
-        }
-
-        // Getting relevant information
-        std::vector<std::string> line_vec(split(indv_line, "\t"));
-        std::string finregid = line_vec[0];
-        std::string start_date = line_vec[2];
-        std::string end_date = line_vec[3];
-
-        // Converting dates to date objects
-        date start_date_obj(from_simple_string(start_date));
-        date end_date_obj(from_simple_string(end_date));
-
-        // Creating tuple of dates <start, end>
-        std::tuple<date, date> indv_dates(start_date_obj, end_date_obj);
-
-        // Assining to individual
-        relevant_indvs[finregid] = indv_dates;
-    }
-}
-
-/**
- * @brief Reads the sample file with all relevant individuals, ignoring the start and end date
- * 
- * @param relevant_indvs unordered set of relevant individuals to fill in. Made up of finregids
- * @param indvs_path path to the individuals sample file
- * 
- * @return void
- * 
- * @details
- * Reads the sample file with all relevant individuals, ignoring the start and end date. The information is stored in the
- * unordered set relevant_indvs. The keys are the finregids. This is used when we do not care about the
- * start or end date to the study, but only about the relevant individuals for which we want to get information. 
-*/
-void read_indvs_file(std::unordered_set<std::string> &relevant_indvs,
-                              std::string indvs_path) {
-    // Opening file
-    std::ifstream indvs_file;
-    indvs_file.open(indvs_path);
-    check_in_open(indvs_file, indvs_path);
-    std::string indv_line;
-  
-    // Reading
-    int first_line = 1;
-    while(std::getline(indvs_file, indv_line)) {
-        if (first_line == 1) {
-            first_line = 0;
-            continue;
-        }
-        std::vector<std::string> line_vec(split(indv_line, "\t"));
-        std::string finregid = line_vec[0];
-        relevant_indvs.insert(finregid);
-  }
-}
-
-/**
- * @brief Reads the omop file with all relevant omops for which we want to get data
- * 
- * @param relevant_omops unordered set of relevant omop identifiers to fill in. Made up of omop_id;lab_unit
- * @param omops_path path to the omops sample file
- * 
- * @return void
- * 
- * @details
- * Reads the omop file with all relevant omops for which we want to get data. The information is stored in the
- * unordered set relevant_omops. The keys are the omop identifiers. An omop identifier is made up of the
- * OMOP ID and the lab unit, separated by "_".
- * 
-*/
-void read_omops_file(std::unordered_set<std::string> &relevant_omops,
-                     std::string omops_path) {
-
-    std::ifstream omops_file;
-    omops_file.open(omops_path);
-    check_in_open(omops_file, omops_path);
-    std::string omop_line;
-
-    int first_line = 1;
-    while(std::getline(omops_file, omop_line)) {
-        if (first_line == 1) {
-            first_line = 0;
-            continue;
-        }
-
-        std::vector<std::string> line_vec(split(omop_line, ";"));
-        std::string omop_id = line_vec[0];
-        std::string lab_unit = line_vec[2];
-        std::string omop_identifier = concat_string(std::vector<std::string>({omop_id, lab_unit}), std::string("_"));
-        relevant_omops.insert(omop_identifier);
-    }
-}
-
-/**
- * indvs_omop_sumstats has structure FINREGID -> OMOP_ID_LAB_UNIT -> measure_name > measure_value
-*/
-void write_relevant_sumstats_files( std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>> &indvs_omop_sumstats,
-                                    std::vector<std::string> &relevant_sumstats,
-                                    std::unordered_set<std::string> &relevant_omops,
-                                    std::string res_path) {
-    for(auto sumstat: relevant_sumstats) {
-        // Opening file
-        std::vector<std::string> full_res_path_vec = {res_path, sumstat};
-        std::string full_res_path = concat_string(full_res_path_vec);
-        std::ofstream res_file;
-        res_file.open(full_res_path);
-        check_out_open(res_file, full_res_path);
-
-        // Header
-        res_file << "FINREGISTRYID" << ";";
-        res_file << concat_string(relevant_omops, (std::string(","))) << std::endl;
-
-        // Each row is a single individual
-        for(auto indv_omop_sumstats: indvs_omop_sumstats) {
-            std::string finregid = indv_omop_sumstats.first;
-            std::cout << finregid << ";";
-
-            // All data of this individual
-            std::unordered_map<std::string, std::unordered_map<std::string, std::string>> indv_data = indv_omop_sumstats.second;
-
-            // Writing to file needs to be ordered the same for everyone as in relevant_omops
-            for(auto crnt_omop: relevant_omops) {
-                // If we have data for this omop get the relevant sumstat
-                if(indv_data.find(crnt_omop) != indv_data.end()) {
-                    std::string crnt_sumstat = indv_data[crnt_omop][sumstat];
-                    std::cout << crnt_sumstat << ";";
-                } else {
-                    std::cout << "NA" << ";";
-                }
-            }
-        }
-        //Closing file
-        res_file.close();
-    }
 }

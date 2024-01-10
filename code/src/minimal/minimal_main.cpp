@@ -7,39 +7,61 @@
  * Input:
  *  - res_path: Path to results folder
  *  - file: File number
- *  - thl_sote_path: Path to THL SOTE organisations name map
+ *  - thl_sote_path: Path to THL SOTE organisations name map 
  *  - thl_abbrv_path: Path to official abbreviations map
  * 
  * @details 
  * 
  * Expected columns:
- *  1. asiakirjaoid - Document OID
- *  2. hetu - Finregistry ID
+ *  1. laboratoriotutkimusoid - Laboratory test OID
+ *  2. asiakirjaoid - Document OID
  *  3. merkintaoid - Note OID
  *  4. entryoid - Entry OID
- *  5. rekisterinpitaja_organisaatio - Registry controller organisation ID
- *  6. rekisterinpitaja -  Registry organisation ID
- *  7. palveluntuottaja_organisaatio - Service provider organisation ID
- *  8. palveluisanta_organisaatio - Service host organisation ID
- *  9. laboratoriotutkimusoid - Laboratory test OID
- *  10. potilassyntymaaika_pvm - Patient birth date
- *  11. potilas_sukupuoli - Patient sex
+ *  5. potilashenkilotunnus - Finregistry ID
+ *  6. palvelutapahtumatunnus - Service event ID
+ *  7. tutkimuksennaytelaatu - Measurement
+ *  8. tutkimuksentekotapa - Test method
+ *  9. potilassyntymaaika_pvm - Patient birth date
+ *  10. potilas_sukupuoli - Patient sex
+ *  11. labooratoriotutkimusoid - Laboratory test OID
  *  12. tutkimusaika - Test time
- *  13. tutkimuksennaytelaatu - Test sample quality
- *  14. tutkimuksentekotapa - Test method
- *  15. paikallinentutkimusnimike - Local test name
- *  16. paikallinentutkimusnimikeid - Local test name ID
- *  17. laboratoriotutkimusnimikeid - Laboratory test name ID
- *  18. tutkimuskoodistonjarjestelmaid - Test code system ID
- *  19. tutkimusvastauksentila - Test result status
- *  20. tutkimustulosarvo - Test result value
- *  21. tutkimustulosyksikkö - Test result unit
- *  22. tuloksenvalmistumisaika - Test result time
- *  23. tuloksenpoikkeavuus - Test result abnormality
- *  24. erikoisalalyhenne - Speciality abbreviation
- *  25. asiakirjaluontiaika - Document creation time
+ *  13. alkuperainenasiakirjaoid - Original document OID
+ *  14. asiakirjaversio - Document version
+ *  15. rekisterinpitaja_organisaatio_h - Registry controller organisation ID
+ *  16. rekisterinpitaja_h -  Registry organisation ID
+ *  17. asiakirjavalistilapk - Document status
+ *  18. marittelykokoelmaoid - Collection OID
+ *  19. tietojarjestelanimi - Data system name
+ *  20. tietojarjestelavalmistaja - Data system manufacturer
+ *  21. tietojarjestelaversio - Data system version
+ *  22. asiajirjaluontiaika - Document creation time
+ *  23. pal_alkuperainenasiakirjaoid - Original document OID
+ *  24. pal_asiakirjaversio - Document version
+ *  25. pal_ariakirjaoid - Document OID
+ *  26. pal_asiakirjaversio - Document version
+ *  27. rekisterinpitaja_organisaatio - Registry controller organisation ID
+ *  28. rekisterinpitaja -  Registry organisation ID
+ *  29. palveluntuottaja_organisaatio - Service provider organisation ID
+ *  30. palveluisanta_organisaatio - Service host organisation ID
+ *  31. hetu_root - Finregistry ID root
+ *  32. paikallinentutkimusnimike - Local test name
+ *  33. paikallinentutkimusnimikeid - Local test name ID
+ *  34. tutkimuskoodistonjarjestelmaid - Test code system ID
+ *  35. tutkimuksenvastauksentila - Test result status
+ *  36. tutkimustulosarvo - Test result value
+ *  37. tutkimustulosyksikkö - Test result unit
+ *  38. tuloksenpoikkeavuus - Test result abnormality
+ *  39. tuloksenvalmistumisaika - Test result time
+ *  40. viitearvoryhma - Reference value group
+ *  41. viitevalialkuarvo - Reference value lower limit
+ *  42. viitevalialkuarvoyksikko - Reference value lower limit unit
+ *  43. viitevaliloppuarvo - Reference value upper limit
+ *  44. viitevaliloppuarvoyksikko - Reference value upper limit unit
+ *  45. viitearvoteksti - Reference value text
+ *  46. erikoisalalyhenne - Speciality abbreviation
  * 
- * Duplicate lines are removed and written to separate file. A duplicate is defined if all of the following data is the same: 
+ * Duplicate lines are removed.
+ * A duplicate is defined if all of the following data is the same: 
  *  1. Finregistry ID
  *  2. Date and time
  *  3. Service provider organization
@@ -48,6 +70,33 @@
  *  5. Test result value
  *  6. Test result unit
  * 
+ * Removed lines and if the `write_reports` argument is set to True,
+ * written to a file located at directly written to the error file located at
+ * <res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv".
+ * Lines are removed if they have:
+ * * Hetu roots that are not 1.2.246.21 (they are manually assigned hetus).
+ * * A measurement status of K, W, X, or I 
+ *      (unfinished, wrong, no result, sample in the lab waiting for result).
+ * 
+ * Lines with no information about the lab value and abnormality or
+ * a missing Lab ID are removed and if the `write_reports` argument is set to True,
+ * written to a file located at
+ * <res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv",
+ * 
+ * The final file has the following columns:
+ * 1. FINREGISTRYID - Finregistry ID
+ * 2. LAB_DATE_TIME - Lab tests date and time
+ * 3. LAB_SERVICE_PROVIDER - Service provider name
+ * 4. LAB_ID - Lab test ID
+ * 5. LAB_ID_SOURCE - Lab test ID source (0: THL, 1: Local)
+ * 6. LAB_ABBREVIATION - Lab test abbreviation
+ * 7. LAB_VALUE - Lab test value
+ * 8. LAB_UNIT - Lab test unit
+ * 9. LAB_ABNORMALITY - Lab test abnormality
+ * 10. MEASUREMENT_STATUS - Measurement status
+ * 11. REFERENCE_VALUE_TEXT - Reference value text
+ * 12. DATA_SYSTEM - Data system name
+ * 13. DATA_SYSTEM_VERSION - Data system version
 */
 int main(int argc, char *argv[]) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
@@ -62,16 +111,16 @@ int main(int argc, char *argv[]) {
     
     /// OUTPUT FILE PATHS   
     // Results file
-    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> full_res_path_vec = {res_path, "processed/data/kanta_lab_file_", file, "_", date, ".zsv"};    
     std::string full_res_path = concat_string(full_res_path_vec, std::string(""));
     // Row counts file
-    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> report_path_vec = {res_path, "processed/reports/counts/row_counts/row_counts_file_", file, "_", date, ".tsv"};    
     std::string report_path = concat_string(report_path_vec, std::string(""));
     // Problem rows file
-    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, "_", date, ".csv"};    
+    std::vector<std::string> error_path_vec = {res_path, "processed/reports/problem_rows/problem_rows_file_", file, "_", date, ".tsv"};    
     std::string error_path = concat_string(error_path_vec, std::string(""));
     // Missing rows file
-    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".csv"};
+    std::vector<std::string> missing_path_vec = {res_path, "processed/reports/problem_rows/missing_data_rows_file_", file, "_", date, ".tsv"};
     std::string missing_path = concat_string(missing_path_vec, std::string(""));
 
     std::ofstream error_file; std::ofstream missing_file;
@@ -105,81 +154,105 @@ int main(int argc, char *argv[]) {
     unsigned long long valid_line_count = 0; // Valid lines actually written to file
     unsigned long long total_line_count = 0; // All lines
     unsigned long long na_count = 0;
+    unsigned long long hetu_count = 0;
+    unsigned long long stat_count = 0;
+
     // This code is used for wrongly split lines writing to error file
     int lines_valid_status = 0; // 0: line is valid 1: line is invalid 2: both line and new line are invalid 3: line is invalid, but newline is valid
 
     /// READING IN DATA
+    char out_delim = '\t';
+    char in_delim = '\t';
     std::string line;
     cout << "Starting reading file " << file << endl;
     while(std::getline(std::cin, line)) {
         ++total_line_count;
         // Getting current line as vector
-        std::vector<std::string> final_line_vec = read_correct_lines(line, total_line_count, skip_count, error_file, lines_valid_status, write_reports);
+        std::vector<std::string> line_vec = split(line, &in_delim);
 
         // Line or newline is valid
         if((lines_valid_status == 0) | (lines_valid_status == 3)) {
             if((valid_line_count == 0)) {
                 // Writing header
-                res_file << "FINREGISTRYID,LAB_DATE_TIME,LAB_SERVICE_PROVIDER,LAB_ID,LAB_ID_SOURCE,LAB_ABBREVIATION,LAB_VALUE,LAB_UNIT,LAB_ABNORMALITY\n"; 
+                res_file << get_no_omop_header(out_delim) << "\n";
                 ++valid_line_count;
-                cout << "Header written, check if delimiter correct first element on line 1 is: " << final_line_vec[0] << endl;
+                cout << "Header written, check if delimiter correct first element on line 1 is: " << line_vec[0] << endl;
             } else {
                 // Fixing the NA indicators to actual NAs
-                fix_nas(final_line_vec);
+                fix_nas(line_vec);
 
                 // Column values directly from line
-                std::string finregistry_id = final_line_vec[1];
-                std::string date_time = final_line_vec[11];
-                std::string service_provider_oid = final_line_vec[6];
-                std::string lab_value = final_line_vec[19];
-                std::string lab_unit = final_line_vec[20];
-                std::string lab_abnormality = final_line_vec[22];
+                std::string finregid = remove_chars(line_vec[4], ' ');
+                std::string lab_date_time = remove_chars(line_vec[11], ' ');
+                std::string service_provider_oid = remove_chars(line_vec[28], ' ');
+                std::string measure_stat = remove_chars(line_vec[34], ' ');
+                std::string lab_value = remove_chars(line_vec[35], ' ');
+                std::string lab_unit = remove_chars(line_vec[36], ' ');
+                std::string lab_abnormality = remove_chars(line_vec[37], ' ');
+                std::string ref_value_text = remove_chars(line_vec[44], ' ');
+                std::string data_system = remove_chars(line_vec[18], ' ');
+                std::string data_system_ver = remove_chars(line_vec[20], ' ');
+
+                // Skipping lines with not official hetu root, doing this here to avoid keeping hetu_root in later files
+                std::string hetu_root = line_vec[30];
+                if((hetu_root != "1.2.246.21")) {
+                    error_file << line << "\n";
+                    ++hetu_count;
+                    continue;
+                } 
+                // Skipping lines with measurement status = unfinished, W = wrong, X = no result, I = sample in the lab waiting for result
+                if((measure_stat == "K") | (measure_stat == "W") | (measure_stat == "X") | (measure_stat == "I")) {
+                    error_file << line << "\n";
+                    ++stat_count;
+                    continue;
+                }
 
                 // Removing characters like " ", "_", etc from unit
                 lab_unit = clean_units(lab_unit);
 
                 // Column values needed for mapping and cleaning
-                std::string lab_name = final_line_vec[14];
-                std::string local_lab_id = final_line_vec[15];
-                std::string thl_lab_id = final_line_vec[16];
+                std::string local_lab_abbrv = line_vec[31];
+                std::string local_lab_id = line_vec[32];
+                std::string thl_lab_id = line_vec[0];
 
                 // Lab ID, and source depend on data
                 std::string lab_id; 
                 std::string lab_id_source;
 
                 // Duplicate line
-                std::vector<std::string> dup_vec = {finregistry_id, date_time, service_provider_oid, lab_id, lab_name, lab_value, lab_unit};
+                std::vector<std::string> dup_vec = {finregid, lab_date_time, service_provider_oid, lab_id, local_lab_abbrv, lab_value, lab_unit};
                 std::string dup_line = concat_string(dup_vec, std::string("")); 
                 // Only saving non-duplicated lines
                 if(all_dup_lines.find(dup_line) == all_dup_lines.end()) {
-                    // Now doing the rest
+                    // Merging the two lab IDs
                     get_lab_id_and_source(local_lab_id, thl_lab_id, lab_id, lab_id_source); 
 
                     // Mapped column values
                     std::string service_provider_name = get_service_provider_name(thl_sote_map, service_provider_oid);
-                    std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, lab_name);
+                    std::string lab_abbrv = get_lab_abbrv(thl_abbrv_map, lab_id, lab_id_source, local_lab_abbrv);
                     // Cleaning potential "" in lab-abbreviation
                     lab_abbrv = remove_chars(lab_abbrv, '\"');
 
-                    // Only saving if we have either the value or at least the abnormality
-                    // and an lab ID
+                    // Only saving if we have either the value or at least the abnormality and a lab id
                     if((!((lab_value == "NA") & (lab_abnormality == "NA"))) & (lab_id != "NA") ) { 
-                            // Increasing line count for this file to one
+                            // WRITING PROCESSED MINIMAL DATA
+                            // Increasing line count for duplicate lines in this file to one (meaning that this line is not actually duplicated)
                             all_dup_lines[dup_line] = 1;
                             // Writing line to file
-                            add_quotation(lab_id); add_quotation(lab_value); add_quotation(lab_abbrv); add_quotation(lab_unit); 
-
-                            res_file << finregistry_id << "," <<  date_time << "," << service_provider_name << "," << lab_id << "," << lab_id_source << "," << lab_abbrv << "," << lab_value << "," << lab_unit << "," <<  lab_abnormality << "\n";
+                            std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, measure_stat, ref_value_text, data_system, data_system_ver};
+                            // Making sure that all columns with the delimiter in the text are in quotation marks
+                            for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
+                            res_file << concat_string(final_line_vec, std::string(1, out_delim)) << "\n";
                             // Increasing valid line count
                             ++valid_line_count;
-                        // Duplicate line
-                        } else {
-                            ++dup_count;
-                        }
-                // Invalid line because of NAs in both value, and abnormality or NA in lab ID
+                    // Line is missing all interesting data
+                    } else {
+                        ++na_count;       
+                        if(write_reports == "True") missing_file << line << "\n";
+                    } 
+                // Duplicate line
                 } else {
-                    ++na_count;       
-                    if(write_reports == "True") missing_file << concat_string(final_line_vec, ";") << "\n";
+                    ++dup_count; all_dup_lines[dup_line]++;
                 }
             }  
         }
@@ -196,7 +269,7 @@ int main(int argc, char *argv[]) {
     res_file.close(); 
 
     // Writing final files
-    write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count);
+    write_row_count_report(report_path, date, total_line_count, valid_line_count,skip_count, dup_count, na_count, hetu_count, stat_count);
     write_dup_lines_file(res_path, file, date, report_path, all_dup_lines);
 
     write_end_run_summary(begin);

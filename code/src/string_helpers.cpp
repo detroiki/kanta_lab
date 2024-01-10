@@ -69,17 +69,32 @@ std::string remove_chars(std::string str,
     return(str);
 }
 
-std::string get_omop_identifier(std::string lab_id,
-                                std::string lab_abbrv,
-                                std::string lab_unit,
-                                std::string sep) {
+std::string get_lab_id_omop_identifier(std::string lab_id,
+                                       std::string lab_abbrv,
+                                       std::string lab_unit,
+                                       char sep) {
 
     // Currently identifying the OMOP concept by the lab ID and abbreviation.
-    lab_id = concat_string(std::vector<std::string>({"\"", lab_id,  "\""}));
-    lab_abbrv = concat_string(std::vector<std::string>({"\"", lab_abbrv,  "\""}));
-
+    add_quotation(lab_id, sep);
+    add_quotation(lab_abbrv, sep);
+    add_quotation(lab_unit, sep);
     std::vector<std::string> omop_identifier_vec = {lab_id, lab_abbrv, lab_unit};
-    std::string omop_identifier = concat_string(omop_identifier_vec, sep);
+    std::string omop_identifier = concat_string(omop_identifier_vec, &sep);
+
+    return(omop_identifier);
+} 
+
+std::string get_omop_identifier(std::string omop_id,
+                                std::string omop_name,
+                                std::string lab_unit,
+                                char sep) {
+
+    // Currently identifying the OMOP concept by the lab ID and abbreviation.
+    add_quotation(omop_id, sep);
+    add_quotation(omop_name, sep);
+    add_quotation(lab_unit, sep);
+    std::vector<std::string> omop_identifier_vec = {omop_id, omop_name, lab_unit};
+    std::string omop_identifier = concat_string(omop_identifier_vec, &sep);
 
     return(omop_identifier);
 } 
@@ -149,9 +164,9 @@ std::string clean_units(std::string lab_unit) {
  * @brief Creates a single string combining the OMOP ID and OMOP Name that can be 
  * used to identify the concept and written directly to results files
 */
-std::string get_omop_info(std::string omop_id, std::string omop_name) {
-    omop_name =  concat_string(std::vector<std::string>({"\"", omop_name,  "\""}));
-    std::string omop_info = concat_string(std::vector<std::string>({omop_id, omop_name}), std::string(","));
+std::string get_omop_info(std::string omop_id, std::string omop_name, char delim) {
+    add_quotation(omop_id, delim);
+    std::string omop_info = concat_string(std::vector<std::string>({omop_id, omop_name}), std::string(1, delim));
     return(omop_info);
 }
 
@@ -159,9 +174,9 @@ std::string get_omop_info(std::string omop_id, std::string omop_name) {
  * @brief Creates a single string combining the lab abbreviation and its unit that can be 
  * used to identify the concept and written directly to results files
 */
-std::string get_lab_info(std::string lab_abbrv, std::string lab_unit) {
-    lab_abbrv =  concat_string(std::vector<std::string>({"\"", lab_abbrv,  "\""}));
-    std::string lab_info = concat_string(std::vector<std::string>({lab_abbrv, lab_unit}), std::string(","));
+std::string get_lab_info(std::string lab_abbrv, std::string lab_unit, char delim) {
+    add_quotation(lab_abbrv, delim);
+    std::string lab_info = concat_string(std::vector<std::string>({lab_abbrv, lab_unit}), std::string(1, delim));
     return(lab_info);
 }
 
@@ -172,9 +187,10 @@ std::string get_lab_info(std::string lab_abbrv, std::string lab_unit) {
 */
 std::string get_lab_id_omop_info(std::string lab_id, 
                                  std::string lab_info,
-                                 std::string omop_info) {
-    lab_id =  concat_string(std::vector<std::string>({"\"", lab_id,  "\""}));
-    std::string lab_id_omop_info = concat_string(std::vector<std::string>({lab_id, lab_info, omop_info}), std::string(","));
+                                 std::string omop_info,
+                                 char delim) {
+    add_quotation(lab_id, delim);
+    std::string lab_id_omop_info = concat_string(std::vector<std::string>({lab_id, lab_info, omop_info}), std::string(1, delim));
     return(lab_id_omop_info);                             
 }
 
@@ -184,6 +200,9 @@ std::string get_lab_id_abbrv(std::string lab_id,
     return(lab_id_abbrv); 
 }
 
-void add_quotation(std::string &str) {
-    if(str != "NA") str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
+void add_quotation(std::string &str,
+                   char delim) {
+    if(str.find(delim) != std::string::npos) {
+        str = concat_string(std::vector<std::string>({"\"", str,  "\""}));
+    }
 }

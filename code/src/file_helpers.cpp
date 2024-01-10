@@ -28,6 +28,8 @@ void write_line_update(int n_lines,
 void write_end_run_summary(std::chrono::steady_clock::time_point &begin) {
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::minutes>(end - begin).count() << "[minutes]" << std::endl;
+    std::cout << "Time took = " << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[seconds]" << std::endl;
+
 }
 
 /**
@@ -148,4 +150,22 @@ char find_delim(std::string file_path) {
 
     in_file.close();
     return(delim);
+}
+
+std::string get_no_omop_header(char delim) {
+    std::vector<std::string> header_vec = {"FINREGISTRYID", "LAB_DATE_TIME", "LAB_SERVICE_PROVIDER", "LAB_ID", "LAB_ID_SOURCE", "LAB_ABBREVIATION", "LAB_VALUE", "LAB_UNIT", "LAB_ABNORMALITY", "MEASUREMENT_STATUS", "REFERENCE_VALUE_TEXT", "DATA_SYSTEM", "DATA_SYSTEM_VERSION"};
+    std::string header = concat_string(header_vec, std::string(1, delim));
+    return(header);
+}
+
+std::string get_header(char delim) {
+    std::vector<std::string> header_vec = {"FINREGISTRYID", "LAB_DATE_TIME", "LAB_SERVICE_PROVIDER", "LAB_ID", "LAB_ID_SOURCE", "LAB_ABBREVIATION", "LAB_VALUE", "LAB_UNIT", "OMOP_ID", "OMOP_NAME", "LAB_ABNORMALITY", "MEASUREMENT_STATUS", "REFERENCE_VALUE_TEXT", "DATA_SYSTEM", "DATA_SYSTEM_VERSION"};
+    std::string header = concat_string(header_vec, std::string(1, delim));
+    return(header);
+}
+
+std::string get_header_final(char delim) {
+    std::vector<std::string> header_vec = {"FINREGISTRYID", "LAB_DATE_TIME", "LAB_SERVICE_PROVIDER", "LAB_ID", "LAB_ID_SOURCE", "LAB_ABBREVIATION", "LAB_VALUE", "LAB_UNIT", "OMOP_ID", "OMOP_NAME", "LAB_ABNORMALITY", "MEASUREMENT_STATUS", "REFERENCE_VALUE_TEXT"};
+    std::string header = concat_string(header_vec, std::string(1, delim));
+    return(header);
 }
