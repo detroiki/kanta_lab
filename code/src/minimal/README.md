@@ -63,19 +63,19 @@ The input arguments need be appended in the correct order
  ## Output
 
  The final files have the following columns:
- 1. `FINREGISTRYID` - Finregistry ID
- 2. `LAB_DATE_TIME` - Lab tests date and time
- 3. `LAB_SERVICE_PROVIDER` - Service provider name
- 4. `LAB_ID` - Lab test ID
- 5. `LAB_ID_SOURCE` - Lab test ID source (0: THL, 1: Local)
- 6. `LAB_ABBREVIATION` - Lab test abbreviation
- 7. `LAB_VALUE` - Lab test value
- 8. `LAB_UNIT` - Lab test unit
- 9. `LAB_ABNORMALITY` - Lab test abnormality
- 10. `MEASUREMENT_STATUS` - Measurement status
- 11. `REFERENCE_VALUE_TEXT` - Reference value text
- 12. `DATA_SYSTEM` - Data system name
- 13. `DATA_SYSTEM_VERSION` - Data system version
+  1. `FINREGISTRYID` - Pseudoanonimized IDs
+  2. `LAB_DATE_TIME` - Date and time of lab measurement
+  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  4. `LAB_ID` - Regional or local lab ID
+  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: national
+  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (national)
+  7. `LAB_VALUE` - The value of the laboratory measurement
+  8. `LAB_UNIT` - The unit from the file
+  9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
+  10. `MEASUREMENT_STAUTS`- The measurement status, i.e. C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
+  11. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form.
+  12. `DATA_SYSTEM` - Data system used to store the information.
+  13. `DATA_SYSTEM_VERSION` - Version of the data system used.
 
  <a name="special">
 
