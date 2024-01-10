@@ -103,7 +103,7 @@ std::string lab_date_time = remove_chars(line_vec[11], ' ');
       - The number of rows with missing data
       - The number of rows with bad measurement status
       - The number of rows with not-official hetus.
-2. Writes all duplicate rows newly encountered to
+2. Writes all duplicate rows newly encountered in this file to
    `<res_path>processed/reports/problem_rows/duplines_<file_no>_<date>.tsv}`
 <a name="new">
    
