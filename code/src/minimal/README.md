@@ -99,7 +99,7 @@ std::string lab_date_time = remove_chars(line_vec[11], ' ');
 ### Writing
 1. Writes a row count report about the total number of lines, as well as the number of
       - Usable rows written to the output file
-      - The number of duplicate rows previously encountered
+      - The number of duplicate rows encountered in this file
       - The number of rows with missing data
       - The number of rows with bad measurement status
       - The number of rows with not-official hetus.
