@@ -58,9 +58,32 @@ The input arguments need be appended in the correct order
  written to a file located at
  `<res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv`,
 
-<a name="out">
+# Steps
+## Current Steps
 
- ## Output
+### Reading Files
+
+1. Reads in duplicate lines from all previous files 
+```c
+std::unordered_map<std::string, int> all_dup_lines; # Counts number of times the duplicate lines appear in the current file
+```
+2. Reads in the [THL SOTE Organisation](https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/sote-organisaatio-rekisteri) map 
+  - Created by mapping each organisations OID to shorter strings which are based on the the city 
+  -` Example: 1.2.246.10.1739.4173.10.1 mapped to Helsinki_1301 is HUS
+```c
+std::unordered_map<std::string, std::string> thl_sote_map;
+```
+3. Reads in the official [THL Koodistopalvelu regional lab IDs map to abbreviations](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120)
+  - Example: 
+  
+  ![image](https://user-images.githubusercontent.com/56593546/235346446-813e5adb-0199-4c15-ac6d-4b6585ff90d0.png)
+  
+```c
+    std::unordered_map<std::string, std::string> thl_abbrv_map;
+``` 
+
+#### For each line from std::cin
+##### Creates a new file with columns
 
  The final files have the following columns:
   1. `FINREGISTRYID` - Pseudoanonimized IDs
@@ -77,18 +100,48 @@ The input arguments need be appended in the correct order
   12. `DATA_SYSTEM` - Data system used to store the information.
   13. `DATA_SYSTEM_VERSION` - Version of the data system used.
 
- <a name="special">
+#### Steps
 
- ### Columns `LAB_ID`, `LAB_ID_SOURCE`, and `LAB_ABBREVIATION`
+1. Reads line and splits using "\t" - Removes all spaces ` ` from the columns data.
+2. Turns all NA markers to actual NAs in the data 
+    - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1`, `NA`, `NULL`` (except in value column
+3. Skips rest and writes line to error file if:
+    - current hetu root is not `1.2.246.21` (they are manually assigned hetus),
+    - or the measurement status is  `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result). 
+4. Creates duplicate row vector and checks whether this vector is already in the map of previously encountered duplicate lines
+   ```c
+      std::vector<std::string> dup_vec = {finregid, lab_date_time, service_provider_oid, lab_id, local_lab_abbrv, lab_value, lab_unit};
+   ```
+   if yes, writes the line directly to the duplicate line file. Otherwise, adds it to the duplicate line map.
+5. Lab IDs and abbreviations come from the two columns 
+    * `labooratoriotutkimusoid` 
+         * THL - lab ID source: 0
+         * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
+    * `paikallinentutkimusnimikeid`
+         * Local - lab ID source: 1
+         * lab abbreviation from column `paikallinentutkimusnimike`
+6. Gets a readable service provider name from the THL SOTE organisation map.
+7. Removes all " characters from the data
+8. Checks that the lab value or abnormality and the lab ID are not missing
+    - If they are, writes the line to the missing data file and skips the line.
+9. Creates output vector and writes it to a tab separated file
+```c
+std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, measure_stat, ref_value_text, data_system, data_system_ver};
+```
 
- The columns for lab ID, lab ID source, and lab abbreviation are based on
- the following original columns:
-* `labooratoriotutkimusoid` 
-    * THL - lab ID source: 0
-    * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
-* `paikallinentutkimusnimikeid`
-    * Local - lab ID source: 1
-    * lab abbreviation from column `paikallinentutkimusnimike`
+Columns directly copied from the data:
+```c
+std::string finregid = remove_chars(line_vec[4], ' ');
+std::string lab_date_time = remove_chars(line_vec[11], ' ');
+                std::string service_provider_oid = remove_chars(line_vec[28], ' ');
+                std::string measure_stat = remove_chars(line_vec[34], ' ');
+                std::string lab_value = remove_chars(line_vec[35], ' ');
+                std::string lab_unit = remove_chars(line_vec[36], ' ');
+                std::string lab_abnormality = remove_chars(line_vec[37], ' ');
+                std::string ref_value_text = remove_chars(line_vec[44], ' ');
+                std::string data_system = remove_chars(line_vec[18], ' ');
+                std::string data_system_ver = remove_chars(line_vec[20], ' ');
+```    
 
 <a name="expect">
 
