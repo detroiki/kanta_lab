@@ -1,12 +1,13 @@
 # Table of Contents
-- [Run](#run)
-- [Important Steps](#important)
+- [Usage](#run)
+- [All Steps](#read)
+   - [Reading](#read)
+   - [For each line from std::cin](#in)
+   - [Creates a new file with columns](#new)
+- [Extra Files Created](#important)
    -  [Duplicates](#dup)
    -  [Removed Lines](#rem)
-- [Output](#out)
-   - [Columns `LAB_ID`, `LAB_ID_SOURCE`, and `LAB_ABBREVIATION`](#special)
 - [Expected Columns](#expect)
-
 
 <a name="run">
  
@@ -26,42 +27,12 @@ The input arguments need be appended in the correct order
 * `write_reports`: Wheter to write report or not, either "True" or "False"
   
  <a name="important">
- 
- # Important Steps
 
- <a name="dup">
-  
- ## Duplicates 
+# All Steps
 
- Duplicate lines are removed. A duplicate is defined if all of the following data is the same: 
- 1. Finregistry ID
- 2. Date and time
- 3. Service provider organization
- 3. Laboratory test name ID
- 4. Laboratory test name abbreviation
- 5. Test result value
- 6. Test result unit
+<a name="read">
 
-<a name="rem">
-
- ## Removed lines
-
- Removed lines are directly written to a file located at 
- `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`, if the `write_reports` argument is set to `True`.
- 
- Lines are removed if they have:
- * Hetu roots that are not `1.2.246.21` (they are manually assigned hetus).
- * A measurement status of `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result).
- 
- Lines with no information about the lab value and abnormality or
- a missing Lab ID are removed and if the `write_reports` argument is set to True,
- written to a file located at
- `<res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv`,
-
-# Steps
-## Current Steps
-
-### Reading Files
+## Reading Files
 
 1. Reads in duplicate lines from all previous files 
 ```c
@@ -82,26 +53,10 @@ std::unordered_map<std::string, std::string> thl_sote_map;
     std::unordered_map<std::string, std::string> thl_abbrv_map;
 ``` 
 
-#### For each line from std::cin
-##### Creates a new file with columns
+<a name="in">
 
- The final files have the following columns:
-  1. `FINREGISTRYID` - Pseudoanonimized IDs
-  2. `LAB_DATE_TIME` - Date and time of lab measurement
-  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
-  4. `LAB_ID` - Regional or local lab ID
-  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: national
-  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (national)
-  7. `LAB_VALUE` - The value of the laboratory measurement
-  8. `LAB_UNIT` - The unit from the file
-  9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
-  10. `MEASUREMENT_STAUTS`- The measurement status, i.e. C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
-  11. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form.
-  12. `DATA_SYSTEM` - Data system used to store the information.
-  13. `DATA_SYSTEM_VERSION` - Version of the data system used.
-
-#### Steps
-
+## For each line from std::cin
+   
 1. Reads line and splits using "\t" - Removes all spaces ` ` from the columns data.
 2. Turns all NA markers to actual NAs in the data 
     - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1`, `NA`, `NULL`` (except in value column
@@ -142,6 +97,58 @@ std::string lab_date_time = remove_chars(line_vec[11], ' ');
                 std::string data_system = remove_chars(line_vec[18], ' ');
                 std::string data_system_ver = remove_chars(line_vec[20], ' ');
 ```    
+
+<a name="new">
+   
+## Creates a new file with columns
+
+ The final files have the following columns:
+  1. `FINREGISTRYID` - Pseudoanonimized IDs
+  2. `LAB_DATE_TIME` - Date and time of lab measurement
+  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  4. `LAB_ID` - Regional or local lab ID
+  5. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: national
+  6. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (national)
+  7. `LAB_VALUE` - The value of the laboratory measurement
+  8. `LAB_UNIT` - The unit from the file
+  9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
+  10. `MEASUREMENT_STAUTS`- The measurement status, i.e. C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
+  11. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form.
+  12. `DATA_SYSTEM` - Data system used to store the information.
+  13. `DATA_SYSTEM_VERSION` - Version of the data system used.
+
+ 
+ # Extra Files Created
+
+ <a name="dup">
+  
+ ## Duplicates 
+
+ Duplicate lines are removed. A duplicate is defined if all of the following data is the same: 
+ 1. Finregistry ID
+ 2. Date and time
+ 3. Service provider organization
+ 3. Laboratory test name ID
+ 4. Laboratory test name abbreviation
+ 5. Test result value
+ 6. Test result unit
+
+<a name="rem">
+
+ ## Removed lines
+
+ Removed lines are directly written to a file located at 
+ `<res_dir>/problem_rows/problem_rows_file_<file_no>_<date>.tsv`, if the `write_reports` argument is set to `True`.
+ 
+ Lines are removed if they have:
+ * Hetu roots that are not `1.2.246.21` (they are manually assigned hetus).
+ * A measurement status of `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result).
+ 
+ Lines with no information about the lab value and abnormality or
+ a missing Lab ID are removed and if the `write_reports` argument is set to True,
+ written to a file located at
+ `<res_dir>/problem_rows/missing_data_rows_file_<file_no>_<date>.tsv`,
+
 
 <a name="expect">
 
