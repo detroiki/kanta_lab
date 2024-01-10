@@ -63,11 +63,10 @@ std::unordered_map<std::string, std::string> thl_sote_map;
 3. Skips rest and writes line to error file if:
     - current hetu root is not `1.2.246.21` (they are manually assigned hetus),
     - or the measurement status is  `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result). 
-4. Creates duplicate row vector and checks whether this vector is already in the map of previously encountered duplicate lines
+4. Creates duplicate row vector and skips the row if already in duplicate line map.
    ```c
       std::vector<std::string> dup_vec = {finregid, lab_date_time, service_provider_oid, lab_id, local_lab_abbrv, lab_value, lab_unit};
    ```
-   if yes, writes the line directly to the duplicate line file. Otherwise, adds it to the duplicate line map.
 5. Lab IDs and abbreviations come from the two columns 
     * `labooratoriotutkimusoid` 
          * THL - lab ID source: 0
@@ -96,8 +95,16 @@ std::string lab_date_time = remove_chars(line_vec[11], ' ');
                 std::string ref_value_text = remove_chars(line_vec[44], ' ');
                 std::string data_system = remove_chars(line_vec[18], ' ');
                 std::string data_system_ver = remove_chars(line_vec[20], ' ');
-```    
-
+```
+### Writing
+1. Writes a row count report about the total number of lines, as well as the number of
+      - Usable rows written to the output file
+      - The number of duplicate rows previously encountered
+      - The number of rows with missing data
+      - The number of rows with bad measurement status
+      - The number of rows with not-official hetus.
+2. Writes all duplicate rows newly encountered to
+   `<res_path>processed/reports/problem_rows/duplines_<file_no>_<date>.tsv}`
 <a name="new">
    
 ## Creates a new file with columns
