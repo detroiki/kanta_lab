@@ -8,6 +8,10 @@
  * @param res_path Path to results directory
  * 
  * @return void 
+ * 
+ * @details Reads in all previous duplines files into a map.
+ * The map has the duplicate lines as keys and the value is 0 if the duplicate line is from a previous file and 1 if the duplicate line is from the current file.
+ * The idea originally was to also track the number of times a duplicate line has been seen, but this has not been implemented yet.
 */
 void get_previous_dup_lines(std::unordered_map<std::string, int> &all_dup_lines, 
                             std::string file,
@@ -217,6 +221,22 @@ std::string get_lab_abbrv(std::unordered_map<std::string, std::string> &thl_abbr
     return(lab_abbrv);
 }
 
+/**
+ * @brief Writes the row count report
+ * 
+ * @param report_path Reference to the path to the report directory
+ * @param date Reference to the date
+ * @param total_line_count Reference to the total line count
+ * @param valid_line_count Reference to the valid line count
+ * @param dup_count Reference to the duplicate line count
+ * @param na_count Reference to the missing line count
+ * @param hetu_count Reference to the non-official hetu line count
+ * @param stat_count Reference to the bad measure status line count
+ * 
+ * @return void
+ * 
+ * @details Writes the row count report.
+*/
 void write_row_count_report(std::string &report_path,
                             std::string &date,
                             unsigned long long &total_line_count,
