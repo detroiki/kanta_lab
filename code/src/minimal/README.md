@@ -59,7 +59,7 @@ std::unordered_map<std::string, std::string> thl_sote_map;
    
 1. Reads line and splits using "\t" - Removes all spaces from each columns data.
 2. Turns all NA markers to actual NAs in the data 
-    - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1`, `NA`, `NULL`` (except in value column
+    - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1` (except in value column), `NA`, `NULL`
 3. Skips rest and writes line to error file if:
     - current hetu root is not `1.2.246.21` (they are manually assigned hetus),
     - or the measurement status is  `K`, `W`, `X`, or `I` (unfinished, wrong, no result, sample in the lab waiting for result). 
@@ -67,18 +67,24 @@ std::unordered_map<std::string, std::string> thl_sote_map;
    ```c
       std::vector<std::string> dup_vec = {finregid, lab_date_time, service_provider_oid, lab_id, local_lab_abbrv, lab_value, lab_unit};
    ```
-5. Lab IDs and abbreviations come from the two columns 
+5. Lab IDs and abbreviations come from the two columns
     * `labooratoriotutkimusoid` 
          * THL - lab ID source: 0
          * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
     * `paikallinentutkimusnimikeid`
          * Local - lab ID source: 1
          * lab abbreviation from column `paikallinentutkimusnimike`
-6. Gets a readable service provider name from the THL SOTE organisation map.
-7. Removes all " characters from the data
-8. Checks that the lab value or abnormality and the lab ID are not missing
+ ```c
+    std::string local_lab_abbrv = remove_chars(line_vec[31], ' ');
+    std::string local_lab_id = remove_chars(line_vec[32], ' ');
+    std::string thl_lab_id = remove_chars(line_vec[0], ' ');
+   ```
+7. Gets a readable service provider name from the THL SOTE organisation map.
+8. Removes all " characters from the data
+9. Checks that the lab value or abnormality and the lab ID are not missing
     - If they are, writes the line to the missing data file and skips the line.
-9. Creates output vector and writes it to a tab separated file
+10. Adds the line to the duplicate line map
+11. Creates output vector and writes it to a tab separated file
 ```c
 std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, lab_abnormality, measure_stat, ref_value_text, data_system, data_system_ver};
 ```
@@ -109,7 +115,6 @@ std::string data_system_ver = remove_chars(line_vec[20], ' ');
    
 ## Creates a new file with columns
 
- The final files have the following columns:
   1. `FINREGISTRYID` - Pseudoanonimized IDs
   2. `LAB_DATE_TIME` - Date and time of lab measurement
   3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
@@ -129,9 +134,9 @@ std::string data_system_ver = remove_chars(line_vec[20], ' ');
 
  <a name="dup">
   
- ## Duplicates 
-
- Duplicate lines are removed. A duplicate is defined if all of the following data is the same: 
+ ## Duplicates
+ A duplicate is defined if all of the following data is the same: 
+ 
  1. Finregistry ID
  2. Date and time
  3. Service provider organization
@@ -139,6 +144,8 @@ std::string data_system_ver = remove_chars(line_vec[20], ' ');
  4. Laboratory test name abbreviation
  5. Test result value
  6. Test result unit
+
+Lines occuring in a specific file are written to `<res_path>processed/reports/problem_rows/duplines_<file_no>_<date>.tsv`
 
 <a name="rem">
 
