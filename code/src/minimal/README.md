@@ -1,12 +1,13 @@
 # Input:
 The input arguments need be appended when running the script in the
 following order:
-    * `res_path`: Path to results directory
-    * `file`: File number
-    * `date`: Date of file
-    * `thl_sote_path`: Path to THL SOTE organisations name map `data/thl_sote_organisations.tsv`
-    * `thl_abbrv_path`: Path to official abbreviations map `data/thl_lab_id_abbrv_map.tsv`
-    * `write_reports`: Wheter to write report or not, either "True" or "False"
+
+*`res_path`: Path to results directory
+*`file`: File number
+*`date`: Date of file
+*`thl_sote_path`: Path to THL SOTE organisations name map `data/thl_sote_organisations.tsv`
+*`thl_abbrv_path`: Path to official abbreviations map `data/thl_lab_id_abbrv_map.tsv`
+*`write_reports`: Wheter to write report or not, either "True" or "False"
 
 # Expected columns:
  1. `laboratoriotutkimusoid` - Laboratory test OID
@@ -102,9 +103,9 @@ following order:
 
  The columns for lab ID, lab ID source, and lab abbreviation are based on
  the following original columns:
-    * `labooratoriotutkimusoid` 
-        * THL - lab ID source: 0
-        * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
-    * `paikallinentutkimusnimikeid`
-        * Local - lab ID source: 1
-        * lab abbreviation from column `paikallinentutkimusnimike`
+*`labooratoriotutkimusoid` 
+    * THL - lab ID source: 0
+    * lab abbreviation from THL abbreviation map in `data/thl_lab_id_abbrv_map.tsv`
+*`paikallinentutkimusnimikeid`
+    * Local - lab ID source: 1
+    * lab abbreviation from column `paikallinentutkimusnimike`
