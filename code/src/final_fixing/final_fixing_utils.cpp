@@ -70,7 +70,9 @@ void fix_titles(std::string &lab_id,
 
     if(titles.find(lab_id) != titles.end()) {
         if(titles[lab_id].find(lab_abbrv) != titles[lab_id].end()) {
-            if(lab_unit == "NA") lab_unit = "ph";
+            // this is actually a bug, want to remove the data and not 
+            // make it pH but represents the current data
+            lab_unit = "ordered";
         }
     }
 }
@@ -199,18 +201,18 @@ int remove_illegal_values(std::string &lab_value,
 }
 
 /**
- * @brief Removes illegal values that are not numbers
+ * @brief Removes illegal measure statuses that are D or P
  * 
- * @param lab_value The lab value of the lab test
- * @param lab_abnorm The lab abnormality of the lab test
- * @param lab_abbrv The lab abbreviation of the lab test
+ * @param measure_status The measure status of the lab test
  * @param keep Whether the line should be kept or not
  * 
  * @return void
  * 
- * If the lab value is not a number, the line is removed. Additionally, negative values
- * are removed except for -h-ind, ab-hb-met, be and vekaas.
-*/
+ * If the measure status is D or P, the line is removed. D stands for deleted information and P for a preliminary result. The entrie with missing information
+ * are kept. We have found that this increases the coverage across different 
+ * areas of Finland. Indicating that the actual status is missing from specific
+ * providers.
+ */
 int remove_bad_measure_status(std::string measure_status,
                               int keep) {
     if(measure_status == "NA") return(keep);

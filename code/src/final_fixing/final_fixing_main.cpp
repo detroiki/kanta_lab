@@ -8,17 +8,8 @@
  * 
  * @return int
  * 
- * This program performs final fixes to the data. It is run after the data has been processed
- * and the OMOP IDs have been added. The fixes are:
- * - Fixing percentages that are in osuus (fraction) format into % format
- * - Fixing abnormality abbreviations to be consistent. This means replacing < with L, > with H, 
- *    POS with A and NEG with N. If the abbreviation is not one of these, it is replaced with NA.
- * - Removing lines where the measurement year is before 2014
- * - Removing lines where the lab value is not a number. Makes illegal units that are numbers NA. 
- * - Removing values from title lines (Making them NAs) and turning the lab unit to ordered. 
- *   These are lines where often there is random information in the lab value column. 
- * - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
- *   marked with binary in the lab unit column.
+ * This program performs final fixes to the data. It is run after the data has 
+ * been processed. For detailed steps performed see the README.
  */
 int main(int argc, char *argv[])
 {
@@ -83,6 +74,7 @@ int main(int argc, char *argv[])
             
             // Fixing values and units
             fix_abnorms(lab_abnormality);
+            // unit_conversion(lab_value, lab_unit); - Current bug needs to be done in future versions
             remove_illegal_units(lab_unit);
             fix_phs(lab_id, lab_abbrv, lab_unit, phs);  // Phs often have no units
             fix_inrs(lab_id, lab_abbrv, lab_unit); // INRs often have no units
@@ -100,9 +92,7 @@ int main(int argc, char *argv[])
             // Writing line to file
             std::vector<std::string> final_line_vec = {finregid, lab_date_time, service_provider_name, lab_id, lab_id_source, lab_abbrv, lab_value, lab_unit, omop_id, omop_name, lab_abnormality, ref_value_text};
             // Making sure that all columns with the delimiter in the text are in quotation marks
-            if(out_delim != '\t') {
-                for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
-            }
+            if(out_delim != '\t') for(unsigned int i = 0; i < final_line_vec.size(); ++i) add_quotation(final_line_vec[i], out_delim);
             if(keep)
                 res_file << concat_string(final_line_vec, std::string(1, out_delim)) << "\n";
             else
