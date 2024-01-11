@@ -47,8 +47,10 @@ Reduces the original files to a single file with columns
   9. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
   10. `MEASUREMENT_STAUTS`- The measurement status, i.e. C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
   11. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form.
-  12. `DATA_SYSTEM` - Data system used to store the information.
-  13. `DATA_SYSTEM_VERSION` - Version of the data system used.
+[12. `DATA_SYSTEM` - Data system used to store the information.
+  13. `DATA_SYSTEM_VERSION` - Version of the data system used.] - Not in final version
+
+<a name="use"/>
 
 ## Usage
 ```
@@ -62,6 +64,8 @@ for file_no in 1:10:
 - `thl_sote_fix_name_map.tsv`- This file is located in the `data/`directory of this repo.
 - `lab_id_map.tsv`- This file is located in the `data/`directory of this repo.
 - `write_reports`- Whether or not to write problem rows etc. to other files, turn off to conserve space. Can be either `True`or `False`.
+
+<a name="steps"/>
 
 ## Steps
 For a detailed desription of the steps performed see: [Minimal README](https://github.com/detroiki/kanta_lab/tree/v2/code/src/minimal).
