@@ -11,8 +11,8 @@
  * Maps the OMOP concetps IDs, using both the lab ID and abbreviation map. 
  * We can map about 87% of the data this way
  * 
- * Reads in the minimal data from stdin. The delimiter is expected to be ";"
- * Expects the columns to be:
+ * Reads in the minimal data from stdin. The delimiter is expected to be "\t"
+ * Expects the columns to be: 
  * - FINREGISTRYID
  * - LAB_DATE_TIME
  * - LAB_SERVICE_PROVIDER
@@ -40,6 +40,7 @@
  *      to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. 
  *      The columns names are irrelevant but they need to be in the correct order. 
  *      LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
+ * - date: The date to distinguish between different runs
 **/
 int main(int argc, char *argv[]) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

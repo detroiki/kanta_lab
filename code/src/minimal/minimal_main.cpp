@@ -4,6 +4,14 @@
  * Processes the original kanta data files with 46 columns and creates
  * files with only the minimal necessary columns. See README.md for more
  * information.
+ * 
+ * The input arguments need be appended in the correct order
+ *  - `res_path`: Path to results directory
+ *  - `file`: File number
+ *  - `date`: Date of file
+ *  - `thl_sote_path`: Path to THL SOTE organisations name map `data/thl_sote_organisations.tsv`
+* `thl_abbrv_path`: Path to official abbreviations map `data/thl_lab_id_abbrv_map.tsv`
+* `write_reports`: Wheter to write report or not, either "True" or "False"
 */
 int main(int argc, char *argv[]) {
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
