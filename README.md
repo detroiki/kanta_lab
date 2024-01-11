@@ -85,7 +85,8 @@ The program takes in the minimal file created in the previous step and maps the 
 - `res_path` - The path to the results folder
 - `omop_concept_map_path`: The path to the OMOP concept ID map. Mapping from lab IDs and abbreviations to OMOP concept IDs. The delimiter is expected to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. The columns names are irrelevant but they need to be in the correct order. LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
 
-You can find the map here: TODO
+You can find the map here: [upload/data/omop_concept_map.tsv](https://github.com/detroiki/kanta_lab/blob/v2/upload/data/omop_concept_map.tsv)
+
 ### Resulting file columns
 
 Adds columns 
