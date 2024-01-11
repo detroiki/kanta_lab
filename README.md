@@ -52,12 +52,12 @@ Reduces the original files to a single file with columns
 
 <a name="use"/>
 
-#### Usage
+### Usage
 ```
 for file_no in 1:10:
   cat finregistry_[file_no].csv.finreg_ID | exec/minimal [res_path] [file_no] [date] [thl_sote_fix_name_map.tsv] [lab_id_map.tsv] [write_reports]
 ```
-##### Explanation of arguments
+#### Explanation of arguments
 - `res_path`- Path to the directory where all files will be saved. 
 - `file_no`- Number of the current file.
 - `date`- Current date or other string to make the results from different runs distinguishable.
@@ -67,7 +67,7 @@ for file_no in 1:10:
 
 <a name="steps"/>
 
-#### Steps
+### Steps
 For a detailed desription of the steps performed see: [Minimal README](https://github.com/detroiki/kanta_lab/tree/v2/code/src/minimal).
 
 <a name="omop"/>
