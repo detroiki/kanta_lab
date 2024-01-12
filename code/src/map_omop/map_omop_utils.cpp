@@ -151,12 +151,16 @@ void read_omop_file(std::string omop_concept_map_path,
 /**
  * @brief Gets new OMOP mappings from file
  * 
- * @param new_omops The map to store the new OMOP mappings
+ * @param new_omops The map from lab ID, abbreviation, and lab unit to OMOP ID
+ * @param omop_names The map from OMOP ID to OMOP names
  * @param file_path The path to the file containing the new OMOP mappings
+ * @param min_count The minimum number of occurrences of a lab ID, abbreviation, and unit
  * 
  * @return void
  * 
- * These mappings are based on the lab ID, abbreviation, and unit.
+ * These mappings are based on the lab ID, abbreviation, and unit. Detects new lab IDs
+ * that appear at least x times mapped to a given OMOP ID. The file is expected to have
+ * the following columns: LAB_ID, LAB_ABBREVIATION, UNIT, OMOP_ID, OMOP_NAME, LAB_COUNT, OMOP_COUNT.
 */
 void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omops,
                            std::unordered_map<std::string, std::string> &omop_names,   
@@ -182,11 +186,11 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
         std::string lab_unit = line_vec[2];
         std::string omop_id = line_vec[3];
         std::string omop_name = line_vec[4];
-        std::string lab_count = line_vec[5];
+        int lab_count = std::stoi(line_vec[5]);
         int omop_count = std::stoi(line_vec[6]);
-
+        // This actually needs to be fixed to lab_count, but represents the current data 
         if(omop_count >= min_count) {
-            std::string omop_identifier = get_omop_identifier(lab_id, lab_abbrv, lab_unit, std::string(","));
+            std::string omop_identifier = get_lab_id_omop_identifier(lab_id, lab_abbrv, lab_unit, delim);
             new_omops[omop_identifier] = omop_id;
             omop_names[omop_id] = omop_name;
         }
