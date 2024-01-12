@@ -12,8 +12,6 @@
   - [Usage](#repo)
   - [Processing Pipeline](#pipe)
 
-
-
 # Using the Final Data
 
 The current processed version of the kanta lab  v2 - 2023-12-12 has the following 11 columns
