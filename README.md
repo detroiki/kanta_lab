@@ -19,19 +19,21 @@ The current processed version of the kanta lab  v2 - 2023-12-12 has the followin
 
 ## Columns
 
-  1. `FINREGISTRYID` - Pseudoanonimized IDs
-  2. `LAB_DATE_TIME` - Date and time of lab measurement
-  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID ([THL - OID-yksilöintitunnukset](https://thl.fi/aiheet/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/oid-yksilointitunnukset) mapped to a readable city containing the city and a number, i.e. HUS is Helsinki_1301. This is NOT the lab performing the test but the service provider that ordered the test see Section [Important Notes](#final_notes) for more details. The map is at [upload/data/thl_sote_map_named.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_sote_map_named.tsv).
-  4. `LAB_ID` - National (THL) or local lab ID of the lab measurement
-  5. `LAB_ID_SOURCE` - Source of the lab ID 0: local and 1: national (THL) 
-  6. `LAB_ABBREVIATION` - Laboratory abbreviation of the measurement from data (local) or mapped using the THL map (national, The map is at [upload/data/thl_lab_id_abbrv_map.csv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_lab_id_abbrv_map.csv), source: [Kuntaliitto - Laboratoriotutkimusnimikkeistö](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120))
-  7. `LAB_VALUE` - The value of the laboratory measurement
-  8. `LAB_UNIT` - The unit of the laboratory measurement from the data
-  9. `OMOP_ID` - OMOP concept ID, mapped using both the lab ID and the lab Abbreviation. See Section [](#) for more details.
-  10. `OMOP_NAME` - Name of the OMOP concept
-  11. `LAB_ABNORMALITY` - Whether the test result is considered normal, or abnormal i.e. the value is too high or low for this individual compared to what is considered normal based on the laboratories reference values. This is **not** a quality measurement but to say it very simply but inaccuratley defines whether the patient is sick or not. This column has a lot of missingness.
-  12. `MEASUREMENT_STAUTS`- The measurement status, the final data only contains results that are: C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
-  13. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form. This contains less missingness and using regex expression can be used to define the `LAB_ABNORMALITY` with better coverage - To be implemented for all.
+| # | Column Name            | Easy Description                                     | Notes                                                                                             |
+|---|------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| 1 | `FINREGISTRYID`        | Pseudoanonimized IDs                                |                                                                                                   |
+| 2 | `LAB_DATE_TIME`        | Date and time of lab measurement                    |                                                                                                   |
+| 3 | `LAB_SERVICE_PROVIDER` | Service provider | The original data contains the service provider in OID format ([OID-yksilöintitunnukset](https://thl.fi/aiheet/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/oid-yksilointitunnukset)). This was mapped to a readable string based on the city where the service provider is registered i.e. *HUS is mapped to Helsinki_1301*. The map is at [upload/data/thl_sote_map_named.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_sote_map_named.tsv) and based on [THL - SOTE-organisaatiorekisteri 2008](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=421&versionKey=501).  This is NOT the lab performing the test but the service provider that ordered the test see Section [Important Notes](#final_notes) for more details. |
+| 4 | `LAB_ID`               | National (THL) or local lab ID of the measurement  | |
+| 5 | `LAB_ID_SOURCE`        | Source of the lab ID 0: local and 1: national(THL)           |                                    |
+| 6 | `LAB_ABBREVIATION`     | Laboratory abbreviation of the measurement from the data (local) or mapped using the THL map (national) | The national abbreviation are mapped using [upload/data/thl_lab_id_abbrv_map.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_lab_id_abbrv_map.tsv), downloaded from [Kuntaliitto - Laboratoriotutkimusnimikkeistö](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120)     |
+| 7 | `LAB_VALUE`            | The value of the laboratory measurement  |                          |
+| 8 | `LAB_UNIT`             | The unit of the labroatroy measurement from the data            |         |
+| 9 | `OMOP_ID`              | OMOP concept ID of the lab measurement, mapped using the lab ID and the lab abbreviation      | For more details about the lab measurements see Sections []() and []().
+|10 | `OMOP_NAME`            |  Name of the OMOP concept |   |
+|11 | `LAB_ABNORMALITY`      | Whether the test result is considered normal, or abnormal i.e. too high or low low for this individual compared to what is considered normal based on the laboratories reference values. |  This is **not** a quality control variable to to state it simply and inaccuratley denotes whether the patient is health or not. The column contains a lot of missingness. See [AR/LABRA - Poikkeustilanneviestit](https://91.202.112.142/codeserver/pages/publication-view-page.xhtml?distributionKey=10329&versionKey=324&returnLink=fromVersionPublicationList) for the meanings. |
+|12 | `MEASUREMENT_STATUS`   | The measurement status, the final data contains only `C` - corrected results or `F` - final result | See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList). |
+|13 | `REFERENCE_VALUE_TEXT` | The reference values for the measurement in text form |                                                     This can be used to define the `LAB_ABNORMALITY` with better coverage using regex expressions (-to be implemented).    |
 
 <a name="final_notes">
 
