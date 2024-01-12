@@ -132,43 +132,9 @@ See the minimal README located at [code/src/minimal](https://github.com/detroiki
 
 ### Mapping OMOP
 
-Maps the OMOP concepts, using both the lab ID and abbreviation map. We can map about 60% of the local lab codes and 87% of the data this way.
+Maps the OMOP concepts, using both the lab ID and abbreviation map. We can map about 60% of the local lab IDs and 78.6% of the data this way. 
 
 The lab ID and abbreviations are mapped to the correct source table, if possible and otherwise hierarchical to the best matching source table. The four tables are LABfi the nation wide table, LABfi_HUS the HUS table, LABfi_TMP the Tampere table, and LABfi_TKU the Turku table. The hierarchy for local lab IDs from non-major hospitals is HUS, TMP, TKU.
-
-#### Usage
-
-The program takes in the minimal file created in the previous step and maps the lab measurements to OMOP concepts. The program takes in the following arguments
-
-- `res_path` - The path to the results folder
-- `omop_concept_map_path`: The path to the OMOP concept ID map. Mapping from lab IDs and abbreviations to OMOP concept IDs. The delimiter is expected to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. The columns names are irrelevant but they need to be in the correct order. LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
-
-You can find the map here: TODO
-#### Resulting file columns
-
-Adds columns 
-
-10. `OMOP_ID` - The OMOP ID of the lab measurement
-11. `OMOP_NAME` - The OMOP name of the lab measurement
-
-to the [Minimal File Columns](#minimalcolumns).
-
-### Current Steps
-
-1. Reads in the OMOP concept maps. The OMOP concept ID map has separate maps for each lab source LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU
-
-```c
-    // OMOP source -> lab ID + abbreviation -> OMOP ID
-    std::unordered_map<std::string, std::unordered_map<std::string, std::string>> omop_concept_map;
-    // OMOP ID -> OMOP name
-    std::unordered_map<std::string, std::string> omop_names;
-
-```
-
-1. Reads in the minimal data from stdin. The delimiter is expected to be ";". The column names are irrelevant but they need to be in the correct order as described in section [Minimal File Columns](#minimalcolumns).
-2. Gets the service provider source of the current measurement. So either LABfi, LABfi_HUS, LABfi_TMP, or LABfi_TKU, depending on the location of the service provider.
-3. Gets the lab ID and abbreviation of the current measurement.
-4. Maps the lab ID and abbreviation to OMOP concept ID and name, using the `omop_concept_map`.
 
 <a name="unit">
 
@@ -203,15 +169,23 @@ For all regex commands see: [code/src/unit_fixing.py](https://github.com/detroik
 
 ## Final Fixing
 
- This program performs final fixes to the data. It is run after the data has been processed
- and the OMOP IDs have been added. The fixes are:
- - Fixing percentages that are in osuus (fraction) format into % format
- - Fixing abnormality abbreviations to be consistent. This means replacing < with L, > with H, 
-    POS with A and NEG with N. If the abbreviation is not one of these, it is replaced with NA.
- - Removing lines where the measurement year is before 2014
- - Removing lines where the lab value is not a number. Makes illegal units that are numbers NA. 
- - Removing values from title lines (Making them NAs) and turning the lab unit to ordered. 
-   These are lines where often there is random information in the lab value column. 
- - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
-   marked with binary in the lab unit column.
- - Adding units to INR and pH measurements because they often lack their unit and it is very clear what it shoul be.
+1. **Fixes abnormality abbreviations** to be consistent with the standard definition see [AR/LABRA - Poikkeustilanneviestit](https://91.202.112.142/codeserver/pages/publication-view-page.xhtml?distributionKey=10329&versionKey=324&returnLink=fromVersionPublicationList). This means replacing
+    * < with L, > with H, POS with A and NEG with N. 
+    * If the abbreviation is not one of these, it is replaced with NA.
+2. **Converting e6/l to e9/l** by dividing them by 1000 and changing the unit. To increase unity within the same measurements. Note that this is actually not implemented yet. (TODO).
+3. **Fixes some of the units**
+    * Removes units that are numbers 
+    * Adds units for **INR**, and **pH** where they are almost always missing
+        * Adds unit ph to a list of lab IDs, and abbreviation combos that are pH based on their OMOP mapping. The list is at `/data/xxxx`(TODO).
+        * Adds unit to 4520 p-tt-inr, 4520 p-inr, 955 p-inr.
+4. **Changes unit to `ordered` and removes the lab value for titles.** Titles are a set of lab measurements ordered together, here they often contain random information, probably from the children entries. Only information that is potentially reasonable is the abnormality. However, I wouldn't necessarily trust it. At the very least the information that this test has ben ordered can be preserved.The list of lab ID and abbreviation combos for titles is at `/data/xxxx`(TODO). - Note there currently is a bug in this. Instead of removing any data it adds pH to the units. (TODO)
+5. **Removes data from years <2014 and >2022**
+6. **Unifies all percentages and fractions to be in percentage.** Meaning, all entries with unit `osuus` (fraction) are multiplied by 100 and the unit is changed to `%`. For sometimes the percentage unit makes less sense logically. However, overall the data is preserved and for measurements where both fraction and percentage are used the data is unified this way.
+7. **Removes illegal values**
+    * Values that are not numbers - TODO is this actually a bug, i.e. do we have left or right censored values that are being removed in this way?
+    * Negative values, except for the measurements with abbreviations: -h-ind, -ab-hb-met, xxxbe*, xxxvekaas*
+8. **Removes measurements with measurement status D and P.** D stands for deleted information and P for a preliminary result. The entrie with missing information are kept. We have found that this increases the coverage across different areas of Finland. Indicating that the actual status is missing from specific providers.
+9.**Moves all lab abnormality info to the lab value with unit `binary`**, in cases where this is the onl information we have. So `0` means normal and `1` abnormal.
+ ## Learning New OMOP Concepts
+
+Adds OMOP IDs to lab IDs that are unknown but occur at least 1000 times with lab abbreviations that can be mapped to the OMOP ID. The list of new omop concepts can be found here: [upload/data/new_omop_mappings.tsv](https://github.com/detroiki/kanta_lab/blob/mainupload/data/new_omop_mappings.tsv).
