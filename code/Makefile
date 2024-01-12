@@ -1,4 +1,22 @@
-FLAGS = -std=c++11 -static -Wall
+FLAGS = -std=c++17 -static -Wall
+
+find_suspicious_entryoids: bin/find_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
+	g++ $(FLAGS) bin/find_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o ../upload/exec/find_suspicious_entryoids
+
+bin/find_suspicious_entryoids.o: src/minimal/find_suspicious_entryoids.cpp
+	$(info Buildung Main minimal...)  g++ -c $(FLAGS) -o bin/find_suspicious_entryoids.o src/minimal/find_suspicious_entryoids.cpp
+
+filter_suspicious_entryoids: bin/filter_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
+	g++ $(FLAGS) bin/filter_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o ../upload/exec/filter_suspicious_entryoids
+
+bin/filter_suspicious_entryoids.o: src/minimal/filter_suspicious_entryoids.cpp
+	$(info Buildung Main minimal...)  g++ -c $(FLAGS) -o bin/filter_suspicious_entryoids.o src/minimal/filter_suspicious_entryoids.cpp
+
+transform: bin/transform.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
+	g++ $(FLAGS) bin/transform.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o ../upload/exec/transform
+
+bin/transform.o: src/transform.cpp
+	$(info Buildung Main minimal...)  g++ -c $(FLAGS) -o bin/transform.o src/transform.cpp
 
 ## Minimal
 minimal: bin/minimal_main.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
@@ -71,6 +89,3 @@ bin/omop_sumstats_main.o: src/sumstats/omop_sumstats_main.cpp
 
 bin/sumstats_utils.o: src/sumstats/sumstats_utils.cpp
 	$(info Buildung Main omop_sumstats...)  g++ -c $(FLAGS) -o bin/sumstats_utils.o src/sumstats/sumstats_utils.cpp
-clean:
-	$(info Cleaning up...)
-	rm bin/*.o
