@@ -1,33 +1,62 @@
+# Table of Contents
+
+- [Using the Final Data](#final_cols)
+  - [Columns](#final_cols)
+  - [Important Notes](#final_notes)
+    - [Known Bugs](#bugs)
+    - [How to Best Use the Data](#best_use)
+- [This Repo](#repo)
+  - [Usage](#repo)
+  - [Processing Pipeline](#pipe)
+
 
 
 # Using the Final Data
 
-## Columns 
-| # | Column Name            | Easy Description                                     | Notes                                                                                             |
-|---|------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------|
-| 1 | `FINREGISTRYID`        | Pseudoanonimized IDs                                |                                                                                                   |
-| 2 | `LAB_DATE_TIME`        | Date and time of lab measurement                    |                                                                                                   |
-| 3 | `LAB_SERVICE_PROVIDER` | Service provider | The original data contains the service provider in OID format ([OID-yksilöintitunnukset](https://thl.fi/aiheet/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/oid-yksilointitunnukset)). This was mapped to a readable string based on the city where the service provider is registered i.e. *HUS is mapped to Helsinki_1301*. The map is at [upload/data/thl_sote_map_named.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_sote_map_named.tsv) and based on [THL - SOTE-organisaatiorekisteri 2008](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=421&versionKey=501). |
-| 4 | `LAB_ID`               | National or local lab ID of the measurement  | |
-| 5 | `LAB_ID_SOURCE`        | Source of the lab ID 0: local and 1: national(THL)           |                                    |
-| 6 | `LAB_ABBREVIATION`     | Laboratory abbreviation of the measurement from the data (local) or mapped using the THL map (national) | The national abbreviation are mapped using [upload/data/thl_lab_id_abbrv_map.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_lab_id_abbrv_map.tsv), downloaded from [Kuntaliitto - Laboratoriotutkimusnimikkeistö](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120)     |
-| 7 | `LAB_VALUE`            | The value of the laboratory measurement  |                          |
-| 8 | `LAB_UNIT`             | The unit of the labroatroy measurement from the data            |         |
-| 9 | `OMOP_ID`              | OMOP concept ID of the lab measurement, mapped using the lab ID and the lab abbreviation      | For more details about the lab measurements see Sections []() and []().
-|10 | `OMOP_NAME`            |  Name of the OMOP concept |   |
-|11 | `LAB_ABNORMALITY`      | Whether the test result is considered normal, or abnormal i.e. too high or low |  This is **not** a quality control variable to to state it simply and inaccuratley denotes whether the patient is health or not. The column contains a lot of missingness. See [AR/LABRA - Poikkeustilanneviestit](https://91.202.112.142/codeserver/pages/publication-view-page.xhtml?distributionKey=10329&versionKey=324&returnLink=fromVersionPublicationList) for the meanings. |
-|12 | `MEASUREMENT_STATUS`   | The measurement status, the final data contains only `C` - corrected results or `F` - final result | See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList). |
-|13 | `REFERENCE_VALUE_TEXT` | The reference values for the measurement in text form |                                                     This can be used to define the `LAB_ABNORMALITY` with better coverage using regex expressions (-to be implemented).    |
+The current processed version of the kanta lab  v2 - 2023-12-12 has the following 11 columns
+
+<a name="final_cols">
+
+## Columns
+
+  1. `FINREGISTRYID` - Pseudoanonimized IDs
+  2. `LAB_DATE_TIME` - Date and time of lab measurement
+  3. `LAB_SERVICE_PROVIDER` - Service provider string based on OID ([THL - OID-yksilöintitunnukset](https://thl.fi/aiheet/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/oid-yksilointitunnukset) mapped to a readable city containing the city and a number, i.e. HUS is Helsinki_1301. This is NOT the lab performing the test but the service provider that ordered the test see Section [Important Notes](#final_notes) for more details. The map is at [upload/data/thl_sote_map_named.tsv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_sote_map_named.tsv).
+  4. `LAB_ID` - National (THL) or local lab ID of the lab measurement
+  5. `LAB_ID_SOURCE` - Source of the lab ID 0: local and 1: national (THL) 
+  6. `LAB_ABBREVIATION` - Laboratory abbreviation of the measurement from data (local) or mapped using the THL map (national, The map is at [upload/data/thl_lab_id_abbrv_map.csv](https://github.com/detroiki/kanta_lab/blob/main/upload/data/thl_lab_id_abbrv_map.csv), source: [Kuntaliitto - Laboratoriotutkimusnimikkeistö](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120))
+  7. `LAB_VALUE` - The value of the laboratory measurement
+  8. `LAB_UNIT` - The unit of the laboratory measurement from the data
+  9. `OMOP_ID` - OMOP concept ID, mapped using both the lab ID and the lab Abbreviation. See Section [](#) for more details.
+  10. `OMOP_NAME` - Name of the OMOP concept
+  11. `LAB_ABNORMALITY` - Whether the test result is considered normal, or abnormal i.e. the value is too high or low for this individual compared to what is considered normal based on the laboratories reference values. This is **not** a quality measurement but to say it very simply but inaccuratley defines whether the patient is sick or not. This column has a lot of missingness.
+  12. `MEASUREMENT_STAUTS`- The measurement status, the final data only contains results that are: C - corrected results or F - final result. See [Koodistopalvelu - AR/LABRA - Tutkimusvastauksien tulkintakoodit 1997](https://koodistopalvelu.kanta.fi/codeserver/pages/publication-view-page.xhtml?distributionKey=2637&versionKey=321&returnLink=fromVersionPublicationList).
+  13. `REFERENCE_VALUE_TEXT`- The reference values for the measurement in text form. This contains less missingness and using regex expression can be used to define the `LAB_ABNORMALITY` with better coverage - To be implemented for all.
+
+<a name="final_notes">
+
+## Imporant notes
+
+<a name="best_use">
 
 
-# Overview
+### How to Best Use the Data
 
-These are various C++ programs for working with the Kanta lab data files.
 
-# Usage
+<a name="bugs">
+
+### Known Bugs
+
+
+
+# This Repo
+
+This repo contains various C++ programs (and one python file) for processing the original Kanta lab files.
+
+## Usage
 
 The whole pipeline can be easily run by simply **replacing the paths for the results directory (`res_dir`)** and the **original data directory (`data_dir`)** in the
-Makefile. **Additionally, you will need to activate a python environment** with packages: csv, re, sys, time, and collections, for the unit fixing step.
+Makefile. **Additionally, you will need to activate a python environment with packages: csv, re, sys, time, and collections, for the unit fixing step.**
 
 Then run
 
@@ -39,11 +68,10 @@ This will run all the steps in the pipeline and create all the necessary folders
 
 The pipeline can also be run step by step. See the Makefile for the exact commands and steps.
 
-# Pipeline
+<a name="pipe">
+
+## Pipeline
 - [Creating Minimal File](#minimal)
-  - [Minimal File Columns](#minimalcolumns)
-  - [Usage](#use)
-  - [Steps](#steps)
 - [Mapping OMOP](#omop)
 - [Unit Fixing](#unit)
 - [Final Fixing](#final)
@@ -51,11 +79,12 @@ The pipeline can also be run step by step. See the Makefile for the exact comman
   
 <a name="minimal">
   
-## Creating Minimal File
+### Creating Minimal File
 
 Reduces the original files to a single file with columns
+<a name="minimalcolumns">
 
-<a name="use"/>
+#### Minimal File Columns
 
 ### Usage
 ```
@@ -69,30 +98,90 @@ for file_no in 1:10:
 - `thl_sote_fix_name_map.tsv`- This file is located in the `data/`directory of this repo.
 - `lab_id_map.tsv`- This file is located in the `data/`directory of this repo.
 - `write_reports`- Whether or not to write problem rows etc. to other files, turn off to conserve space. Can be either `True`or `False`.
+### Current Steps
 
-<a name="steps"/>
+#### Reading Files
+1. Reads in duplicate lines from all previous files 
+```c
+std::unordered_map<std::string, int> all_dup_lines; # Counts number of times the duplicate lines appear in the current file
+```
+2. Reads in the [THL SOTE Organisation](https://thl.fi/fi/web/tiedonhallinta-sosiaali-ja-terveysalalla/ohjeet-ja-soveltaminen/koodistopalvelun-ohjeet/sote-organisaatio-rekisteri) map 
+  - Created by mapping each organisations OID to shorter strings which are based on the the city 
+  -` Example: 1.2.246.10.1739.4173.10.1 mapped to Helsinki_1301 is HUS
+```c
+std::unordered_map<std::string, std::string> thl_sote_map;
+```
+3. Reads in the official [THL Koodistopalvelu regional lab IDs map to abbreviations](https://koodistopalvelu.kanta.fi/codeserver/pages/classification-view-page.xhtml?classificationKey=88&versionKey=120)
+  - Example: 
+  
+  ![image](https://user-images.githubusercontent.com/56593546/235346446-813e5adb-0199-4c15-ac6d-4b6585ff90d0.png)
+  
+```c
+    std::unordered_map<std::string, std::string> thl_abbrv_map;
+``` 
 
-### Steps
-For a detailed desription of the steps performed see: [Minimal README](https://github.com/detroiki/kanta_lab/tree/v2/code/src/minimal).
+#### For each line from std::cin
+##### Creates a new file with columns
+  0. `FINREGISTRYID` - Pseudoanonimized IDs
+  1. `LAB_DATE_TIME` - Date and time of lab measurement
+  2. `LAB_SERVICE_PROVIDER` - Service provider string based on OID mapped to city
+  3. `LAB_ID` - Regional or local lab ID
+  4. `LAB_ID_SOURCE` - Source of lab ID 0: local 1: regional
+  5. `LAB_ABBREVIATION` - Laboratory abbreviation from data (local) or mapped using the THL map (regional)
+  6. `LAB_VALUE` - The value of the laboratory measurement
+  7. `LAB_UNIT` - The unit from the file
+  8. `LAB_ABNORMALITY` - The abnormality of the measurement i.e. high, low, positive, negative. A lot of missingness
+
+#### Steps
+1. Reads in line a splits, using ";" - See function `read_correct_lines`
+    - Checks if the line has 25 columns
+    - If not tries to concatenate with next line to see if it was an early line break
+    - If not checks if the next line is well defined 
+    - Writes badly defined lines to a file `[res_path]/processed/reports/problem_rows/problem_rows_file_[file_no].csv`
+2. Turns all NA markers to actual NAs in the data 
+    - `Puuttuu`, `""`, `THYJÄ`, `_`, `-1` (except in value column
+3. Columns directly copied from the data:
+```c
+std::string finregistry_id = final_line_vec[1];
+std::string date_time = final_line_vec[11];
+std::string lab_value = final_line_vec[19];
+std::string lab_unit = final_line_vec[20];
+std::string lab_abnormality = final_line_vec[22];
+```    
+4. Lab IDs, depending on data
+  - If we have both the code and name -> local lab ID, source = 0
+  - If we have only the code -> regional lab ID, source = 1
+5. Getting abbreviations for regional lab ID, using `thl_abbrv_map`
+6. Getting THL SOTE organisation string, using ``thl_sote_map`
+7. Creating duplicate line string 
+```c
+std::vector<std::string> dup_vec = {finregistry_id, date_time, service_provider_name, lab_id, lab_abbrv, lab_value, lab_unit};
+std::string dup_line = concat_string(dup_vec, std::string("")); 
+```
+8. Adding only non-duplicate lines to the file
+9. Adding line to duplicate line map `all_dup_lines`
+10. Adding lines with neither lab value, nor lab abnormality information to a file `[res_path]/processed/reports/problem_rows/missing_data_rows_file_[file_no].csv
+## Important
+- Currently the process takes a lot of space before compression (over 100GB)
+  - It is in principal possible to skip all the error file creations if necessary to save some space. However, this still needs to be implemented
 
 <a name="omop"/>
 
-## Mapping OMOP
+### Mapping OMOP
 
 Maps the OMOP concepts, using both the lab ID and abbreviation map. We can map about 60% of the local lab codes and 87% of the data this way.
 
 The lab ID and abbreviations are mapped to the correct source table, if possible and otherwise hierarchical to the best matching source table. The four tables are LABfi the nation wide table, LABfi_HUS the HUS table, LABfi_TMP the Tampere table, and LABfi_TKU the Turku table. The hierarchy for local lab IDs from non-major hospitals is HUS, TMP, TKU.
 
-### Usage
+#### Usage
 
 The program takes in the minimal file created in the previous step and maps the lab measurements to OMOP concepts. The program takes in the following arguments
 
 - `res_path` - The path to the results folder
 - `omop_concept_map_path`: The path to the OMOP concept ID map. Mapping from lab IDs and abbreviations to OMOP concept IDs. The delimiter is expected to be "\t". Expects columns: LAB_ID, LAB_SOURCE, LAB_ABBREVIATION, UNIT, OMOP_ID, NAME. The columns names are irrelevant but they need to be in the correct order. LAB_SOURCE is either LABfi, LABfi_HUS, LABfi_TMP, LABfi_TKU.
 
-You can find the map here: [upload/data/omop_concept_map.tsv](https://github.com/detroiki/kanta_lab/blob/v2/upload/data/omop_concept_map.tsv)
-
-### Resulting file columns
+You can find the map here: TODO
+#### Resulting file columns
 
 Adds columns 
 
@@ -150,35 +239,16 @@ For all regex commands see: [code/src/unit_fixing.py](https://github.com/detroik
 <a name="final">
 
 ## Final Fixing
-### Usage
 
-```c
-	cat file.tsv | exec/final_fixing <res_dir> <date> <ph_list_file_path> <title_list_file_path>
-```
-
-The input arguments need be appended in the correct order
-
-* `res_dir`: Path to results directory
-* `date`: Date of file
-* `ph_list_file_path`: Path to the labs denoting pH tests
-* `title_list_file_path`: Path to the labs denoting titles.
-
-### Steps
-
-1. **Fixes abnormality abbreviations** to be consistent with the standard definition see [AR/LABRA - Poikkeustilanneviestit](https://91.202.112.142/codeserver/pages/publication-view-page.xhtml?distributionKey=10329&versionKey=324&returnLink=fromVersionPublicationList). This means replacing
-    * < with L, > with H, POS with A and NEG with N. 
-    * If the abbreviation is not one of these, it is replaced with NA.
-2. **Converting e6/l to e9/l** by dividing them by 1000 and changing the unit. To increase unity within the same measurements. Note that this is actually not implemented yet. (TODO).
-3. **Fixes some of the units**
-    * Removes units that are numbers 
-    * Adds units for **INR**, and **pH** where they are almost always missing
-        * Adds unit ph to a list of lab IDs, and abbreviation combos that are pH based on their OMOP mapping. The list is at `/data/xxxx`(TODO).
-        * Adds unit to 4520 p-tt-inr, 4520 p-inr, 955 p-inr.
-4. **Changes unit to `ordered` and removes the lab value for titles.** Titles are a set of lab measurements ordered together, here they often contain random information, probably from the children entries. Only information that is potentially reasonable is the abnormality. However, I wouldn't necessarily trust it. At the very least the information that this test has ben ordered can be preserved.The list of lab ID and abbreviation combos for titles is at `/data/xxxx`(TODO). - Note there currently is a bug in this. Instead of removing any data it adds pH to the units. (TODO)
-5. **Removes data from years <2014 and >2022**
-6. **Unifies all percentages and fractions to be in percentage.** Meaning, all entries with unit `osuus` (fraction) are multiplied by 100 and the unit is changed to `%`. For sometimes the percentage unit makes less sense logically. However, overall the data is preserved and for measurements where both fraction and percentage are used the data is unified this way.
-7. **Removes illegal values**
-    * Values that are not numbers - TODO is this actually a bug, i.e. do we have left or right censored values that are being removed in this way?
-    * Negative values, except for the measurements with abbreviations: -h-ind, -ab-hb-met, xxxbe*, xxxvekaas*
-8. **Removes measurements with measurement status D and P.** D stands for deleted information and P for a preliminary result. The entrie with missing information are kept. We have found that this increases the coverage across different areas of Finland. Indicating that the actual status is missing from specific providers.
-9.**Moves all lab abnormality info to the lab value with unit `binary`**, in cases where this is the onl information we have. So `0` means normal and `1` abnormal.
+ This program performs final fixes to the data. It is run after the data has been processed
+ and the OMOP IDs have been added. The fixes are:
+ - Fixing percentages that are in osuus (fraction) format into % format
+ - Fixing abnormality abbreviations to be consistent. This means replacing < with L, > with H, 
+    POS with A and NEG with N. If the abbreviation is not one of these, it is replaced with NA.
+ - Removing lines where the measurement year is before 2014
+ - Removing lines where the lab value is not a number. Makes illegal units that are numbers NA. 
+ - Removing values from title lines (Making them NAs) and turning the lab unit to ordered. 
+   These are lines where often there is random information in the lab value column. 
+ - Moving lab abnormality information to the lab value column if the lab value is NA. These are 
+   marked with binary in the lab unit column.
+ - Adding units to INR and pH measurements because they often lack their unit and it is very clear what it shoul be.
