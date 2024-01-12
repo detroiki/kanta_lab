@@ -13,7 +13,8 @@
  * Command line arguments:
  * 1. Path to file containing new OMOP mappings
  * 2. Path to results directory
- * 3. Minimum count for new OMOP mappings - so how often this lab ID appears together with the abbreviation and unit that are mapped to the OMOP concept
+ * 3. Date to distinguish between different runs
+ * 4. Minimum count for new OMOP mappings - so how often this lab ID appears together with the abbreviation and unit that are mapped to the OMOP concept
  * 
  * Reads in lab data from stdin and adds OMOP concepts to it.
 */

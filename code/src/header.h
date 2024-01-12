@@ -6,11 +6,11 @@
 #include <regex>
 #include <unordered_map>
 #include <unordered_set>
+#include <map>
 #include <numeric>
 #include <cmath>
 #include <algorithm>
 #include <chrono>
-#include <filesystem>
 
 using namespace std;
 
@@ -32,22 +32,29 @@ int check_in_open(std::ifstream &file_stream, std::string file_path, int stop_if
 std::string to_lower(std::string str);
 void add_quotation(std::string &str,
                    char delim);
+std::string get_header(char delim);
+std::string get_no_omop_header(char delim);
+std::string get_header_final(char delim);
 
 std::string remove_chars(std::string str, char remove_char);
 std::string clean_units(std::string lab_unit);
 
-std::string get_omop_info(std::string omop_id, std::string omop_name);
-std::string get_lab_info(std::string lab_abbrv, std::string lab_unit);
+std::string get_omop_info(std::string omop_id, std::string omop_name, char delim);
+std::string get_lab_info(std::string lab_abbrv, std::string lab_unit, char delim);
 std::string get_lab_id_omop_info(std::string lab_id, 
                                  std::string lab_info,
-                                 std::string omop_info);
+                                 std::string omop_info,
+                                 char delim);
 std::string get_lab_id_abbrv(std::string lab_id, 
                              std::string lab_abbrv);
-std::string get_omop_identifier(std::string lab_id,
-                                std::string lab_abbrv,
+std::string get_lab_id_omop_identifier(std::string lab_id,
+                                       std::string lab_abbrv,
+                                       std::string lab_unit,
+                                       char = ' ');
+std::string get_omop_identifier(std::string omop_id,
+                                std::string omop_name,
                                 std::string lab_unit,
-                                std::string delim = std::string(" "));
-
+                                char = ' ');
 // Helper functions for minimal file creation
 void fix_nas(std::vector<std::string> &final_line_vec);
 std::string get_service_provider_name(std::unordered_map<std::string, std::string> &thl_sote_map,
@@ -64,7 +71,6 @@ void write_row_count_report(std::string &report_path,
                             std::string &date,
                             unsigned long long &total_line_count,
                             unsigned long long &valid_line_count,
-                            unsigned long long &skip_count,
                             unsigned long long &dup_count,
                             unsigned long long &na_count,
                             unsigned long long &hetu_count,
@@ -78,7 +84,9 @@ void write_dup_lines_file(std::string &res_path,
 // Writing functions
 void write_omop_sumstats(std::unordered_map<std::string, std::vector<double>> &omops,
                          std::unordered_map<std::string, std::unordered_set<std::string>> &omop_indvs,
-                         std::string res_path);
+                         std::string res_path,
+                         std::string date,
+                         char out_delim);
 void write_indvs_omops_sumstats( std::unordered_map<std::string, std::unordered_map<std::string, std::vector<double>>> &indvs_omops_values,
                                 std::string res_path);
 
@@ -105,17 +113,6 @@ void get_new_omop_concepts(std::unordered_map<std::string, std::string> &new_omo
                            std::string file_path,
                            int min_count);
 
-// Sumstats
-
-void read_indvs_file(std::unordered_set<std::string> &relevant_indvs,
-                      std::string indvs_path);
-void read_omops_file(std::unordered_set<std::string> &relevant_omops,
-                     std::string omops_path);
-void read_indvs_omops_sumstats(std::string indvs_omops_sumstats_path,
-                               std::unordered_map<std::string, std::unordered_map<std::string, std::unordered_map<std::string, std::string>>> &indvs_omop_sumstats,
-                               std::unordered_set<std::string> &relevant_omops,
-                               std::unordered_set<std::string> &relevant_indvs);
-
 // Helper functions for OMOP mapping
 std::string get_omop_lab_source(std::string lab_id_source,
                                 std::string service_provider);
@@ -126,6 +123,8 @@ std::string get_omop_name(std::string omop_id,
                           std::unordered_map<std::string, std::string> &omop_names);
 
 // Helpfer functions final fixing
+void read_lab_id_abbrv_map(std::string file_path,
+                           std::map<std::string, std::unordered_set<std::string>> &elems);
 int fix_percentages(std::string &lab_value, 
                     std::string &lab_unit,
                     std::string &lab_abnorm,
@@ -138,10 +137,13 @@ int remove_illegal_values(std::string &lab_value,
                           std::string &lab_abnorm, 
                           std::string &lab_abbrv,
                           int keep);
+int remove_bad_measure_status(std::string measure_status,
+                              int keep);
 void remove_illegal_units(std::string &lab_unit);
 void fix_phs(std::string &lab_id,
              std::string &lab_abbrv,
-             std::string &lab_unit);
+             std::string &lab_unit,
+             std::map<std::string, std::unordered_set<std::string>> &phs);
 void fix_inrs(std::string &lab_id,
               std::string &lab_abbrv,
               std::string &lab_unit);
@@ -151,12 +153,15 @@ int remove_illegal_measure_year(std::string &date_time,
 void fix_titles(std::string &lab_id,
                   std::string &lab_abbrv,
                   std::string &lab_unit,
-                  std::string &lab_value);
+                  std::string &lab_value,
+                  std::map<std::string, std::unordered_set<std::string>> &titles);
 
 // Math helper function
 double get_mean(std::vector<double> values_vec);
 double get_median(std::vector<double> values_vec);
 double get_sd(std::vector<double> values_vec, double mean);
 double get_quantile(std::vector<double> values, double quantile);
+
+
 
 
