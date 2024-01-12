@@ -100,7 +100,7 @@ This repo contains various C++ programs (and one python file) for processing the
 
 ## Usage
 
-The whole pipeline can be easily run by simply **replacing the paths for the results directory (`res_dir`)** and the **original data directory (`data_dir`)** in the
+The whole pipeline can be easily run by simply uploading the directory `upload` to your environment a **replacing the paths for the results directory (`res_dir`)** and the **original data directory (`data_dir`)** in the
 Makefile. **Additionally, you will need to activate a python environment with packages: csv, re, sys, time, and collections, for the unit fixing step.**
 
 Then run
