@@ -22,6 +22,7 @@ void read_indvs_date_file(std::unordered_map<std::string, std::tuple<date, date>
     check_in_open(indvs_file, indvs_path);
     std::string indv_line;
 
+    // Reading
     int first_line = 1;
     while(std::getline(indvs_file, indv_line)) {
         if (first_line == 1) {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
     std::ifstream lab_file;
     lab_file.open(kanta_lab_path);
     check_in_open(lab_file, kanta_lab_path);
-    char delim = find_delim(kanta_lab_path);
+    char in_delim = find_delim(kanta_lab_path);
 
     // Reading
     std::string line;
@@ -78,7 +79,7 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
-        std::vector<std::string> line_vec(splitString(line, delim));
+        std::vector<std::string> line_vec(splitString(line, in_delim));
         std::string finregid = line_vec[0];
         std::string date_time = line_vec[1];
         std::string service_provider = line_vec[2];

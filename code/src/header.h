@@ -123,6 +123,8 @@ std::string get_omop_name(std::string omop_id,
                           std::unordered_map<std::string, std::string> &omop_names);
 
 // Helpfer functions final fixing
+void unit_conversion(std::string lab_value,
+                     std::string lab_unit);
 void read_lab_id_abbrv_map(std::string file_path,
                            std::map<std::string, std::unordered_set<std::string>> &elems);
 int fix_percentages(std::string &lab_value, 
