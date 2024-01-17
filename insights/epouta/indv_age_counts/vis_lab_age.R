@@ -3,10 +3,10 @@ library(dplyr)
 library(lubridate)
 
 date = "v2_2023-12-12"
+out_dir <- "/home/kdetrois/projects/kanta_lab_stats/results/"
 
-age_2020 <- tibble::as_tibble(data.table::fread(file=paste0("/home/kdetrois/projects/kanta_lab_stats/results/age_2020_table_", date, ".tsv"), sep="\t"))
+age_2020 <- tibble::as_tibble(data.table::fread(file=paste0(out_dir, "kanta_lab_", date, "_age_2020_tabl.tsv"), sep="\t"))
 
-# Easiest way to save this as png on epouta is using the RStudio GUI
 ggplot(age_2022, aes(x=AGE, y=TEST_COUNT/ALIVE_COUNT)) +
   geom_col() +
   theme_custom(base_size=18) +

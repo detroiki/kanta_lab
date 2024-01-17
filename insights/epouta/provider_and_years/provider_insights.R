@@ -4,6 +4,7 @@ source("/home/kdetrois/projects/utils/plot_utils.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 date <- args[1]
+date <- "v2_2023-12-12"
 
 provider_years <- tibble::as_tibble(data.table::fread(paste0("/home/kdetrois/projects/kanta_lab_stats/results/service_provider_year_count_", date, ".tsv")))
 provider_table <- tibble::as_tibble(data.table::fread("/home/kdetrois/projects/kanta_lab_processing/data/thl_sote_map_named.tsv", ))
@@ -22,6 +23,7 @@ for(year in 2015:2022) {
   all_years <- dplyr::bind_rows(all_years, crnt_year)
   prev_years <- dplyr::bind_rows(prev_years, crnt_year)
 }
+
 all_years <- na.omit(all_years)
 all_years %>% group_by(YEAR) %>% summarise(n())
 data.table::fwrite(all_years, paste0("/home/kdetrois/projects/kanta_lab_stats/scripts/provider_insights/service_provider_year_count_new_g100_", date, ".tsv"), sep="\t")

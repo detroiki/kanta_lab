@@ -8,6 +8,6 @@ years <- dplyr::filter(years, YEAR < 2023)
 ggplot2::ggplot(years, aes(x=YEAR, y=COUNT)) +
   geom_col() +
   labs(x="Year", y="", title="Cummulative number of tests") +
-  scale_y_continuous(labels=function(x) {so_formatter(x)}) +
+  scale_y_continuous(labels=function(x) {so_formatter(x)}, breaks=c(50000000, 100000000, 150000000), limits=c(0,150000000)) +
   scale_x_continuous(breaks=2014:2022) +
-  theme_custom(base_size=18) 
+  theme_custom(base_size=18) s
