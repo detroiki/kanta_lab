@@ -3,8 +3,8 @@ FLAGS = -std=c++17 -static -Wall
 find_suspicious_entryoids: bin/find_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
 	g++ $(FLAGS) bin/find_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o ../upload/exec/find_suspicious_entryoids
 
-bin/find_suspicious_entryoids.o: src/minimal/find_suspicious_entryoids.cpp
-	$(info Buildung Main minimal...)  g++ -c $(FLAGS) -o bin/find_suspicious_entryoids.o src/minimal/find_suspicious_entryoids.cpp
+bin/find_suspicious_entryoids.o: src/preprocessing/find_suspicious_entryoids.cpp
+	$(info Buildung Main preprocessing...)  g++ -c $(FLAGS) -o bin/find_suspicious_entryoids.o src/preprocessing/find_suspicious_entryoids.cpp
 
 filter_suspicious_entryoids: bin/filter_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o  bin/minimal_utils.o
 	g++ $(FLAGS) bin/filter_suspicious_entryoids.o bin/file_helpers.o bin/string_helpers.o bin/minimal_utils.o -o ../upload/exec/filter_suspicious_entryoids

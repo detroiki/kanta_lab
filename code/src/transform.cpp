@@ -26,41 +26,57 @@ int main(int argc, char *argv[]) {
     std::string full_res_path = argv[1];
     std::string direction = argv[2];
 
-    // Opening results file
-    std::ofstream res_file;
-    res_file.open(full_res_path);
-    check_out_open(res_file, full_res_path);
-
     // Reading
-    if(direction == ",->\t") {
-        char in_delim = ',';
-        char out_delim = '\t';
+    if((direction == ",->tab") || (direction == "tab->,")) {
+        // Opening results file
+        std::ofstream res_file;
+        res_file.open(full_res_path);
+        check_out_open(res_file, full_res_path);
+        std::cout << "Writing to: " << full_res_path << std::endl;
 
-        std::string line;
-        int n_lines = 0;
-        while(std::getline(std::cin, line)) {
-            std::vector<std::string> line_vec = splitString(line, in_delim);
-            for(unsigned int i = 0; i < line_vec.size(); i++) {
-                line_vec[i] = remove_chars(line_vec[i], '\t');
-            }
-            res_file << concat_string(line_vec, std::string(1, out_delim)) << "\n";
-            n_lines++; write_line_update(n_lines, begin);
-        }
-    } else if(direction == "\t->,") {
-        char in_delim = '\t';
-        char out_delim = ',';
+        // Different directions
+        if(direction == ",->tab") {
+            char in_delim = ',';
+            char out_delim = '\t';
+            std::cout << "Transforming , to tab " << std::endl;;
 
-        std::string line;
-        int n_lines = 0;
-        while(std::getline(std::cin, line)) {
-            std::vector<std::string> line_vec = split(line, &in_delim);
-            for(unsigned int i = 0; i < line_vec.size(); i++) {
-                add_quotation(line_vec[i], out_delim);
+            std::string line;
+            int n_lines = 0;
+            while(std::getline(std::cin, line)) {
+                std::vector<std::string> line_vec = splitString(line, in_delim);
+                for(unsigned int i = 0; i < line_vec.size(); i++) {
+                    line_vec[i] = remove_chars(line_vec[i], '\t');
+                }
+                if(n_lines == 0) {
+                    cout << "Split and cleaned first line first element is: " << line_vec[0] << std::endl;
+                }
+
+                res_file << concat_string(line_vec, std::string(1, out_delim)) << "\n";
+                n_lines++; write_line_update(n_lines, begin);
             }
-            res_file << concat_string(line_vec, std::string(1, out_delim)) << "\n";
-            n_lines++; write_line_update(n_lines, begin);
+        } else if(direction == "tab->,") {
+            char in_delim = '\t';
+            char out_delim = ',';
+            std::cout << "Transforming tab to , " << std::endl;;
+
+            std::string line;
+            int n_lines = 0;
+            while(std::getline(std::cin, line)) {
+                std::vector<std::string> line_vec = split(line, &in_delim);
+                for(unsigned int i = 0; i < line_vec.size(); i++) {
+                    add_quotation(line_vec[i], out_delim);
+                }
+                if(n_lines == 0) {
+                    cout << "Split and cleaned first line first element is: " << line_vec[0] << std::endl;
+                }
+
+                res_file << concat_string(line_vec, std::string(1, out_delim)) << "\n";
+                n_lines++; write_line_update(n_lines, begin);
+            }
         }
+        res_file.close(); 
+    } else {
+        std::cout << "Could not figure out transformation, options are: tab->, and ,->tab." << endl;
     }
-
 }
 
